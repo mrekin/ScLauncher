@@ -3,4 +3,4 @@ ScLauncher
 
 Simple application launcher
 
-For more information __Wiki__  https://github.com/mrekin/ScLauncher/wiki
+For more information [Wiki](https://github.com/mrekin/ScLauncher/wiki)
