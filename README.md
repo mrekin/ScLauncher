@@ -1,0 +1,4 @@
+ScLauncher
+==========
+
+Simple application launcher
