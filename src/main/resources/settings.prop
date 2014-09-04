@@ -1,0 +1,12 @@
+[AutoUpdater]
+AutoUpdaterServerURL = http://192.168.1.104:8080/SCLauncher/
+AutoUpdaterEnabled = true
+AutoUpdaterDevMode = false
+
+[Plugins]
+PluginDirectory = plugins/
+PluginRepoServerURL = http://192.168.1.104:8080/SCLauncher/plugins/
+
+[Applications]
+ApplicationDirectory = apps/
+ApplicationShowReleaseNotes = true

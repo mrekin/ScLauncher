@@ -1,0 +1,4 @@
+=========================================
+1. Fixed auto updater downloading speed
+2. Added Release Notes for applications
+=========================================

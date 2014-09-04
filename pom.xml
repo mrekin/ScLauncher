@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <url>${url.base}/${project.artifactId}</url>
+
+
+
+    <groupId>ru.mrekin.sc</groupId>
+    <artifactId>sc-launcher</artifactId>
+    <packaging>jar</packaging>
+    <version>1.2.1</version>
+    <description>Tool for launching app</description>
+
+
+	<dependencies>
+		<dependency>	
+			<groupId>org.tmatesoft.svnkit</groupId>
+			 <artifactId>svnkit</artifactId>
+			 <version>1.7.11</version>
+		</dependency>
+	</dependencies>
+
+
+
+    <build>
+		<resources>
+			<resource> 
+				<directory>src/main/resources</directory> 
+				<filtering>true</filtering>
+			</resource> 
+		</resources> 
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <mainClass>ru.mrekin.sc.launcher.Launch</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <archive>
+                    <manifest>
+                        <mainClass>ru.mrekin.sc.launcher.Launch</mainClass>
+                        <packageName>ru.mrekin.sc</packageName>
+                    </manifest>
+			<manifestEntries>
+				<appTitle>${project.description}</appTitle>
+				<appName>${project.artifactId}</appName>
+				<appVersion>${project.version}</appVersion>
+			</manifestEntries>
+                </archive>
+
+            </configuration>
+
+            <executions>
+                <execution>
+                    <id>assemble-all</id>
+                    <phase>prepare-package</phase>
+                    <goals>
+                        <goal>single</goal>
+                    </goals>
+                </execution>
+
+            </executions>
+        </plugin>
+
+        </plugins>
+    </build>
+</project>

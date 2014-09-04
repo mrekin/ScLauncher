@@ -1,0 +1,95 @@
+package com.vimpelcom.sc.launcher;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * Created by MRekin on 01.08.2014.
+ */
+public class AppHashMap extends HashMap {
+
+    
+
+    public AppHashMap() {
+        super();
+
+    }
+
+    public String getAppName() {
+        return (String) get("Name");
+    }
+
+    ;
+
+    public String getAppVersion() {
+        return (String) get("Version");
+    }
+
+    ;
+
+    public ArrayList<String> getAppVersions() {
+        return (ArrayList<String>) get("Versions");
+    }
+
+    ;
+
+    public String getAppLastVersion() {
+        if(getAppVersions()!=null ){
+
+            return getAppVersions().get(getAppVersions().size() - 1);
+        }else{
+            return "-1";
+        }
+    }
+
+    public String getAppPath() {
+        return (String) get("Path");
+    }
+
+    ;
+
+    public String getAppTitle() {
+        return (String) get("Title");
+    }
+
+    ;
+
+    public void setAppName(String name) {
+        put("Name", name);
+    }
+
+    ;
+
+    public void setAppVersion(String version) {
+        put("Version", version);
+    }
+
+    ;
+
+    public void setAppVersions(ArrayList<String> versions) {
+        put("Versions", versions);
+    }
+
+    ;
+
+    public void setAppPath(String path) {
+        put("Path", path);
+    }
+
+    ;
+
+    public void setAppTitle(String title) {
+        put("Title", title);
+    }
+
+    ;
+
+    @Override
+    public boolean equals(Object o) {
+        if(! (o instanceof AppHashMap)){
+            return false;
+        }else {
+            return getAppName().equals(((AppHashMap) o).getAppName());
+        }
+    }
+}
