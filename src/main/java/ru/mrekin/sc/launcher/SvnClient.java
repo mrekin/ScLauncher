@@ -27,7 +27,7 @@ public class SvnClient implements RemoteStorageClient {
     private SvnOperationFactory svnOperationFactory = new SvnOperationFactory();
     private SVNClientManager svnClientManager = SVNClientManager.newInstance();
     private ArrayList<Application> svnAppList;
-    private String rootPath = "https://192.168.1.1/svn/deployment/.m2/repository/com/vimpelcom/sc/tools";
+    private String rootPath = "https://192.168.1.1/svn/deployment/.m2/repository/sc/tools";
 
     public SvnClient() {
         try {
