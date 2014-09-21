@@ -30,8 +30,11 @@ public class AppPopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 class run implements Runnable {
                     public void run() {
-                        appManager.deleteApplication(svnApp.getAppName());
-                        appManager.updateApplication(svnApp.getAppName());
+
+                        appManager.deleteApplication(svnApp.getAppPath());
+                        appManager.updateApplication(svnApp.getAppPath());
+                        //iform.setVisible(false);
+                        //iform = null;
                         gui.init();
                         gui.launch();
                     }
@@ -53,8 +56,11 @@ public class AppPopupMenu extends JPopupMenu {
 
                         class run implements Runnable {
                             public void run() {
-                                appManager.deleteApplication(svnApp.getAppName());
-                                appManager.installApplication(svnApp.getAppName(), ((JMenuItem) e.getSource()).getText());
+                                AppInstallForm iform = new AppInstallForm();
+                                appManager.deleteApplication(svnApp.getAppPath());
+                                appManager.installApplication(svnApp.getAppPath(), ((JMenuItem) e.getSource()).getText());
+                                iform.setVisible(false);
+                                iform = null;
                                 gui.init();
                                 gui.launch();
                             }

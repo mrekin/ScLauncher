@@ -26,11 +26,11 @@ public class SettingsManager {
         instance = this;
     }
 
-    public static SettingsManager getInstance(){
-        if(instance!=null){
+    public static SettingsManager getInstance() {
+        if (instance != null) {
 
             return instance;
-        }else{
+        } else {
             return new SettingsManager();
         }
     }

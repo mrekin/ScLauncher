@@ -1,9 +1,8 @@
 package ru.mrekin.sc.launcher.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -27,7 +26,7 @@ public class FileDriver {
         File file = new File(path);
 
         File[] files = file.listFiles();
-        if(files != null) {
+        if (files != null) {
 
             for (File f : files) {
                 if (f.isDirectory()) {
@@ -60,24 +59,52 @@ public class FileDriver {
 
         } else {
             try {
-                apps = listFiles(file.getPath(), ".jar");
+                //TODO !!! will not work with old version. Need to do something
+                apps = listFiles(file.getPath(), "app.properties");
                 for (File f : apps) {
-                    JarFile jar = new JarFile(f);
 
-                    Attributes attr = jar.getManifest().getMainAttributes();
-                    Application apl = new Application();
-                    String appName = attr.getValue("appName");
-                    String appTitle = attr.getValue("appTitle");
-                    String appVersion = attr.getValue("appVersion");
-                    if (appName == null) appName = "";
-                    if (appTitle == null) appTitle = "";
-                    if (appVersion == null) appVersion = "";
-                    apl.setAppName(appName);
-                    apl.setAppTitle(appTitle);
-                    apl.setAppVersion(appVersion);
-                    apl.setAppPath(f.getPath());
-                    appList.add(apl);
-                    jar.close();
+                    String propertyFile = f.getParent() + "/" + LauncherConstants.PropertiesFileName;
+                    File pf = new File(propertyFile);
+                    if (!pf.exists() || pf.isDirectory()) {
+
+                        try {
+                            JarFile jar = new JarFile(f);
+                            Attributes attr = jar.getManifest().getMainAttributes();
+                            Application apl = new Application();
+                            String appName = attr.getValue("appName");
+                            String appTitle = attr.getValue("appTitle");
+                            String appVersion = attr.getValue("appVersion");
+                            if (appName == null) appName = "";
+                            if (appTitle == null) appTitle = "";
+                            if (appVersion == null) appVersion = "";
+                            apl.setAppName(appName);
+                            //apl.setAppTitle(appTitle);
+                            apl.setAppVersion(appVersion);
+                            apl.setAppPath(f.getPath());
+                            appList.add(apl);
+                            jar.close();
+                        } catch (IOException ioe) {
+                            System.out.println("Can't open file: " + f.getAbsolutePath() + ", error: " + ioe.getLocalizedMessage());
+                        }
+                    } else {
+                        Properties attr = new Properties();
+                        FileInputStream fis = new FileInputStream(propertyFile);
+                        attr.load(fis);
+                        fis.close();
+                        Application apl = new Application();
+                        String appName = attr.getProperty(LauncherConstants.ApplicationName,"");
+                        String appVersion = attr.getProperty(LauncherConstants.ApplicationVersion,"");
+                        String appType = attr.getProperty(LauncherConstants.ApplicationType,"");
+                        String appExecFile = attr.getProperty(LauncherConstants.ApplicationExecFile,"");
+
+                        apl.setAppName(appName);
+                        apl.setAppVersion(appVersion);
+                        apl.setExecFile(appExecFile);
+                        apl.setAppPath(f.getParentFile().getName());
+                        apl.setAppType(appType);
+
+                        appList.add(apl);
+                    }
                 }
 
 
@@ -109,6 +136,32 @@ public class FileDriver {
             return null;
 
         }
+    }
+
+    public boolean installFile(String appName, String version, String fileName, InputStream is) {
+        try {
+            String appDir = appRoot + "/" + appName;
+            fileName = appDir + "/" + fileName;
+            File file = new File(fileName);
+            if (!file.exists() || !file.isFile()) {
+                boolean b = file.mkdirs();
+                b = file.delete();
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            int c = 0;
+
+            byte[] array = new byte[1048576];
+            while ((c = is.read(array)) != -1) {
+                fos.write(array, 0, c);
+            }
+            fos.close();
+            is.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 }

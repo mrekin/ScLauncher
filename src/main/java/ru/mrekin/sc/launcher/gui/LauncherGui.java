@@ -23,13 +23,14 @@ import java.util.ArrayList;
 public class LauncherGui extends JFrame {
 
 
-    public AppManager appManager;
+    private AppManager appManager;
     ArrayList<Application> appList, svnAppList, localApps;
     FileDriver fileDriver;
     SvnClient svnClient;
     JPanel mainPanel, statusPanel;
     BufferedImage mainIcon;
     ImageIcon redIcon, greenIcon;
+    static LauncherGui instance;
 
     public LauncherGui() {
         super("SC launcher");
@@ -37,9 +38,16 @@ public class LauncherGui extends JFrame {
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         init();
-
         launch();
+        instance = this;
+    }
 
+    public static LauncherGui getInstance(){
+        if(instance == null){
+            return new LauncherGui();
+        }else{
+            return instance;
+        }
     }
 
     public void init() {
@@ -47,6 +55,7 @@ public class LauncherGui extends JFrame {
         try
 
         {
+            //TODO need to create new icon :)
             mainIcon = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
             greenIcon = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResource("green.png")));
             redIcon = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResource("red.png")));
@@ -90,6 +99,7 @@ public class LauncherGui extends JFrame {
     }
 
     public void launch() {
+        //TODO Need to add menu panel with settings, plugin list, about page,tool for prepare apps for publishing, may be Help menu
         String appLocalVersionDef = "Need to install";
         //setContentPane(new Container());
         this.getContentPane().removeAll();
@@ -101,18 +111,18 @@ public class LauncherGui extends JFrame {
         // setVisible(false);
         for (Application localApp : localApps) {
             JButtonEx button = new JButtonEx();
-            String appTitle = "";
+            //String appTitle = "";
             String appLocalVersion = appLocalVersionDef;
             String localPath = "";
 
 
-            appTitle = localApp.getAppTitle();
+            //appTitle = localApp.getAppTitle();
             appLocalVersion = localApp.getAppVersion();
             localPath = localApp.getAppPath();
 
 
             button.setPreferredSize(new Dimension(100, 30));
-            button.setText(("".equals(appTitle) ? localApp.getAppName() : appTitle));
+            button.setText(localApp.getAppName());
             //button.setBorder(new TitledBorder(""));
             button.setBorder(new EtchedBorder());
             button.setToolTipText((String) localApp.getAppName());
@@ -156,7 +166,7 @@ public class LauncherGui extends JFrame {
             //    add(box);
 
         }
-
+        //TODO need to move this logic to AppManager, GUI must work only with one common app list
         for (Application svnApp : svnAppList) {
             JButtonEx button = new JButtonEx();
             String appTitle = "";
@@ -164,10 +174,10 @@ public class LauncherGui extends JFrame {
             String localPath = "";
 
             for (Application app : appList) {
-                if (app.getAppName().equals(svnApp.getAppName())) {
-                    appTitle = app.getAppTitle();
+                if (app.equals(svnApp)) {
+                    //appTitle = app.getAppTitle();
                     appLocalVersion = app.getAppVersion();
-                    localPath = app.getAppPath();
+                    localPath = app.getRunCommand();
                     break;
                 }
             }
@@ -256,12 +266,13 @@ public class LauncherGui extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
 
-                        //TODO This is the simple way to launch apps. Need to realize full plugin mode
-                        Runtime.getRuntime().exec("java -jar " + app);
+                        //This is the simple way to launch apps.
+                        Runtime.getRuntime().exec(app);
 
                         //JarFile jar = new JarFile(app);
                         //String mainClass = (String)jar.getManifest().getMainAttributes().get("Main-Class");
-                        //TODO read this http://stackoverflow.com/questions/60764/how-should-i-load-jars-dynamically-at-runtime
+                        //read this http://stackoverflow.com/questions/60764/how-should-i-load-jars-dynamically-at-runtime
+                        //Jar plugins not need there - > moved to plugin manager
 
                     } catch (Exception ioe) {
                         ioe.printStackTrace();

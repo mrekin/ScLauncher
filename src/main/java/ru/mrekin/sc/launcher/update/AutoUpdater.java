@@ -21,7 +21,7 @@ public class AutoUpdater {
 
     private static JTextArea ta = null;
     //private static String serverURL = "http://bssdev:8888/SCLauncher/";
-    private static String serverURL;
+    private static String serverURL, appURL;
 
     public static String checkForUpdates() {
 
@@ -30,7 +30,7 @@ public class AutoUpdater {
         } else {
             serverURL = SettingsManager.getPropertyByName(LauncherConstants.AutoUpdaterServerURL) + "devmode/";
         }
-        serverURL = serverURL + LauncherConstants.SettingsFileName;
+        appURL = serverURL + LauncherConstants.SettingsFileName;
         String version = null;
 
         HttpURLConnection connection = null;
@@ -45,7 +45,7 @@ public class AutoUpdater {
         URL serverAddress = null;
 
         try {
-            serverAddress = new URL(serverURL);
+            serverAddress = new URL(appURL);
             //set up out communications stuff
             connection = null;
 
@@ -57,16 +57,16 @@ public class AutoUpdater {
 
             connection.connect();
             int responce = connection.getResponseCode();
-            if(responce !=200){
+            if (responce != 200) {
                 //Cant connect
-                log("Update server returns: "+responce);
+                log("Update server returns: " + responce);
                 return null;
             }
 
             //read the result from the server
             Properties props = new Properties();
             props.load(connection.getInputStream());
-            if(props.size()==0) {
+            if (props.size() == 0) {
                 //no settings
                 return null;
             }
@@ -109,20 +109,20 @@ public class AutoUpdater {
         //String pluginsDir = "plugins";
         String pluginsDir = SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugins/");
         String pluginName = "AutoUpdater";
-        String pluginDir = "./" + pluginsDir + "/" + pluginName + "/";
+        String pluginDir = "./" + pluginsDir + pluginName + "/";
         String fullPath = pluginDir + name;
         String fullPath1 = pluginDir + name1;
         String fullPath2 = pluginDir + name2;
         String fullPath3 = pluginDir + name3;
         URL pr = AutoUpdater.class.getClassLoader().getResource(name);
         try {
-
+            /*
             File plugin = new File(pluginDir + packagePath);
             if (!plugin.exists() || !plugin.isDirectory()) {
                 boolean b = plugin.mkdirs();
 
             }
-
+            */
             installUpdaterClass(name, fullPath);
             installUpdaterClass(name1, fullPath1);
             installUpdaterClass(name2, fullPath2);
@@ -145,6 +145,11 @@ public class AutoUpdater {
         try {
             URL pr = AutoUpdater.class.getClassLoader().getResource(pathInJar);
             InputStream bis = pr.openStream();
+            File plugin = new File(pathInPluginDirectory);
+            if (!plugin.exists() || !plugin.isFile()) {
+                boolean b = plugin.mkdirs();
+                b = plugin.delete();
+            }
             FileOutputStream fos = new FileOutputStream(pathInPluginDirectory);
             int c;
             while ((c = bis.read()) != -1) {

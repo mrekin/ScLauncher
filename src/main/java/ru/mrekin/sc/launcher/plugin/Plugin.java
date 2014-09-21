@@ -45,11 +45,11 @@ public class Plugin {
         this.pluginPath = pluginPath;
     }
 
-    public boolean isInstalled(){
+    public boolean isInstalled() {
         return installed;
     }
 
-    public void setIntalled(boolean b){
+    public void setInstalled(boolean b) {
         installed = b;
     }
 }
