@@ -16,7 +16,7 @@ public class Launch {
 
     public static void main(String[] args) {
 
-        ApplicationPrepare.prepare("F:\\MxDownload\\Mega Fappening 2014 Folder(1)");
+
       //  AppInstallForm form = new AppInstallForm();
       //  form.setValues(30,100);
         //Init all managers. Settings manager must be first
