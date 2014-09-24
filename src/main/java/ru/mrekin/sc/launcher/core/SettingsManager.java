@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher.core;
 
 import java.io.*;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
@@ -31,13 +32,9 @@ public class SettingsManager {
         return new File(LauncherConstants.WorkingDirectory + LauncherConstants.SettingsFileName);
     }
 
-    private static File getDefaultSettingsFile() {
-        try {
-            return new File(SettingsManager.class.getClassLoader().getResource(LauncherConstants.SettingsFileName).toURI());
-        } catch (URISyntaxException use) {
-            log(use.getLocalizedMessage());
-            return null;
-        }
+    private static InputStream getDefaultSettings() {
+
+            return SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
     }
 
 
@@ -122,15 +119,10 @@ public class SettingsManager {
             } else {
                 localSettings.load(new FileInputStream(lsf));
                 tempLocalSettings = (Properties)localSettings.clone();
-                File dsf = getDefaultSettingsFile();
-                if(!dsf.exists()||!dsf.isFile()){
-                    log("Error on check default settings file");
-                    return false;
-                }
-                defaultSettings.load(new FileInputStream(dsf));
-                //if need to force updete
-                //localSettings.putAll(defaultSettings);
-                //if need to add new properties
+                InputStream dsf = getDefaultSettings();
+
+                defaultSettings.load(dsf);
+
                 for(String key: defaultSettings.stringPropertyNames()){
                     if(!localSettings.containsKey(key)){
                         localSettings.put(key,defaultSettings.getProperty(key));
