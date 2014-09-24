@@ -4,7 +4,7 @@ package ru.mrekin.sc.launcher;
 import ru.mrekin.sc.launcher.core.Application;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.SettingsManager;
-import ru.mrekin.sc.launcher.plugin.RemoteStorageClient;
+import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNProperties;
@@ -24,7 +24,7 @@ import java.util.Properties;
  * Created by MRekin on 30.07.2014.
  * Will be changed on SVNPlugin later
  */
-public class SvnClient implements RemoteStorageClient {
+public class SvnClient implements IRemoteStorageClient {
 
     SVNRepository svnRepository;
     private SvnOperationFactory svnOperationFactory = new SvnOperationFactory();

@@ -73,9 +73,31 @@ public class AppPopupMenu extends JPopupMenu {
                 installItem.add(mi);
             }
         }
+
+        JMenuItem deleteItem = new JMenuItem();
+        deleteItem.setText("Delete");
+
+        deleteItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                class run implements Runnable {
+                    public void run() {
+
+                        appManager.deleteApplication(svnApp.getAppPath());
+                        gui.init();
+                        gui.launch();
+                    }
+                }
+
+                new run().run();
+            }
+        });
+
+
         this.add(updateItem);
         this.addSeparator();
         this.add(installItem);
+        this.addSeparator();
+        this.add(deleteItem);
 
     }
 }

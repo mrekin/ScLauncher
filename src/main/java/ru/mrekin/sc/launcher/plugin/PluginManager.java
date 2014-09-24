@@ -56,12 +56,12 @@ public class PluginManager {
 
 
                     Class cl = classLoader.loadClass(mainClass);
-                    if (!RemoteStorageClient.class.isAssignableFrom(cl)) {
-                        System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + RemoteStorageClient.class.getCanonicalName());
+                    if (!IRemoteStorageClient.class.isAssignableFrom(cl)) {
+                        System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IRemoteStorageClient.class.getCanonicalName());
                         continue;
                     }
 
-                    RemoteStorageClient instance = (RemoteStorageClient) cl.newInstance();
+                    IRemoteStorageClient instance = (IRemoteStorageClient) cl.newInstance();
                     Plugin plugin = new Plugin();
                     try {
                         pluginName = "".equals(instance.getPluginName()) ? cl.getSimpleName() : instance.getPluginName();

@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher.core;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
@@ -13,7 +14,7 @@ public class SettingsManager {
     private static SettingsManager instance;
 
     private SettingsManager() {
-        localSettingsFile = new File(LauncherConstants.WorkingDirectory + LauncherConstants.SettingsFileName);
+        localSettingsFile = getLocalSettingsFile();
         settings = new Properties();
         appProperties = new Properties();
 
@@ -25,6 +26,20 @@ public class SettingsManager {
         loadLauncherProperties();
         instance = this;
     }
+
+    private static File getLocalSettingsFile() {
+        return new File(LauncherConstants.WorkingDirectory + LauncherConstants.SettingsFileName);
+    }
+
+    private static File getDefaultSettingsFile() {
+        try {
+            return new File(SettingsManager.class.getClassLoader().getResource(LauncherConstants.SettingsFileName).toURI());
+        } catch (URISyntaxException use) {
+            log(use.getLocalizedMessage());
+            return null;
+        }
+    }
+
 
     public static SettingsManager getInstance() {
         if (instance != null) {
@@ -53,7 +68,6 @@ public class SettingsManager {
      * @return
      */
     public static String getPropertyByName(String name, String defValue) {
-
         return settings.getProperty(name, appProperties.getProperty(name, defValue));
     }
 
@@ -73,17 +87,17 @@ public class SettingsManager {
         }
     }
 
-    private void log(Object o) {
+    private static void log(Object o) {
         System.out.println(o.toString());
     }
 
     /**
      * Copy default settings to workDir.
      */
-    private void applyDefaultSettings() {
+    private static void applyDefaultSettings() {
         InputStream is = SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
         try {
-            FileOutputStream fos = new FileOutputStream(LauncherConstants.WorkingDirectory + localSettingsFile);
+            FileOutputStream fos = new FileOutputStream(getLocalSettingsFile());
             int c;
             while ((c = is.read()) != -1) {
                 fos.write(c);
@@ -94,6 +108,47 @@ public class SettingsManager {
             log(ioe.getLocalizedMessage());
         }
 
+    }
+
+    public static boolean updateLocalSettings() {
+
+        Properties localSettings = new Properties();
+        Properties tempLocalSettings = new Properties();
+        Properties defaultSettings = new Properties();
+        try {
+            File lsf = getLocalSettingsFile();
+            if (!lsf.exists() || !lsf.isFile()) {
+                applyDefaultSettings();
+            } else {
+                localSettings.load(new FileInputStream(lsf));
+                tempLocalSettings = (Properties)localSettings.clone();
+                File dsf = getDefaultSettingsFile();
+                if(!dsf.exists()||!dsf.isFile()){
+                    log("Error on check default settings file");
+                    return false;
+                }
+                defaultSettings.load(new FileInputStream(dsf));
+                //if need to force updete
+                //localSettings.putAll(defaultSettings);
+                //if need to add new properties
+                for(String key: defaultSettings.stringPropertyNames()){
+                    if(!localSettings.containsKey(key)){
+                        localSettings.put(key,defaultSettings.getProperty(key));
+                    }
+                }
+                if(!localSettings.equals(tempLocalSettings)){
+                    localSettings.store(new FileOutputStream(lsf),"test");
+                }
+
+            }
+        } catch (FileNotFoundException fnfe) {
+            log(fnfe.getLocalizedMessage());
+            return false;
+        } catch (IOException ioe) {
+            log(ioe.getLocalizedMessage());
+            return false;
+        }
+        return true;
     }
 
 }

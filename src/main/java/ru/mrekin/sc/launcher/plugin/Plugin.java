@@ -10,7 +10,7 @@ public class Plugin {
     private String pluginName = "";
     private String pluginVersion = "";
     private URL pluginPath;
-    private RemoteStorageClient pluginObj = null;
+    private IRemoteStorageClient pluginObj = null;
     private boolean installed = false;
 
     public String getPluginName() {
@@ -29,11 +29,11 @@ public class Plugin {
         this.pluginVersion = pluginVersion;
     }
 
-    public RemoteStorageClient getPluginObj() {
+    public IRemoteStorageClient getPluginObj() {
         return pluginObj;
     }
 
-    public void setPluginObj(RemoteStorageClient pluginObj) {
+    public void setPluginObj(IRemoteStorageClient pluginObj) {
         this.pluginObj = pluginObj;
     }
 

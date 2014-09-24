@@ -42,10 +42,10 @@ public class LauncherGui extends JFrame {
         instance = this;
     }
 
-    public static LauncherGui getInstance(){
-        if(instance == null){
+    public static LauncherGui getInstance() {
+        if (instance == null) {
             return new LauncherGui();
-        }else{
+        } else {
             return instance;
         }
     }

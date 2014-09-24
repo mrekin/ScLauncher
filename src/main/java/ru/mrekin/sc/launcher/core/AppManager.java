@@ -107,7 +107,7 @@ public class AppManager {
 
             int i = 0;
             AppInstallForm iform = new AppInstallForm();
-            String appName,version;
+            String appName, version;
 
             public void run() {
                 while (run) {
@@ -119,8 +119,8 @@ public class AppManager {
                     try {
                         int i = 0;
                         for (String fileName : files.stringPropertyNames()) {
-                            if(iform!=null){
-                                iform.setValues(i,files.size());
+                            if (iform != null) {
+                                iform.setValues(i, files.size());
                                 iform.update();
                             }
                             is = svnClient.getFile(appName, version, fileName);
@@ -161,7 +161,7 @@ public class AppManager {
             }
 
 
-            public void setData(String appName, String version){
+            public void setData(String appName, String version) {
 
                 this.appName = appName;
                 this.version = version;
@@ -171,7 +171,7 @@ public class AppManager {
         }
 
         MyThread th = new MyThread();
-        th.setData(appName,version);
+        th.setData(appName, version);
         th.start();
 
     }
@@ -189,7 +189,7 @@ public class AppManager {
         File f = new File(path);
         try {
             FileUtils.deleteDirectory(f);
-        }catch (IOException ioe){
+        } catch (IOException ioe) {
             System.out.println(ioe.getLocalizedMessage());
         }
     }

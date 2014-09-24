@@ -92,10 +92,10 @@ public class FileDriver {
                         attr.load(fis);
                         fis.close();
                         Application apl = new Application();
-                        String appName = attr.getProperty(LauncherConstants.ApplicationName,"");
-                        String appVersion = attr.getProperty(LauncherConstants.ApplicationVersion,"");
-                        String appType = attr.getProperty(LauncherConstants.ApplicationType,"");
-                        String appExecFile = attr.getProperty(LauncherConstants.ApplicationExecFile,"");
+                        String appName = attr.getProperty(LauncherConstants.ApplicationName, "");
+                        String appVersion = attr.getProperty(LauncherConstants.ApplicationVersion, "");
+                        String appType = attr.getProperty(LauncherConstants.ApplicationType, "");
+                        String appExecFile = attr.getProperty(LauncherConstants.ApplicationExecFile, "");
 
                         apl.setAppName(appName);
                         apl.setAppVersion(appVersion);

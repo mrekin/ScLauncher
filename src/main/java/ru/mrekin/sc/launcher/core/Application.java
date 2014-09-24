@@ -76,7 +76,7 @@ public class Application {
         calculateRunCommand();
     }
 
-    private void calculateRunCommand(){
+    private void calculateRunCommand() {
         String appFullPath = SettingsManager.getPropertyByName(LauncherConstants.ApplicationDirectory) + getAppPath() + "/" + getExecFile();
         if (LauncherConstants.ApplicationTypeWin.equals(appType)) {
             runCommand = appFullPath;
@@ -106,18 +106,15 @@ public class Application {
     }
 
 
-
     public String getAppPath() {
         return this.appPath;
     }
-
 
 
     public void setAppPath(String path) {
         this.appPath = path;
         calculateRunCommand();
     }
-
 
 
     /*
