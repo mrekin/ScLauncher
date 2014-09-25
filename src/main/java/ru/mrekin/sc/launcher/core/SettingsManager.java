@@ -1,9 +1,14 @@
 package ru.mrekin.sc.launcher.core;
 
+import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
+
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Properties;
+import java.util.TreeSet;
 
 /**
  * Created by MRekin on 27.08.2014.
@@ -17,9 +22,10 @@ public class SettingsManager {
     private SettingsManager() {
         localSettingsFile = getLocalSettingsFile();
         settings = new Properties();
+
         appProperties = new Properties();
 
-        if (!localSettingsFile.exists() || localSettingsFile.isDirectory() || settings.size() == 0) {
+        if (!localSettingsFile.exists() || localSettingsFile.isDirectory()) {
             applyDefaultSettings();
         }
 
@@ -29,7 +35,7 @@ public class SettingsManager {
     }
 
     private static File getLocalSettingsFile() {
-        return new File(LauncherConstants.WorkingDirectory + LauncherConstants.SettingsFileName);
+        return new File(LauncherConstants.SettingsFileName);
     }
 
     private static InputStream getDefaultSettings() {
@@ -92,6 +98,7 @@ public class SettingsManager {
      * Copy default settings to workDir.
      */
     private static void applyDefaultSettings() {
+
         InputStream is = SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
         try {
             FileOutputStream fos = new FileOutputStream(getLocalSettingsFile());
@@ -109,12 +116,20 @@ public class SettingsManager {
 
     public static boolean updateLocalSettings() {
 
-        Properties localSettings = new Properties();
-        Properties tempLocalSettings = new Properties();
+        //Properties with sorted keys
+        Properties localSettings = new Properties(){
+            @Override
+            public synchronized Enumeration<Object> keys() {
+                return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+            }
+        };
+        Properties tempLocalSettings;// = new Properties();
         Properties defaultSettings = new Properties();
         try {
             File lsf = getLocalSettingsFile();
+            log(lsf.getAbsolutePath());
             if (!lsf.exists() || !lsf.isFile()) {
+                log("Local settings file "+lsf.getAbsolutePath()+" not found");
                 applyDefaultSettings();
             } else {
                 localSettings.load(new FileInputStream(lsf));
@@ -129,7 +144,7 @@ public class SettingsManager {
                     }
                 }
                 if(!localSettings.equals(tempLocalSettings)){
-                    localSettings.store(new FileOutputStream(lsf),"test");
+                    localSettings.store(new FileOutputStream(lsf),null);
                 }
 
             }

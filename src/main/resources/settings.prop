@@ -1,9 +1,9 @@
-[AutoUpdater]
+#AutoUpdater
 AutoUpdaterServerURL = http://192.168.1.104:8080/SCLauncher/
 AutoUpdaterEnabled = true
 AutoUpdaterDevMode = false
 
-[Plugins]
+#Plugins
 PluginDirectory = plugins/
 PluginRepoServerURL = http://192.168.1.104:8080/SCLauncher/plugins/
 SVNRepoURL = http://192.168.1.102/svn/repository/ru/mrekin/
@@ -11,6 +11,6 @@ SVNUser = rmm
 SVNPassword = gthtgbcrf
 MandatoryPlugins =
 
-[Applications]
+#Applications
 ApplicationDirectory = apps/
 ApplicationShowReleaseNotes = true
