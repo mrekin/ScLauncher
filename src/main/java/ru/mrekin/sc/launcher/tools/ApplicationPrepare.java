@@ -74,11 +74,11 @@ public class ApplicationPrepare {
     }
 
 
-    public static void pluginDirPrepare(String dir){
+    public static void pluginDirPrepare(String dir) {
 
     }
 
-    public static void updateDirPrepare(String dir){
+    public static void updateDirPrepare(String dir) {
 
     }
 

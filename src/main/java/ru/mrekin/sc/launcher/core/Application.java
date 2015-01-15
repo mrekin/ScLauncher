@@ -18,6 +18,8 @@ public class Application {
     private String ExecFile = "";
     private ArrayList<String> appVersions = new ArrayList<String>(1);
     private Properties appFiles = new Properties();
+    private String sourcePlugin = "";
+    private boolean isInstalled = false;
 
     public Application() {
         super();
@@ -35,6 +37,14 @@ public class Application {
     }
 
     ;
+
+    public boolean isInstalled() {
+        return isInstalled;
+    }
+
+    public void setInstalled(boolean isInstalled) {
+        this.isInstalled = isInstalled;
+    }
 
     public String getAppVersion() {
         return this.appVersion;
@@ -59,6 +69,14 @@ public class Application {
     public void setExecFile(String execFile) {
         ExecFile = execFile;
         calculateRunCommand();
+    }
+
+    public String getSourcePlugin() {
+        return sourcePlugin;
+    }
+
+    public void setSourcePlugin(String sourcePlugin) {
+        this.sourcePlugin = sourcePlugin;
     }
 
     public void setAppVersions(ArrayList<String> versions) {

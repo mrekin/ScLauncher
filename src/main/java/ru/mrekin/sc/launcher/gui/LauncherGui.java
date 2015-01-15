@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher.gui;
 
-import ru.mrekin.sc.launcher.SvnClient;
+//import ru.mrekin.sc.launcher.SvnClient;
+
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.Application;
 import ru.mrekin.sc.launcher.core.FileDriver;
@@ -24,9 +25,10 @@ public class LauncherGui extends JFrame {
 
 
     private AppManager appManager;
-    ArrayList<Application> appList, svnAppList, localApps;
+    ArrayList<Application> appList;
+    //, svnAppList, localApps;
     FileDriver fileDriver;
-    SvnClient svnClient;
+    //    SvnClient svnClient;
     JPanel mainPanel, statusPanel;
     BufferedImage mainIcon;
     ImageIcon redIcon, greenIcon;
@@ -74,8 +76,8 @@ public class LauncherGui extends JFrame {
 //        fileDriver = appManager.getFileDriver();
         appList = appManager.getAppList();
 //        svnClient = appManager.getSvnClient();
-        svnAppList = appManager.getSvnAppList();
-
+//        svnAppList = appManager.getSvnAppList();
+/*
         if (svnAppList == null) {
             JDialog msg = new JDialog();
             msg.setTitle("Can't connect to SVN");
@@ -89,11 +91,12 @@ public class LauncherGui extends JFrame {
             System.exit(1);
 
         }
-        //temp is a diff
-        localApps = (ArrayList<Application>) appList.clone();
-        localApps.removeAll(svnAppList);
+  */      //temp is a diff
+        //      localApps = (ArrayList<Application>) appList.clone();
+        //      localApps.removeAll(svnAppList);
 
-        setSize(new Dimension(300, 45 + 55 * (svnAppList.size() + localApps.size())));
+//        setSize(new Dimension(300, 45 + 55 * (svnAppList.size() + localApps.size())));
+        setSize(new Dimension(300, 45 + 55 * appList.size()));
 
 
     }
@@ -103,13 +106,14 @@ public class LauncherGui extends JFrame {
         String appLocalVersionDef = "Need to install";
         //setContentPane(new Container());
         this.getContentPane().removeAll();
-        mainPanel = new JPanel(new GridLayout(svnAppList.size() + localApps.size(), 2));
+//        mainPanel = new JPanel(new GridLayout(svnAppList.size() + localApps.size(), 2));
+        mainPanel = new JPanel(new GridLayout(appList.size(), 2));
         mainPanel.setBorder(new LineBorder(Color.GRAY));
 
         statusPanel = new JPanel();
         //setVisible(true);
         // setVisible(false);
-        for (Application localApp : localApps) {
+        for (Application localApp : appList) {
             JButtonEx button = new JButtonEx();
             //String appTitle = "";
             String appLocalVersion = appLocalVersionDef;
@@ -117,8 +121,10 @@ public class LauncherGui extends JFrame {
 
 
             //appTitle = localApp.getAppTitle();
-            appLocalVersion = localApp.getAppVersion();
-            localPath = localApp.getAppPath();
+            if(localApp.isInstalled()) {
+                appLocalVersion = localApp.getAppVersion();
+            }
+            localPath = localApp.getRunCommand();
 
 
             button.setPreferredSize(new Dimension(100, 30));
@@ -137,13 +143,13 @@ public class LauncherGui extends JFrame {
 
 
             label.setComponentPopupMenu(new AppPopupMenu(this, localApp, appManager));
-            if (localApp.getAppLastVersion().equals(appLocalVersion)) {
+            if (localApp.isInstalled()&&localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.GREEN);
                 button.setEnabled(true);
-            } else if (!localApp.getAppLastVersion().equals(appLocalVersion) && !appLocalVersionDef.equals(appLocalVersion)) {
+            } else if (localApp.isInstalled()&&!localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.RED);
                 button.setEnabled(true);
-            } else if (appLocalVersionDef.equals(appLocalVersion)) {
+            } else if (!localApp.isInstalled()) {
                 label.setForeground(Color.LIGHT_GRAY);
                 button.setEnabled(false);
             }
@@ -167,7 +173,7 @@ public class LauncherGui extends JFrame {
 
         }
         //TODO need to move this logic to AppManager, GUI must work only with one common app list
-        for (Application svnApp : svnAppList) {
+ /*       for (Application svnApp : svnAppList) {
             JButtonEx button = new JButtonEx();
             String appTitle = "";
             String appLocalVersion = "Need to install";
@@ -226,7 +232,7 @@ public class LauncherGui extends JFrame {
             //    add(box);
 
         }
-
+*/
         // setResizable(false);
 
         mainPanel.setVisible(true);
@@ -235,10 +241,13 @@ public class LauncherGui extends JFrame {
         statusPanel.setMaximumSize(new Dimension(0, 20));
 
         statusPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        //TODO implements plugin status logic
         statusPanel.setToolTipText("Status");
         JLabel lbl = new JLabel();
         JLabel lbl2 = new JLabel();
-        if (appManager.getSvnClient().checkSvnConnection()) {
+        //if (appManager.getSvnClient().checkSvnConnection()) {
+
+        if (true) {
             lbl2.setIcon(greenIcon);
         } else {
             lbl2.setIcon(redIcon);

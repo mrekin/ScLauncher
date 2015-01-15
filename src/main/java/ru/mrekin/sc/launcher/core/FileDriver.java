@@ -81,6 +81,7 @@ public class FileDriver {
                             //apl.setAppTitle(appTitle);
                             apl.setAppVersion(appVersion);
                             apl.setAppPath(f.getPath());
+                            apl.setInstalled(true);
                             appList.add(apl);
                             jar.close();
                         } catch (IOException ioe) {
@@ -102,7 +103,7 @@ public class FileDriver {
                         apl.setExecFile(appExecFile);
                         apl.setAppPath(f.getParentFile().getName());
                         apl.setAppType(appType);
-
+                        apl.setInstalled(true);
                         appList.add(apl);
                     }
                 }
@@ -138,9 +139,9 @@ public class FileDriver {
         }
     }
 
-    public boolean installFile(String appName, String version, String fileName, InputStream is) {
+    public boolean installFile(String appPath, String version, String fileName, InputStream is) {
         try {
-            String appDir = appRoot + "/" + appName;
+            String appDir = appRoot + "/" + appPath;
             fileName = appDir + "/" + fileName;
             File file = new File(fileName);
             if (!file.exists() || !file.isFile()) {

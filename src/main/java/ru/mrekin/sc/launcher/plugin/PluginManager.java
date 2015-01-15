@@ -11,10 +11,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
@@ -28,6 +27,7 @@ public class PluginManager {
     private static PluginManager instance;
 
     private PluginManager() {
+        loadProperties();
         instance = this;
     }
 
@@ -51,11 +51,14 @@ public class PluginManager {
                 try {
                     URL jarURL = f.toURI().toURL();
                     JarFile jf = new JarFile(f);
-                    mainClass = jf.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
-                    URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
+                    //oldVersion
+                    //mainClass = jf.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
+                    // mainClass = "ru/mrekin/sc/launcher/plugin/SvnClient.class";
+                    //mainClass = findClassByInterface(jf, jarURL,IRemoteStorageClient.class);
+                    //URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
 
 
-                    Class cl = classLoader.loadClass(mainClass);
+                    Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
                     if (!IRemoteStorageClient.class.isAssignableFrom(cl)) {
                         System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IRemoteStorageClient.class.getCanonicalName());
                         continue;
@@ -79,8 +82,6 @@ public class PluginManager {
 
 
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -125,7 +126,7 @@ public class PluginManager {
                     //1. Read settings from settings file (at least jar name) 2. Load plugin info (version, description)
                     //2. Store plugin path info for further install process
                     Properties settings = new Properties();
-                    serverAddress = new URL(serverURL + e.getKey() + "/" + LauncherConstants.SettingsFileName);
+                    serverAddress = new URL(SettingsManager.getPropertyByName(LauncherConstants.PluginRepoServerURL) + e.getKey() + "/" + LauncherConstants.SettingsFileName);
                     connection = (HttpURLConnection) serverAddress.openConnection();
                     connection.connect();
                     settings.load(connection.getInputStream());
@@ -158,6 +159,40 @@ public class PluginManager {
 
     public ArrayList<Plugin> getPlugins() {
         return installedPlugins;
+    }
+
+    public Plugin getPluginByName(String name) {
+        for (Plugin pl : installedPlugins) {
+            if (name.equals(pl.getPluginName())) {
+                return pl;
+            }
+        }
+        return null;
+    }
+
+    private Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
+        Enumeration<JarEntry> entries = jar.entries();
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
+
+        Class cl = null;
+        while (entries.hasMoreElements()) {
+            JarEntry nextElement = entries.nextElement();
+            String element = nextElement.getName().replace("/", ".");
+            if (element.endsWith(".class")) {
+                try {
+                    cl = classLoader.loadClass(element.replace(".class", ""));
+                    //cl = classLoader.loadClass(element);
+                } catch (ClassNotFoundException cnfe) {
+                    System.out.println("Entry " + element + " not a class");
+                }
+                if (cl != null && iface.isAssignableFrom(cl)) {
+                    return cl;
+                }
+            }
+        }
+
+
+        return null;
     }
 
 }

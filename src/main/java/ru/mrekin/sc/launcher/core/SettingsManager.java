@@ -5,16 +5,13 @@ import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by MRekin on 27.08.2014.
  */
 public class SettingsManager {
-    static Properties settings, appProperties;
+    static Properties settings, appProperties, pluginProperties;
 
     File localSettingsFile;
     private static SettingsManager instance;
@@ -23,7 +20,10 @@ public class SettingsManager {
         localSettingsFile = getLocalSettingsFile();
         settings = new Properties();
 
+        pluginProperties = new Properties();
+
         appProperties = new Properties();
+
 
         if (!localSettingsFile.exists() || localSettingsFile.isDirectory()) {
             applyDefaultSettings();
@@ -40,7 +40,7 @@ public class SettingsManager {
 
     private static InputStream getDefaultSettings() {
 
-            return SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
+        return SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
     }
 
 
@@ -71,7 +71,7 @@ public class SettingsManager {
      * @return
      */
     public static String getPropertyByName(String name, String defValue) {
-        return settings.getProperty(name, appProperties.getProperty(name, defValue));
+        return settings.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
 
     public void loadLauncherSettings() {
@@ -85,6 +85,26 @@ public class SettingsManager {
     public void loadLauncherProperties() {
         try {
             appProperties.load(SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.PropertiesFileName));
+        } catch (IOException ioe) {
+            log(ioe.getLocalizedMessage());
+        }
+    }
+
+    public void loadPluginProperties() {
+        try {
+            Properties temp = new Properties();
+            ArrayList<File> props = FileDriver.listFiles(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugins"), ".props");
+            for (File f : props) {
+                temp.clear();
+                temp.load(new FileInputStream(f));
+                for (String s : temp.stringPropertyNames()) {
+                    if (!pluginProperties.contains(s)) {
+                        //TODO how to find plugin Name ? Now it will be without any prefixes
+                        pluginProperties.put(s, temp.getProperty(s));
+                    }
+                }
+            }
+            //appProperties.load());
         } catch (IOException ioe) {
             log(ioe.getLocalizedMessage());
         }
@@ -117,7 +137,7 @@ public class SettingsManager {
     public static boolean updateLocalSettings() {
 
         //Properties with sorted keys
-        Properties localSettings = new Properties(){
+        Properties localSettings = new Properties() {
             @Override
             public synchronized Enumeration<Object> keys() {
                 return Collections.enumeration(new TreeSet<Object>(super.keySet()));
@@ -129,22 +149,25 @@ public class SettingsManager {
             File lsf = getLocalSettingsFile();
             log(lsf.getAbsolutePath());
             if (!lsf.exists() || !lsf.isFile()) {
-                log("Local settings file "+lsf.getAbsolutePath()+" not found");
+                log("Local settings file " + lsf.getAbsolutePath() + " not found");
                 applyDefaultSettings();
             } else {
                 localSettings.load(new FileInputStream(lsf));
-                tempLocalSettings = (Properties)localSettings.clone();
+                tempLocalSettings = (Properties) localSettings.clone();
                 InputStream dsf = getDefaultSettings();
-
+                if(dsf==null){
+                    log("Can't load default settings. Jar file is corrupted or you need to package project first.");
+                    System.exit(1);
+                }
                 defaultSettings.load(dsf);
 
-                for(String key: defaultSettings.stringPropertyNames()){
-                    if(!localSettings.containsKey(key)){
-                        localSettings.put(key,defaultSettings.getProperty(key));
+                for (String key : defaultSettings.stringPropertyNames()) {
+                    if (!localSettings.containsKey(key)) {
+                        localSettings.put(key, defaultSettings.getProperty(key));
                     }
                 }
-                if(!localSettings.equals(tempLocalSettings)){
-                    localSettings.store(new FileOutputStream(lsf),null);
+                if (!localSettings.equals(tempLocalSettings)) {
+                    localSettings.store(new FileOutputStream(lsf), null);
                 }
 
             }

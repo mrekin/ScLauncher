@@ -15,14 +15,18 @@ public class Launch {
 
     public static void main(String[] args) {
 
-        if(args.length>0){
+        if (args.length > 0) {
             //execute tools
             ApplicationTools.execute(args);
-        }else {
+        } else {
             //launch
             SettingsManager.updateLocalSettings();
             SettingsManager.getInstance();
-            PluginManager.getInstance();
+
+            //Loading plugins
+            PluginManager.getInstance().loadInstalledPlugins();
+            PluginManager.getInstance().loadAvaliablePlugins();
+
             AppManager.getInstance();
 
             //Checking if need to update launcher
@@ -33,11 +37,6 @@ public class Launch {
                 }
             }
 
-            //Loading plugins
-            PluginManager pm = PluginManager.getInstance();
-            pm.loadProperties();
-            pm.loadInstalledPlugins();
-            pm.loadAvaliablePlugins();
 
             //Launching launcher :)
             LauncherGui gui = new LauncherGui();

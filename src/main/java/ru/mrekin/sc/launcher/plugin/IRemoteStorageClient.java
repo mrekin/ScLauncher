@@ -21,7 +21,7 @@ public interface IRemoteStorageClient {
 
     //public boolean getApp(String name, String version, FileOutputStream fos) throws Exception;
 
-    public boolean checkSvnConnection() throws Exception;
+    public boolean checkConnection() throws Exception;
 
     public ArrayList<Application> getAppList() throws Exception;
 
@@ -29,8 +29,8 @@ public interface IRemoteStorageClient {
 
     public String getPluginVersion();
 
-    public Properties getFiles(String appName, String version);
+    public Properties getFiles(String appPath, String version);
 
-    public InputStream getFile(String appName, String version, String fileName);
+    public InputStream getFile(String appPath, String version, String fileName);
 
 }
