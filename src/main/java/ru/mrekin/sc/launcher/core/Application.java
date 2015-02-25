@@ -62,6 +62,10 @@ public class Application {
 
     ;
 
+    public void setAppVersions(ArrayList<String> versions) {
+        this.appVersions = versions;
+    }
+
     public String getExecFile() {
         return ExecFile;
     }
@@ -77,10 +81,6 @@ public class Application {
 
     public void setSourcePlugin(String sourcePlugin) {
         this.sourcePlugin = sourcePlugin;
-    }
-
-    public void setAppVersions(ArrayList<String> versions) {
-        this.appVersions = versions;
     }
 
     ;

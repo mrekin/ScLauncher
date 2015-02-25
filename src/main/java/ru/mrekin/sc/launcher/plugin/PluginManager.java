@@ -3,16 +3,14 @@ package ru.mrekin.sc.launcher.plugin;
 import ru.mrekin.sc.launcher.core.FileDriver;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.SettingsManager;
-import sun.net.www.protocol.jar.Handler;
-import sun.net.www.protocol.jar.JarURLConnection;
 
-import java.io.*;
-import java.net.HttpURLConnection;
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
-import java.util.jar.Attributes;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -21,13 +19,14 @@ import java.util.jar.JarFile;
  */
 public class PluginManager {
 
+    private static PluginManager instance;
     private String pluginDir = "";
     private ArrayList<Plugin> installedPlugins = new ArrayList<Plugin>(1);
     private ArrayList<Plugin> avaliabledPlugins = new ArrayList<Plugin>(1);
-    private static PluginManager instance;
 
     private PluginManager() {
         loadProperties();
+        load();
         instance = this;
     }
 
@@ -38,6 +37,15 @@ public class PluginManager {
         } else {
             return new PluginManager();
         }
+    }
+
+    public void load() {
+        this.installedPlugins = new ArrayList<Plugin>(1);
+        ;
+        this.avaliabledPlugins = new ArrayList<Plugin>(1);
+        ;
+        loadInstalledPlugins();
+        loadAvaliablePlugins();
     }
 
     public void loadInstalledPlugins() {
@@ -78,6 +86,7 @@ public class PluginManager {
                     plugin.setPluginObj(instance);
                     plugin.setPluginPath(f.toURI().toURL());
                     plugin.setInstalled(true);
+                    plugin.setPluginSimpleName(f.getName().replace(".jar", ""));
                     installedPlugins.add(plugin);
 
 
@@ -97,7 +106,10 @@ public class PluginManager {
     }
 
     public void loadAvaliablePlugins() {
-        //TODO need to move all file names to constans class
+        //TODO need to move all file names to constans class //
+        // Get all RepoClients
+        //Get plugin list from each + RepoClientID
+/*
         String serverURL = SettingsManager.getPropertyByName(LauncherConstants.PluginRepoServerURL) + "plugin.list";
         HttpURLConnection connection = null;
         URL serverAddress;
@@ -150,7 +162,8 @@ public class PluginManager {
 
         }
 
-
+*/
+        this.avaliabledPlugins = PluginRepoManager.getInstance().getAvaliablePlugins();
     }
 
     public void loadProperties() {
@@ -195,4 +208,22 @@ public class PluginManager {
         return null;
     }
 
+    public ArrayList<Plugin> getAvaliabledPlugins() {
+        return avaliabledPlugins;
+    }
+
+    public ArrayList<Plugin> getAllPlugins() {
+        for (Plugin pl : avaliabledPlugins) {
+            if (!installedPlugins.contains(pl)) {
+                installedPlugins.add(pl);
+            }
+        }
+//        installedPlugins.addAll(avaliabledPlugins);
+        return installedPlugins;
+    }
+
+    public void install(Plugin plugin, String version) {
+        System.out.println("Intalling plugin " + plugin.getPluginName()+", " + version);
+        PluginRepoManager.getInstance().install(plugin, version);
+    }
 }

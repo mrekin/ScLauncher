@@ -1,20 +1,21 @@
 package ru.mrekin.sc.launcher.core;
 
-import sun.reflect.generics.reflectiveObjects.LazyReflectiveObjectGenerator;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.configuration.event.ConfigurationEvent;
+import org.apache.commons.configuration.event.ConfigurationListener;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**
  * Created by MRekin on 27.08.2014.
  */
 public class SettingsManager {
-    static Properties settings, appProperties, pluginProperties;
-
-    File localSettingsFile;
+    private static Properties settings, appProperties, pluginProperties;
+    private XMLConfiguration xmlConfiguration;
     private static SettingsManager instance;
+    File localSettingsFile;
 
     private SettingsManager() {
         localSettingsFile = getLocalSettingsFile();
@@ -32,6 +33,48 @@ public class SettingsManager {
         loadLauncherSettings();
         loadLauncherProperties();
         instance = this;
+
+        //TODO Need to use XMLConfiguration for config management, Properties not very usefull
+        xmlConfiguration = loadXMLConfiguration(settings);
+
+
+    }
+
+    private XMLConfiguration loadXMLConfiguration(Properties defaultProperties) {
+        XMLConfiguration xmlConfiguration = null;
+        try {
+            File file = new File(LauncherConstants.SettingsFileName2);
+            if (!file.exists() || !file.isFile()) {
+                //first run
+                try {
+
+                    xmlConfiguration = new XMLConfiguration();
+                    for (Object key : settings.keySet()) {
+                        xmlConfiguration.addProperty((String) key, settings.get(key));
+                    }
+                    file.createNewFile();
+                    xmlConfiguration.save(file);
+                } catch (IOException ioe) {
+                    log(ioe.getLocalizedMessage());
+                }
+            } else {
+                xmlConfiguration = new XMLConfiguration(file);
+            }
+        } catch (ConfigurationException ce) {
+            log(ce.getLocalizedMessage());
+            xmlConfiguration = new XMLConfiguration();
+        }
+        xmlConfiguration.addConfigurationListener(new ConfigurationListener() {
+            @Override
+            public void configurationChanged(ConfigurationEvent configurationEvent) {
+                //if(configurationEvent.getType()== AbstractConfiguration.){
+                //}
+
+                log("Changed property: " + configurationEvent.getPropertyName());
+            }
+        });
+
+        return xmlConfiguration;
     }
 
     private static File getLocalSettingsFile() {
@@ -74,41 +117,18 @@ public class SettingsManager {
         return settings.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
 
-    public void loadLauncherSettings() {
-        try {
-            settings.load(new FileInputStream(localSettingsFile));
-        } catch (IOException ioe) {
-            log(ioe.getLocalizedMessage());
-        }
+    /**
+     * Return setting value or property value or empty string. If exist setting and property with same name - setting will be returned.
+     *
+     * @param name
+     * @return
+     */
+    public String getPropertyByName2(String name, String defValue) {
+        String value = (String) xmlConfiguration.getProperty(name);
+        return "".equals(value) ? defValue : value;
+        //return xmlConfiguration.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
 
-    public void loadLauncherProperties() {
-        try {
-            appProperties.load(SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.PropertiesFileName));
-        } catch (IOException ioe) {
-            log(ioe.getLocalizedMessage());
-        }
-    }
-
-    public void loadPluginProperties() {
-        try {
-            Properties temp = new Properties();
-            ArrayList<File> props = FileDriver.listFiles(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugins"), ".props");
-            for (File f : props) {
-                temp.clear();
-                temp.load(new FileInputStream(f));
-                for (String s : temp.stringPropertyNames()) {
-                    if (!pluginProperties.contains(s)) {
-                        //TODO how to find plugin Name ? Now it will be without any prefixes
-                        pluginProperties.put(s, temp.getProperty(s));
-                    }
-                }
-            }
-            //appProperties.load());
-        } catch (IOException ioe) {
-            log(ioe.getLocalizedMessage());
-        }
-    }
 
     private static void log(Object o) {
         System.out.println(o.toString());
@@ -155,7 +175,7 @@ public class SettingsManager {
                 localSettings.load(new FileInputStream(lsf));
                 tempLocalSettings = (Properties) localSettings.clone();
                 InputStream dsf = getDefaultSettings();
-                if(dsf==null){
+                if (dsf == null) {
                     log("Can't load default settings. Jar file is corrupted or you need to package project first.");
                     System.exit(1);
                 }
@@ -179,6 +199,42 @@ public class SettingsManager {
             return false;
         }
         return true;
+    }
+
+    public void loadLauncherSettings() {
+        try {
+            settings.load(new FileInputStream(localSettingsFile));
+        } catch (IOException ioe) {
+            log(ioe.getLocalizedMessage());
+        }
+    }
+
+    public void loadLauncherProperties() {
+        try {
+            appProperties.load(SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.PropertiesFileName));
+        } catch (IOException ioe) {
+            log(ioe.getLocalizedMessage());
+        }
+    }
+
+    public void loadPluginProperties() {
+        try {
+            Properties temp = new Properties();
+            ArrayList<File> props = FileDriver.listFiles(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugins"), ".props");
+            for (File f : props) {
+                temp.clear();
+                temp.load(new FileInputStream(f));
+                for (String s : temp.stringPropertyNames()) {
+                    if (!pluginProperties.contains(s)) {
+                        //TODO how to find plugin Name ? Now it will be without any prefixes
+                        pluginProperties.put(s, temp.getProperty(s));
+                    }
+                }
+            }
+            //appProperties.load());
+        } catch (IOException ioe) {
+            log(ioe.getLocalizedMessage());
+        }
     }
 
 }

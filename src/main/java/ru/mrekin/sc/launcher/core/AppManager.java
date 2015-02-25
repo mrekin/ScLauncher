@@ -1,7 +1,6 @@
 package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
-//import ru.mrekin.sc.launcher.SvnClient;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
@@ -9,23 +8,24 @@ import ru.mrekin.sc.launcher.plugin.Plugin;
 import ru.mrekin.sc.launcher.plugin.PluginManager;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
+
+//import ru.mrekin.sc.launcher.SvnClient;
 
 /**
  * Created by MRekin on 03.08.2014.
  */
 public class AppManager {
 
+    //, svnAppList;
+    static AppManager instance;
     FileDriver fileDriver;
     //SvnClient svnClient;
     IRemoteStorageClient client;
     ArrayList<Application> appList;
-    //, svnAppList;
-    static AppManager instance;
 
     private AppManager() {
         init();
@@ -42,7 +42,7 @@ public class AppManager {
     }
 
     public void init() {
-        this.fileDriver = new FileDriver();
+        this.fileDriver = FileDriver.getInstance();
 //        this.svnClient = new SvnClient();
         appList = fileDriver.getAppList();
         updateAppList();
@@ -168,7 +168,7 @@ public class AppManager {
 
             int i = 0;
             AppInstallForm iform = new AppInstallForm();
-            String appName, version,appPath;
+            String appName, version, appPath;
 
 
             public void run() {
@@ -186,7 +186,7 @@ public class AppManager {
                                 iform.update();
                             }
                             is = client.getFile(appPath, version, fileName);
-                            if (!fileDriver.installFile(appPath, version, fileName, is)) {
+                            if (!fileDriver.installFile("", appPath, version, fileName, is)) {
                                 System.out.println("Can't install file: " + fileName);
                             }
                             is.close();
@@ -242,7 +242,7 @@ public class AppManager {
     public void deleteApplication(String appPath) {
         //TODO need not remove local settings file / update settings when updating application
         String path = "";
-        if("".equals(appPath) || appPath == null){
+        if ("".equals(appPath) || appPath == null) {
             System.out.print("Nothing to delete. Ok.");
             return;
         }

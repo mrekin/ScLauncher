@@ -2,17 +2,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <url>${url.base}/${project.artifactId}</url>
+
+
     <groupId>ru.mrekin.sc</groupId>
     <artifactId>sc-launcher</artifactId>
     <packaging>jar</packaging>
     <version>0.2.2</version>
     <description>Tool for launching app</description>
+
+
     <dependencies>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+
         <dependency>
             <groupId>com.github.lookfirst</groupId>
             <artifactId>sardine</artifactId>
@@ -24,13 +30,12 @@
             <version>1.10</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.directory.studio</groupId>
-            <artifactId>org.apache.commons.collections</artifactId>
-            <version>3.2.1</version>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>2.0</version>
         </dependency>
-
-
     </dependencies>
+
     <repositories>
         <repository>
             <id>nexus-repo</id>
@@ -57,6 +62,8 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+
     <build>
         <resources>
             <resource>
@@ -64,47 +71,66 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.3</version>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <index>true</index>
+                        <manifest>
+                            <mainClass>ru.mrekin.sc.launcher.Launch</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>ru.mrekin.sc.launcher.Launch</mainClass>
+                            <packageName>ru.mrekin.sc</packageName>
+                        </manifest>
+                        <manifestEntries>
+                            <appTitle>${project.description}</appTitle>
+                            <appName>${project.artifactId}</appName>
+                            <appVersion>${project.version}</appVersion>
+                        </manifestEntries>
+                    </archive>
+
+                </configuration>
+
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <id>assemble-all</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <minimizeJar>true</minimizeJar>
-			    <filters> 
-                		<filter>
-					<artifact>commons-logging:commons-logging</artifact>
-					<includes>
-						<include>**</include>
-	        			</includes>
-				</filter>
-			    </filters>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>ru.mrekin.sc.launcher.Launch</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
                     </execution>
+
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 </project>

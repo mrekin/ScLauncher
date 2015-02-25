@@ -4,7 +4,6 @@ import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
-import ru.mrekin.sc.launcher.plugin.PluginManager;
 import ru.mrekin.sc.launcher.tools.ApplicationTools;
 import ru.mrekin.sc.launcher.update.AutoUpdater;
 
@@ -24,8 +23,6 @@ public class Launch {
             SettingsManager.getInstance();
 
             //Loading plugins
-            PluginManager.getInstance().loadInstalledPlugins();
-            PluginManager.getInstance().loadAvaliablePlugins();
 
             AppManager.getInstance();
 

@@ -1,13 +1,11 @@
 package ru.mrekin.sc.launcher.tools;
 
 
-import ru.mrekin.sc.launcher.Launch;
 import ru.mrekin.sc.launcher.core.FileDriver;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOError;
 import java.io.IOException;
 import java.util.ArrayList;
 

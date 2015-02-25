@@ -1,0 +1,224 @@
+package ru.mrekin.sc.launcher.gui;
+
+import ru.mrekin.sc.launcher.plugin.Plugin;
+import ru.mrekin.sc.launcher.plugin.PluginManager;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+
+/**
+ * Created by xam on 04.02.2015.
+ */
+public class PluginRepoForm extends JFrame {
+    JTable table;
+    List<Plugin> plugins;
+
+    public PluginRepoForm() {
+
+        //setResizable(false);
+        getContentPane().setLayout(new BorderLayout());
+        BufferedImage
+                mainIcon = null;
+        try {
+
+            mainIcon = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
+        } catch (IOException ioe) {
+            System.out.println(ioe.getLocalizedMessage());
+        }
+        setIconImage(mainIcon);
+
+        JPanel panel = new JPanel();
+
+        add(panel);
+        setAlwaysOnTop(true);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        PluginManager.getInstance().load();
+        plugins = PluginManager.getInstance().getAllPlugins();
+        createTable(plugins);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(0, 1));
+
+        JButton installButton = new JButton("Install");
+        JButton updateButton = new JButton("Update");
+        JButton deleteButton = new JButton("Delete");
+
+        installButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!(table.getSelectedRow() == -1)) {
+                    PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
+                }
+            }
+        });
+
+        buttonPanel.add(installButton);
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.weighty = 1;
+
+        JPanel east = new JPanel(new GridBagLayout());
+        east.add(buttonPanel, gbc);
+
+        JPanel tablePanel = new JPanel();
+        //tablePanel.add(new JScrollPane(table));
+        JScrollPane jspane = new JScrollPane(table);
+        tablePanel.add(jspane);
+
+        add(tablePanel);
+
+
+        add(east, BorderLayout.EAST);
+        setVisible(true);
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    private void createTable(List<Plugin> plugins) {
+        MyTableModel model = new MyTableModel(plugins);
+        table = new JTable(model);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    }
+
+    private void setRenderer(int columnNum, TableCellRenderer tcr) {
+
+    }
+
+
+    private class MyTableModel extends AbstractTableModel {
+        private List<Plugin> plugins;
+        private String[] selectedValues;
+
+        public MyTableModel(List<Plugin> plugins) {
+            this.plugins = plugins;
+            selectedValues = new String[this.plugins.size()];
+        }
+
+        @Override
+        public int getRowCount() {
+            return plugins.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            //Plugin name
+            //Plugin installed version
+            //Plugin avaliable version
+            //Plugin RepoName version
+            //Plugin what ?
+            return 4;
+        }
+
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return "Plugin name";
+                case 1:
+                    return "Installed version";
+                case 2:
+                    return "Avaliable versions";
+                case 3:
+                    return "Repository";
+                default:
+                    return "Unknown column";
+            }
+
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+
+            return getValueAt(0, columnIndex).getClass();
+
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return false;
+                case 1:
+                    return false;
+                case 2:
+                    return true;
+                case 3:
+                    return false;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return plugins.get(rowIndex).getPluginName();
+                case 1:
+                    return plugins.get(rowIndex).getPluginVersion();
+                case 2: {
+                    String[] array = new String[plugins.get(rowIndex).getPluginVersions().size()];
+                    plugins.get(rowIndex).getPluginVersions().keySet().toArray(array);
+                    //array = new String[]{"1", "2", "3"};
+                    JComboBox box = new JComboBox(array);
+                    table.getColumnModel().getColumn(columnIndex).setCellEditor(new DefaultCellEditor(box));
+                    DefaultTableCellRenderer renderer =
+                            new DefaultTableCellRenderer();
+                    renderer.setToolTipText("Click for combo box");
+                    renderer.setBackground(Color.LIGHT_GRAY);
+                    if (plugins.get(rowIndex).isInstalled() && plugins.get(rowIndex).getPluginVersion().equals(plugins.get(rowIndex).getLatestVersion())) {
+                        renderer.setForeground(Color.GREEN);
+                    } else {
+                        renderer.setForeground(Color.RED);
+                    }
+
+                    table.getColumnModel().getColumn(columnIndex).setCellRenderer(renderer);
+
+                    if (selectedValues[rowIndex] == null) {
+                        selectedValues[rowIndex] = (String) box.getSelectedItem();
+                    }
+                    return selectedValues[rowIndex];
+                }
+                case 3:
+                    return plugins.get(rowIndex).isInstalled();
+                default:
+                    return "Something goes wrong";
+            }
+        }
+
+
+        @Override
+        public void addTableModelListener(TableModelListener l) {
+
+        }
+
+        @Override
+        public void removeTableModelListener(TableModelListener l) {
+
+        }
+
+        public void setValueAt(Object value, int row, int col) {
+            selectedValues[row] = (String) value;
+            fireTableCellUpdated(row, col);
+        }
+
+    }
+
+
+}

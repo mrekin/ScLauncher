@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class LauncherGui extends JFrame {
 
 
-    private AppManager appManager;
+    static LauncherGui instance;
     ArrayList<Application> appList;
     //, svnAppList, localApps;
     FileDriver fileDriver;
@@ -32,7 +32,11 @@ public class LauncherGui extends JFrame {
     JPanel mainPanel, statusPanel;
     BufferedImage mainIcon;
     ImageIcon redIcon, greenIcon;
-    static LauncherGui instance;
+    JMenuBar menuBar;
+    JMenu pluginMenu, settingsMenu, helpMenu;
+    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem;
+    PluginRepoForm pluginRepoForm;
+    private AppManager appManager;
 
     public LauncherGui() {
         super("SC launcher");
@@ -58,6 +62,7 @@ public class LauncherGui extends JFrame {
 
         {
             //TODO need to create new icon :)
+            //TODO need to create resource manager
             mainIcon = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
             greenIcon = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResource("green.png")));
             redIcon = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResource("red.png")));
@@ -75,28 +80,14 @@ public class LauncherGui extends JFrame {
         appManager.init();
 //        fileDriver = appManager.getFileDriver();
         appList = appManager.getAppList();
-//        svnClient = appManager.getSvnClient();
-//        svnAppList = appManager.getSvnAppList();
-/*
-        if (svnAppList == null) {
-            JDialog msg = new JDialog();
-            msg.setTitle("Can't connect to SVN");
 
-            msg.setVisible(true);
-            try {
-                wait(1000);
-            } catch (InterruptedException ie) {
+        menuBar = new JMenuBar();
+        //menuBar.setMaximumSize(new Dimension(0, 25));
+        menuBar.setSize(new Dimension(0, 25));
+        //menuBar.setMinimumSize(new Dimension(0, 20));
 
-            }
-            System.exit(1);
-
-        }
-  */      //temp is a diff
-        //      localApps = (ArrayList<Application>) appList.clone();
-        //      localApps.removeAll(svnAppList);
-
-//        setSize(new Dimension(300, 45 + 55 * (svnAppList.size() + localApps.size())));
-        setSize(new Dimension(300, 45 + 55 * appList.size()));
+        //this.getContentPane().setMaximumSize(new Dimension(300,menuBar.getHeight()+ 55 * appList.size()));
+        //setMinimumSize(new Dimension(300, menuBar.getHeight() + 55 * appList.size()));
 
 
     }
@@ -107,8 +98,45 @@ public class LauncherGui extends JFrame {
         //setContentPane(new Container());
         this.getContentPane().removeAll();
 //        mainPanel = new JPanel(new GridLayout(svnAppList.size() + localApps.size(), 2));
+        // MenuBar start
+
+//        menuBar.setSize(new Dimension(200, 20));
+        menuBar.setToolTipText("menu");
+
+        pluginMenu = new JMenu("Plugins");
+        pluginMenu.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
+
+        pluginRepoMenuItem = new JMenuItem("Plugin repositories");
+        pluginRepoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (pluginRepoForm == null) {
+                    pluginRepoForm = new PluginRepoForm();
+                } else if (!pluginRepoForm.isVisible()) {
+                    pluginRepoForm = new PluginRepoForm();
+                } else {
+
+                }
+
+                pluginRepoForm.setEnabled(true);
+            }
+        });
+
+        pluginSettingsMenuItem = new JMenuItem("Plugin settings");
+
+        pluginMenu.add(pluginRepoMenuItem);
+        pluginMenu.add(pluginSettingsMenuItem);
+
+        settingsMenu = new JMenu("Settings");
+
+
+        menuBar.add(pluginMenu);
+        menuBar.add(settingsMenu);
+        setJMenuBar(menuBar);
+// MenuBar end
         mainPanel = new JPanel(new GridLayout(appList.size(), 2));
         mainPanel.setBorder(new LineBorder(Color.GRAY));
+
 
         statusPanel = new JPanel();
         //setVisible(true);
@@ -121,7 +149,7 @@ public class LauncherGui extends JFrame {
 
 
             //appTitle = localApp.getAppTitle();
-            if(localApp.isInstalled()) {
+            if (localApp.isInstalled()) {
                 appLocalVersion = localApp.getAppVersion();
             }
             localPath = localApp.getRunCommand();
@@ -143,10 +171,10 @@ public class LauncherGui extends JFrame {
 
 
             label.setComponentPopupMenu(new AppPopupMenu(this, localApp, appManager));
-            if (localApp.isInstalled()&&localApp.getAppLastVersion().equals(appLocalVersion)) {
+            if (localApp.isInstalled() && localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.GREEN);
                 button.setEnabled(true);
-            } else if (localApp.isInstalled()&&!localApp.getAppLastVersion().equals(appLocalVersion)) {
+            } else if (localApp.isInstalled() && !localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.RED);
                 button.setEnabled(true);
             } else if (!localApp.isInstalled()) {
@@ -158,6 +186,7 @@ public class LauncherGui extends JFrame {
             JComboBox box = new JComboBox();
             box.setBorder(new TitledBorder("Avaliable ver."));
             box.setSize(new Dimension(40, 45));
+            box.setMinimumSize(new Dimension(40, 45));
 
 
             for (String ver : localApp.getAppVersions()) {
@@ -170,6 +199,7 @@ public class LauncherGui extends JFrame {
             mainPanel.add(button);
             mainPanel.add(label);
             //    add(box);
+
 
         }
         //TODO need to move this logic to AppManager, GUI must work only with one common app list
@@ -263,6 +293,8 @@ public class LauncherGui extends JFrame {
 
 
         setIconImage(mainIcon);
+        pack();
+        setLocationRelativeTo(null);
 
     }
 

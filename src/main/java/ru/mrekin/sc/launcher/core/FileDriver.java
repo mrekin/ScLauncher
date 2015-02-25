@@ -12,11 +12,22 @@ import java.util.jar.JarFile;
 public class FileDriver {
 
     private ArrayList<Application> appList;
+    private static FileDriver instance = null;
     // private String appRoot = "./apps";
     private String appRoot = LauncherConstants.WorkingDirectory + SettingsManager.getPropertyByName(LauncherConstants.ApplicationDirectory, "./apps");
 
-    public FileDriver() {
+    private FileDriver() {
         loadAppsSettings();
+    }
+
+    public static FileDriver getInstance() {
+        if (instance != null) {
+
+            return instance;
+        } else {
+            return new FileDriver();
+        }
+
     }
 
     public static ArrayList<File> listFiles(String path, String nameContains) throws IOException {
@@ -139,9 +150,15 @@ public class FileDriver {
         }
     }
 
-    public boolean installFile(String appPath, String version, String fileName, InputStream is) {
+    public boolean installFile(String folder, String appPath, String version, String fileName, InputStream is) {
         try {
-            String appDir = appRoot + "/" + appPath;
+            String appDir = "";
+            if ("".equals(folder) || folder == null) {
+                appDir = appRoot + "/" + appPath;
+            } else {
+                appDir = folder + "/" + appPath + "/" + version;
+            }
+
             fileName = appDir + "/" + fileName;
             File file = new File(fileName);
             if (!file.exists() || !file.isFile()) {

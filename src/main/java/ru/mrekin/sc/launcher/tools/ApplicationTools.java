@@ -1,6 +1,5 @@
 package ru.mrekin.sc.launcher.tools;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**

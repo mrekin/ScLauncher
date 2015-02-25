@@ -7,6 +7,7 @@ public class LauncherConstants {
     /* FILES*/
     public final static String WorkingDirectory = "./";
     public final static String SettingsFileName = "settings.prop";
+    public final static String SettingsFileName2 = "config.xml";
     public final static String PropertiesFileName = "app.properties";
     public final static String ReliseNotesFileName = "releaseNotes.txt";
     public final static String FilesListFileName = "files.list";
