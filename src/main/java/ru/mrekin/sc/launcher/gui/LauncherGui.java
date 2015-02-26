@@ -40,7 +40,7 @@ public class LauncherGui extends JFrame {
 
     public LauncherGui() {
         super("SC launcher");
-        setLocationByPlatform(true);
+        //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         init();
@@ -108,7 +108,7 @@ public class LauncherGui extends JFrame {
 
         pluginRepoMenuItem = new JMenuItem("Plugin repositories");
         pluginRepoMenuItem.addActionListener(new ActionListener() {
-            @Override
+
             public void actionPerformed(ActionEvent e) {
                 if (pluginRepoForm == null) {
                     pluginRepoForm = new PluginRepoForm();

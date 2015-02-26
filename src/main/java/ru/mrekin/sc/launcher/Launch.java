@@ -20,10 +20,7 @@ public class Launch {
         } else {
             //launch
             SettingsManager.updateLocalSettings();
-            SettingsManager.getInstance();
-
-            //Loading plugins
-
+            //SettingsManager.getInstance();
             AppManager.getInstance();
 
             //Checking if need to update launcher

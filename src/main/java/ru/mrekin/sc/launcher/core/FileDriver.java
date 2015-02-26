@@ -14,7 +14,7 @@ public class FileDriver {
     private ArrayList<Application> appList;
     private static FileDriver instance = null;
     // private String appRoot = "./apps";
-    private String appRoot = LauncherConstants.WorkingDirectory + SettingsManager.getPropertyByName(LauncherConstants.ApplicationDirectory, "./apps");
+    private String appRoot = LauncherConstants.WorkingDirectory + SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory, "./apps");
 
     private FileDriver() {
         loadAppsSettings();

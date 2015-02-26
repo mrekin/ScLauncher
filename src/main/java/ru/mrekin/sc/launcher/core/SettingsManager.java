@@ -18,6 +18,9 @@ public class SettingsManager {
     File localSettingsFile;
 
     private SettingsManager() {
+
+        System.setProperty("java.net.preferIPv4Stack","true");
+
         localSettingsFile = getLocalSettingsFile();
         settings = new Properties();
 
@@ -50,7 +53,9 @@ public class SettingsManager {
 
                     xmlConfiguration = new XMLConfiguration();
                     for (Object key : settings.keySet()) {
-                        xmlConfiguration.addProperty((String) key, settings.get(key));
+                        if(((String)key).matches("[_a-zA-Z0-9 -]*")) {
+                            xmlConfiguration.addProperty((String) key, settings.get(key));
+                        }
                     }
                     file.createNewFile();
                     xmlConfiguration.save(file);
@@ -65,7 +70,7 @@ public class SettingsManager {
             xmlConfiguration = new XMLConfiguration();
         }
         xmlConfiguration.addConfigurationListener(new ConfigurationListener() {
-            @Override
+
             public void configurationChanged(ConfigurationEvent configurationEvent) {
                 //if(configurationEvent.getType()== AbstractConfiguration.){
                 //}

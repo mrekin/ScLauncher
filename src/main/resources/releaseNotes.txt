@@ -1,5 +1,5 @@
 =========================================
-1. SCL will add new settings to config file when needed
-2. Added "Delete" option
-3. Added SCL argument  '--prepare app' which creates needed config files for app deployment. Need to run in app directory
+1. Added plugin functionality and Nexus reposiitory support
+2. Some GUI changes - menu bar (under development)
+3. Fixed bugs: settings error, IPv6 error (WA), removing apps error
 =========================================
