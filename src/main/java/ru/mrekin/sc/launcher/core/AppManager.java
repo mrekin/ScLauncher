@@ -5,7 +5,6 @@ import ru.mrekin.sc.launcher.gui.AppInstallForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
-import ru.mrekin.sc.launcher.plugin.PluginManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,8 +20,8 @@ import java.util.Properties;
 public class AppManager {
 
     //, svnAppList;
-    static AppManager instance;
-    FileDriver fileDriver;
+    private static AppManager instance;
+    //FileDriver FileDriver.getInstance();
     //SvnClient svnClient;
     IRemoteStorageClient client;
     ArrayList<Application> appList;
@@ -42,9 +41,9 @@ public class AppManager {
     }
 
     public void init() {
-        this.fileDriver = FileDriver.getInstance();
+       // this.FileDriver.getInstance() = FileDriver.getInstance();
 //        this.svnClient = new SvnClient();
-        appList = fileDriver.getAppList();
+        appList = FileDriver.getInstance().getAppList();
         updateAppList();
 //        svnAppList = svnClient.getAppList();
 
@@ -58,17 +57,18 @@ public class AppManager {
         this.svnClient = svnClient;
     }
 */
-    public FileDriver getFileDriver() {
+    /*public FileDriver getFileDriver() {
         return fileDriver;
     }
-
+*/
+    /*
     public void setFileDriver(FileDriver fileDriver) {
         this.fileDriver = fileDriver;
     }
-
+*/
 
     public void loadLocalAppInfo() {
-        fileDriver.loadAppsSettings();
+        FileDriver.getInstance().loadAppsSettings();
     }
 
     public ArrayList<Application> getAppList() {
@@ -161,8 +161,11 @@ public class AppManager {
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
-
-
+        try {
+            client.connect();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         class MyThread extends Thread {
             boolean run = true;
 
@@ -186,7 +189,7 @@ public class AppManager {
                                 iform.update();
                             }
                             is = client.getFile(appPath, version, fileName);
-                            if (!fileDriver.installFile("", appPath, version, fileName, is)) {
+                            if (!FileDriver.getInstance().installFile("", appPath, version, fileName, is)) {
                                 System.out.println("Can't install file: " + fileName);
                             }
                             is.close();
@@ -214,6 +217,7 @@ public class AppManager {
                     iform.dispose();
                     LauncherGui.getInstance().init();
                     LauncherGui.getInstance().launch();
+                    client = null;
                     stopT();
                 }
             }
@@ -241,12 +245,13 @@ public class AppManager {
 
     public void deleteApplication(String appPath) {
         //TODO need not remove local settings file / update settings when updating application
+        //TODO need to move this to FileDriver
         String path = "";
         if ("".equals(appPath) || appPath == null) {
             System.out.print("Nothing to delete. Ok.");
             return;
         }
-        for (Application app : fileDriver.getAppList()) {
+        for (Application app : FileDriver.getInstance().getAppList()) {
             if (app.getAppPath().equals(appPath)) {
                 path = LauncherConstants.WorkingDirectory + SettingsManager.getPropertyByName(LauncherConstants.ApplicationDirectory) + app.getAppPath();
                 break;

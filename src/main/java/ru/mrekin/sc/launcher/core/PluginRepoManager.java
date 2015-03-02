@@ -1,9 +1,9 @@
-package ru.mrekin.sc.launcher.plugin;
+package ru.mrekin.sc.launcher.core;
 
-import ru.mrekin.sc.launcher.core.FileDriver;
-import ru.mrekin.sc.launcher.core.LauncherConstants;
-import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.plugin.IPluginRepoClient;
 import ru.mrekin.sc.launcher.plugin.NexusPlugin.NexusPluginRepoClient;
+import ru.mrekin.sc.launcher.plugin.Plugin;
+import ru.mrekin.sc.launcher.plugin.RepoPlugin;
 
 import java.io.File;
 import java.io.IOException;

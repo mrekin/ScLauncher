@@ -43,6 +43,7 @@ public class LauncherGui extends JFrame {
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         init();
         launch();
         instance = this;
@@ -202,68 +203,6 @@ public class LauncherGui extends JFrame {
 
 
         }
-        //TODO need to move this logic to AppManager, GUI must work only with one common app list
- /*       for (Application svnApp : svnAppList) {
-            JButtonEx button = new JButtonEx();
-            String appTitle = "";
-            String appLocalVersion = "Need to install";
-            String localPath = "";
-
-            for (Application app : appList) {
-                if (app.equals(svnApp)) {
-                    //appTitle = app.getAppTitle();
-                    appLocalVersion = app.getAppVersion();
-                    localPath = app.getRunCommand();
-                    break;
-                }
-            }
-
-            button.setPreferredSize(new Dimension(100, 30));
-            button.setText(("".equals(appTitle) ? svnApp.getAppName() : appTitle));
-            button.setBorder(new EtchedBorder());
-            button.setToolTipText((String) svnApp.getAppName());
-            button.setApp(localPath);
-
-
-            JLabel label = new JLabel();
-            label.setMaximumSize(new Dimension(40, 25));
-            label.setText(appLocalVersion);
-            label.setBorder(new TitledBorder("Version"));
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-
-
-            label.setComponentPopupMenu(new AppPopupMenu(this, svnApp, appManager));
-            if (svnApp.getAppLastVersion().equals(appLocalVersion)) {
-                label.setForeground(Color.GREEN);
-                button.setEnabled(true);
-            } else if (!svnApp.getAppLastVersion().equals(appLocalVersion) && !appLocalVersionDef.equals(appLocalVersion)) {
-                label.setForeground(Color.RED);
-                button.setEnabled(true);
-            } else if (appLocalVersionDef.equals(appLocalVersion)) {
-                label.setForeground(Color.LIGHT_GRAY);
-                button.setEnabled(false);
-            }
-
-
-            JComboBox box = new JComboBox();
-            box.setBorder(new TitledBorder("Avaliable ver."));
-            box.setSize(new Dimension(40, 45));
-
-
-            for (String ver : svnApp.getAppVersions()) {
-                box.addItem(ver);
-
-            }
-
-            box.setSelectedIndex(box.getItemCount() - 1);
-
-            mainPanel.add(button);
-            mainPanel.add(label);
-            //    add(box);
-
-        }
-*/
-        // setResizable(false);
 
         mainPanel.setVisible(true);
         getContentPane().add(mainPanel, BorderLayout.NORTH);
@@ -294,7 +233,7 @@ public class LauncherGui extends JFrame {
 
         setIconImage(mainIcon);
         pack();
-        setLocationRelativeTo(null);
+
 
     }
 

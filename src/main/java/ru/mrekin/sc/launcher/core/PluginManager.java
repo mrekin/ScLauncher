@@ -1,8 +1,7 @@
-package ru.mrekin.sc.launcher.plugin;
+package ru.mrekin.sc.launcher.core;
 
-import ru.mrekin.sc.launcher.core.FileDriver;
-import ru.mrekin.sc.launcher.core.LauncherConstants;
-import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
+import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +58,7 @@ public class PluginManager {
                 try {
                     URL jarURL = f.toURI().toURL();
                     JarFile jf = new JarFile(f);
+
                     //oldVersion
                     //mainClass = jf.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
                     // mainClass = "ru/mrekin/sc/launcher/plugin/SvnClient.class";
@@ -67,6 +67,7 @@ public class PluginManager {
 
 
                     Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
+                    jf.close();
                     if (!IRemoteStorageClient.class.isAssignableFrom(cl)) {
                         System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IRemoteStorageClient.class.getCanonicalName());
                         continue;
@@ -88,7 +89,6 @@ public class PluginManager {
                     plugin.setInstalled(true);
                     plugin.setPluginSimpleName(f.getName().replace(".jar", ""));
                     installedPlugins.add(plugin);
-
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -199,11 +199,16 @@ public class PluginManager {
                     System.out.println("Entry " + element + " not a class");
                 }
                 if (cl != null && iface.isAssignableFrom(cl)) {
+
                     return cl;
                 }
             }
         }
-
+        try {
+            classLoader.close();
+        }catch (IOException ioe){
+            ioe.printStackTrace();
+        }
 
         return null;
     }
@@ -225,5 +230,18 @@ public class PluginManager {
     public void install(Plugin plugin, String version) {
         System.out.println("Intalling plugin " + plugin.getPluginName()+", " + version);
         PluginRepoManager.getInstance().install(plugin, version);
+        loadInstalledPlugins();
+    }
+
+    public void remove (Plugin plugin){
+        installedPlugins.remove(plugin);
+        try {
+            //((URLClassLoader) plugin.getClass().getClassLoader()).;
+
+            plugin.getPluginObj().disconnect();
+            plugin = null;
+        }catch (Exception e){
+            System.out.println(e.getLocalizedMessage());
+        }
     }
 }

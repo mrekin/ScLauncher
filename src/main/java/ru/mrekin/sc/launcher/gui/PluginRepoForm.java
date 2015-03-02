@@ -1,7 +1,10 @@
 package ru.mrekin.sc.launcher.gui;
 
+import ru.mrekin.sc.launcher.core.FileDriver;
+import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.PluginManager;
+import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.plugin.Plugin;
-import ru.mrekin.sc.launcher.plugin.PluginManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,6 +15,8 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -22,9 +27,15 @@ import java.util.List;
 public class PluginRepoForm extends JFrame {
     JTable table;
     List<Plugin> plugins;
+    JScrollPane jspane;
+    JPanel tablePanel;
 
     public PluginRepoForm() {
+        init();
+        launch();
+    }
 
+    private void init(){
         //setResizable(false);
         getContentPane().setLayout(new BorderLayout());
         BufferedImage
@@ -43,28 +54,49 @@ public class PluginRepoForm extends JFrame {
         setAlwaysOnTop(true);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        PluginManager.getInstance().load();
-        plugins = PluginManager.getInstance().getAllPlugins();
-        createTable(plugins);
-
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(0, 1));
 
-        JButton installButton = new JButton("Install");
-        JButton updateButton = new JButton("Update");
-        JButton deleteButton = new JButton("Delete");
+        final JButton installButton = new JButton("Install");
+        //JButton updateButton = new JButton("Update");
+        final JButton deleteButton = new JButton("Delete");
 
         installButton.addActionListener(new ActionListener() {
-            @Override
+
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
+
                     PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
+                    PluginManager.getInstance().loadInstalledPlugins();
+                    launch();
                 }
             }
         });
 
+        deleteButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (!(table.getSelectedRow() == -1)) {
+                    int row = table.getSelectedRow();
+                    String dirName = plugins.get(row).getPluginSimpleName();
+                    PluginManager.getInstance().remove(plugins.get(row));
+                    //plugins.remove(row);
+                    FileDriver.getInstance().deleteFile(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory)+dirName);
+                }
+            }
+        });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                LauncherGui.getInstance().init();
+                LauncherGui.getInstance().launch();
+                super.windowClosed(e);
+            }
+        });
+
+
         buttonPanel.add(installButton);
-        buttonPanel.add(updateButton);
+        //buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -74,23 +106,35 @@ public class PluginRepoForm extends JFrame {
         JPanel east = new JPanel(new GridBagLayout());
         east.add(buttonPanel, gbc);
 
-        JPanel tablePanel = new JPanel();
+        tablePanel = new JPanel();
         //tablePanel.add(new JScrollPane(table));
-        JScrollPane jspane = new JScrollPane(table);
-        tablePanel.add(jspane);
+        //jspane = new JScrollPane(table);
+        //tablePanel.add(jspane);
 
         add(tablePanel);
 
 
         add(east, BorderLayout.EAST);
-        setVisible(true);
-        pack();
+        table = new JTable();
+
         setLocationRelativeTo(null);
+    }
+
+    private void launch(){
+        remove(tablePanel);
+        tablePanel = new JPanel();
+        PluginManager.getInstance().load();
+        plugins = PluginManager.getInstance().getAllPlugins();
+        createTable(plugins);
+        tablePanel.add(new JScrollPane(table));
+        add(tablePanel);
+        pack();
+        setVisible(true);
     }
 
     private void createTable(List<Plugin> plugins) {
         MyTableModel model = new MyTableModel(plugins);
-        table = new JTable(model);
+        table.setModel(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     }
@@ -109,12 +153,12 @@ public class PluginRepoForm extends JFrame {
             selectedValues = new String[this.plugins.size()];
         }
 
-        @Override
+
         public int getRowCount() {
             return plugins.size();
         }
 
-        @Override
+
         public int getColumnCount() {
             //Plugin name
             //Plugin installed version
@@ -165,7 +209,7 @@ public class PluginRepoForm extends JFrame {
             }
         }
 
-        @Override
+
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch (columnIndex) {
                 case 0:
@@ -202,12 +246,12 @@ public class PluginRepoForm extends JFrame {
             }
         }
 
-
+/*
         @Override
         public void addTableModelListener(TableModelListener l) {
 
         }
-
+*/
         @Override
         public void removeTableModelListener(TableModelListener l) {
 

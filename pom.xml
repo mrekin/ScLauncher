@@ -5,7 +5,7 @@
     <groupId>ru.mrekin.sc</groupId>
     <artifactId>sc-launcher</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
     <description>Tool for launching app</description>
     <dependencies>
         <dependency>
@@ -35,7 +35,7 @@
         <repository>
             <id>nexus-repo</id>
             <name>Nexus repo</name>
-            <url>http://192.168.1.104:8080/nexus/content/groups/public</url>
+            <url>http://sclauncher.ru/nexus/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -48,7 +48,7 @@
         <pluginRepository>
             <id>nexus-repo</id>
             <name>Nexus repo</name>
-            <url>http://192.168.1.104:8080/nexus/content/groups/public</url>
+            <url>http://sclauncher.ru/nexus/content/groups/public</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -57,6 +57,26 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+<distributionManagement>  
+ <!-- Publish the versioned releases here -->  
+
+      <repository>
+        <id>nexus-repo</id>
+        <name>Nexus repo</name>
+        <url>http://sclauncher.ru/nexus/content/repositories/releases</url>
+
+        <releases>
+          <enabled>true</enabled>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+      </repository>
+
+
+</distributionManagement> 
+
     <build>
         <resources>
             <resource>

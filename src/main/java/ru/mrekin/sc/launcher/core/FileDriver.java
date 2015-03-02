@@ -1,5 +1,7 @@
 package ru.mrekin.sc.launcher.core;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -18,6 +20,7 @@ public class FileDriver {
 
     private FileDriver() {
         loadAppsSettings();
+        instance = this;
     }
 
     public static FileDriver getInstance() {
@@ -177,6 +180,27 @@ public class FileDriver {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteFile(String path){
+
+        File f= new File(path);
+
+        try {
+            if (!f.exists()) {
+                return false;
+            }
+            if (f.isDirectory()) {
+               // FileUtils.forceDeleteOnExit(f);
+                FileUtils.deleteDirectory(f);
+            } else {if (f.isFile()) {
+                FileUtils.forceDeleteOnExit(f);
+            }}
+        }catch (IOException ioe){
+            System.out.println(ioe.getLocalizedMessage());
             return false;
         }
         return true;

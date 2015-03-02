@@ -2,7 +2,7 @@ package ru.mrekin.sc.launcher.gui;
 
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.Application;
-import ru.mrekin.sc.launcher.plugin.PluginManager;
+import ru.mrekin.sc.launcher.core.PluginManager;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

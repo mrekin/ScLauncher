@@ -1,12 +1,16 @@
-#Wed Jan 21 21:56:06 MSK 2015
-ApplicationDirectory=apps/
-ApplicationShowReleaseNotes=true
-AutoUpdaterDevMode=false
-AutoUpdaterEnabled=true
-AutoUpdaterServerURL=http\://192.168.1.104\:8080/SCLauncher/
-MandatoryPlugins=
-PluginDirectory=plugins/
-PluginRepoServerURL=http\://192.168.1.104\:8080/SCLauncher/plugins/
-SVNPassword=gthtgbcrf
-SVNRepoURL=http\://192.168.1.102/svn/repository/ru/mrekin/
-SVNUser=rmm
+[AutoUpdater]
+AutoUpdaterServerURL = http://192.168.1.104:8080/SCLauncher/
+AutoUpdaterEnabled = false
+AutoUpdaterDevMode = false
+
+[Plugins]
+PluginDirectory = plugins/
+PluginRepoServerURL = http://192.168.1.104:8080/SCLauncher/plugins/
+SVNRepoURL = http://192.168.1.102/svn/repository/ru/mrekin/
+SVNUser = rmm
+SVNPassword = gthtgbcrf
+MandatoryPlugins =
+
+[Applications]
+ApplicationDirectory = apps/
+ApplicationShowReleaseNotes = true

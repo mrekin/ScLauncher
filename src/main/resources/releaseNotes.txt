@@ -1,5 +1,6 @@
-=========================================
+=============Version 0.2.3===============
 1. Added plugin functionality and Nexus reposiitory support
 2. Some GUI changes - menu bar (under development)
 3. Fixed bugs: settings error, IPv6 error (WA), removing apps error
+4. Fixed bugs: memory leaks on app installing
 =========================================
