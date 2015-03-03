@@ -204,12 +204,12 @@ public class PluginManager {
                 }
             }
         }
-        try {
+        /*try {
             classLoader.close();
         }catch (IOException ioe){
             ioe.printStackTrace();
         }
-
+        */
         return null;
     }
 
