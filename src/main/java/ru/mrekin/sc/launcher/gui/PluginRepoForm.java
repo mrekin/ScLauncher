@@ -73,7 +73,7 @@ public class PluginRepoForm extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
-                    //TODO need to restart launcher and remove plugin before loading
+                    //TODO need to restart launcher and remove plugin before loading SCL
                     //int row = table.getSelectedRow();
                     //String dirName = plugins.get(row).getPluginSimpleName();
                     //PluginManager.getInstance().remove(plugins.get(row));
