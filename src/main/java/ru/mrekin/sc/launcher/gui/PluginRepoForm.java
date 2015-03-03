@@ -1,9 +1,6 @@
 package ru.mrekin.sc.launcher.gui;
 
-import ru.mrekin.sc.launcher.core.FileDriver;
-import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.PluginManager;
-import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import javax.imageio.ImageIO;
@@ -76,11 +73,12 @@ public class PluginRepoForm extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
-                    int row = table.getSelectedRow();
-                    String dirName = plugins.get(row).getPluginSimpleName();
-                    PluginManager.getInstance().remove(plugins.get(row));
+                    //TODO need to restart launcher and remove plugin before loading
+                    //int row = table.getSelectedRow();
+                    //String dirName = plugins.get(row).getPluginSimpleName();
+                    //PluginManager.getInstance().remove(plugins.get(row));
                     //plugins.remove(row);
-                    FileDriver.getInstance().deleteFile(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory)+dirName);
+                    //FileDriver.getInstance().deleteFile(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory)+dirName);
                 }
             }
         });
