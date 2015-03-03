@@ -116,6 +116,7 @@ public class PluginRepoForm extends JFrame {
 
         add(east, BorderLayout.EAST);
         table = new JTable();
+        table.getTableHeader().setReorderingAllowed(false);
 
         setLocationRelativeTo(null);
     }
@@ -137,6 +138,7 @@ public class PluginRepoForm extends JFrame {
         table.setModel(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
     }
 
     private void setRenderer(int columnNum, TableCellRenderer tcr) {
@@ -240,7 +242,7 @@ public class PluginRepoForm extends JFrame {
                     return selectedValues[rowIndex];
                 }
                 case 3:
-                    return plugins.get(rowIndex).isInstalled();
+                    return plugins.get(rowIndex).getRepository();
                 default:
                     return "Something goes wrong";
             }

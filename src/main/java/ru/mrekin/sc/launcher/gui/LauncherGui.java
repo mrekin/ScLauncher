@@ -130,6 +130,9 @@ public class LauncherGui extends JFrame {
 
         settingsMenu = new JMenu("Settings");
 
+        //TODO remove this after implementing logic
+        settingsMenu.setEnabled(false);
+        pluginSettingsMenuItem.setEnabled(false);
 
         menuBar.add(pluginMenu);
         menuBar.add(settingsMenu);
