@@ -25,10 +25,10 @@ public class AutoUpdater {
 
     public static String checkForUpdates() {
 
-        if ("false".equals(SettingsManager.getPropertyByName(LauncherConstants.AutoUpdaterDevMode, "false"))) {
-            serverURL = SettingsManager.getPropertyByName(LauncherConstants.AutoUpdaterServerURL);
+        if ("false".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterDevMode, "false"))) {
+            serverURL = SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterServerURL);
         } else {
-            serverURL = SettingsManager.getPropertyByName(LauncherConstants.AutoUpdaterServerURL) + "devmode/";
+            serverURL = SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterServerURL) + "devmode/";
         }
         appURL = serverURL + LauncherConstants.SettingsFileName;
         String version = null;
@@ -75,7 +75,7 @@ public class AutoUpdater {
             // System.out.println(sb.toString());
 
 
-            currentVersion = SettingsManager.getPropertyByName("Application.version");
+            currentVersion = SettingsManager.getInstance().getPropertyByName("Application.version");
 
 
         } catch (MalformedURLException e) {
@@ -107,7 +107,7 @@ public class AutoUpdater {
         String packagePath = AutoUpdater.class.getPackage().getName().replace(".", "/");
         String packageName = AutoUpdater.class.getPackage().getName();
         //String pluginsDir = "plugins";
-        String pluginsDir = SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugins/");
+        String pluginsDir = SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugins/");
         String pluginName = "AutoUpdater";
         String pluginDir = "./" + pluginsDir + pluginName + "/";
         String fullPath = pluginDir + name;
@@ -128,7 +128,7 @@ public class AutoUpdater {
             installUpdaterClass(name2, fullPath2);
             installUpdaterClass(name3, fullPath3);
 
-            String appName = SettingsManager.getPropertyByName("Application.name", "sc-launcher");
+            String appName = SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher");
             String appURL = serverURL + appName + "-" + version + ".jar";
             String command = "java -cp " + pluginDir + " " + packageName + "." + AutoUpdater.class.getSimpleName() + " " + version + " " + appURL + " " + appName;
             log(command);

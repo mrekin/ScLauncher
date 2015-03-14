@@ -2,7 +2,6 @@ package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
-import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
@@ -41,7 +40,7 @@ public class AppManager {
     }
 
     public void init() {
-       // this.FileDriver.getInstance() = FileDriver.getInstance();
+        // this.FileDriver.getInstance() = FileDriver.getInstance();
 //        this.svnClient = new SvnClient();
         appList = FileDriver.getInstance().getAppList();
         updateAppList();
@@ -69,6 +68,7 @@ public class AppManager {
 
     public void loadLocalAppInfo() {
         FileDriver.getInstance().loadAppsSettings();
+        appList = FileDriver.getInstance().getAppList();
     }
 
     public ArrayList<Application> getAppList() {
@@ -87,6 +87,7 @@ public class AppManager {
             if (pl.isInstalled()) {
                 ArrayList<Application> apps = new ArrayList<Application>(1);
                 try {
+                    pl.getPluginObj().connect();
                     apps = pl.getPluginObj().getAppList();
                 } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
@@ -163,7 +164,7 @@ public class AppManager {
         }
         try {
             client.connect();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         class MyThread extends Thread {
@@ -176,8 +177,6 @@ public class AppManager {
 
             public void run() {
                 while (run) {
-
-                    //FileOutputStream fs = fileDriver.installApp(appName, version);
 
                     Properties files = client.getFiles(appPath, version);
                     InputStream is;
@@ -199,15 +198,6 @@ public class AppManager {
                         System.out.println(ioe.getLocalizedMessage());
                     }
 
-                    //boolean b = svnClient.getApp(appName, version, fs);
-                    //System.out.println("Copied " + b);
-                    loadLocalAppInfo();
-                   /* try {
-                        //fs.close();
-                        //fs = null;
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }*/
 
                     try {
                         sleep(600);
@@ -215,8 +205,8 @@ public class AppManager {
                         e.getLocalizedMessage();
                     }
                     iform.dispose();
-                    LauncherGui.getInstance().init();
-                    LauncherGui.getInstance().launch();
+
+                    //                 LauncherGui.getInstance().launch();
                     client = null;
                     stopT();
                 }
@@ -253,7 +243,7 @@ public class AppManager {
         }
         for (Application app : FileDriver.getInstance().getAppList()) {
             if (app.getAppPath().equals(appPath)) {
-                path = LauncherConstants.WorkingDirectory + SettingsManager.getPropertyByName(LauncherConstants.ApplicationDirectory) + app.getAppPath();
+                path = LauncherConstants.WorkingDirectory + SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory) + app.getAppPath();
                 break;
             }
         }
@@ -263,6 +253,7 @@ public class AppManager {
         } catch (IOException ioe) {
             System.out.println(ioe.getLocalizedMessage());
         }
+        //loadLocalAppInfo();
     }
 
 

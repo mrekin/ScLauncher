@@ -185,21 +185,23 @@ public class FileDriver {
         return true;
     }
 
-    public boolean deleteFile(String path){
+    public boolean deleteFile(String path) {
 
-        File f= new File(path);
+        File f = new File(path);
 
         try {
             if (!f.exists()) {
                 return false;
             }
             if (f.isDirectory()) {
-               // FileUtils.forceDeleteOnExit(f);
+                // FileUtils.forceDeleteOnExit(f);
                 FileUtils.deleteDirectory(f);
-            } else {if (f.isFile()) {
-                FileUtils.forceDeleteOnExit(f);
-            }}
-        }catch (IOException ioe){
+            } else {
+                if (f.isFile()) {
+                    FileUtils.forceDeleteOnExit(f);
+                }
+            }
+        } catch (IOException ioe) {
             System.out.println(ioe.getLocalizedMessage());
             return false;
         }

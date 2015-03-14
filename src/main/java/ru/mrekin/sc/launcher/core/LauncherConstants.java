@@ -31,4 +31,7 @@ public class LauncherConstants {
     public final static String ApplicationTypeUnix = "unix";
     public final static String ApplicationTypeJava = "java";
 
+    public final static String SettingsFormTitle = "Settings";
+    public final static String PluginsFormTitle = "Plugins";
+
 }

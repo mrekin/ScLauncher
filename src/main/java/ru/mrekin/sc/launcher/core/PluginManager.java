@@ -40,11 +40,9 @@ public class PluginManager {
 
     public void load() {
         this.installedPlugins = new ArrayList<Plugin>(1);
-        ;
         this.avaliabledPlugins = new ArrayList<Plugin>(1);
-        ;
         loadInstalledPlugins();
-        loadAvaliablePlugins();
+        //loadAvaliablePlugins();
     }
 
     public void loadInstalledPlugins() {
@@ -52,11 +50,30 @@ public class PluginManager {
         String mainClass = "";
         String pluginName = "";
         String pluginVersion = "";
+        ArrayList<Plugin> tempList = (ArrayList<Plugin>) installedPlugins.clone();
+        installedPlugins = new ArrayList<Plugin>(1);
+        boolean installed = false;
         try {
             ArrayList<File> jars = FileDriver.listFiles(pluginDir, ".jar");
             for (File f : jars) {
                 try {
                     URL jarURL = f.toURI().toURL();
+                    installed = false;
+                    for (Plugin p : tempList) {
+                        if (p.getPluginPath().equals(jarURL)) {
+                            installed = true;
+                            //
+                            p.getPluginObj().disconnect();
+                            p.setPluginObj(p.getPluginObj().getClass().newInstance());
+                            p.getPluginObj().connect();
+                            installedPlugins.add(p);
+                            break;
+                        }
+                    }
+                    if (installed) {
+                        continue;
+                    }
+
                     JarFile jf = new JarFile(f);
 
                     //oldVersion
@@ -167,7 +184,7 @@ public class PluginManager {
     }
 
     public void loadProperties() {
-        pluginDir = SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugin/");
+        pluginDir = SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugin/");
     }
 
     public ArrayList<Plugin> getPlugins() {
@@ -186,7 +203,6 @@ public class PluginManager {
     private Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
         Enumeration<JarEntry> entries = jar.entries();
         URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
-
         Class cl = null;
         while (entries.hasMoreElements()) {
             JarEntry nextElement = entries.nextElement();
@@ -228,19 +244,19 @@ public class PluginManager {
     }
 
     public void install(Plugin plugin, String version) {
-        System.out.println("Intalling plugin " + plugin.getPluginName()+", " + version);
+        System.out.println("Intalling plugin " + plugin.getPluginName() + ", " + version);
         PluginRepoManager.getInstance().install(plugin, version);
         loadInstalledPlugins();
     }
 
-    public void remove (Plugin plugin){
+    public void remove(Plugin plugin) {
         installedPlugins.remove(plugin);
         try {
             //((URLClassLoader) plugin.getClass().getClassLoader()).;
 
             plugin.getPluginObj().disconnect();
             plugin = null;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
     }

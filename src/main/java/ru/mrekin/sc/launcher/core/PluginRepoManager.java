@@ -133,7 +133,7 @@ public class PluginRepoManager {
 
     public void loadProperties() {
         //TODO Need to load settings from XMLSettingsManager
-        pluginDir = SettingsManager.getInstance().getPropertyByName2(LauncherConstants.PluginDirectory, "plugin/");
+        pluginDir = SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugin/");
     }
 
     public ArrayList<RepoPlugin> getRepoPlugins() {

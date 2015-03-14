@@ -2,6 +2,8 @@ package ru.mrekin.sc.launcher.gui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by xam on 21.09.2014.
@@ -38,6 +40,15 @@ public class AppInstallForm extends JFrame {
         //dispose();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                //LauncherGui.getInstance().init();
+                LauncherGui.getInstance().launch();
+                super.windowClosed(e);
+            }
+        });
 
 
     }

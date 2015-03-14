@@ -38,12 +38,14 @@ public class AppPopupMenu extends JPopupMenu {
                         appManager.updateApplication(AppPopupMenu.this.application.getAppPath());
                         //iform.setVisible(false);
                         //iform = null;
-                        gui.init();
+                        //gui.init();
                         gui.launch();
+
                     }
                 }
 
                 new run().run();
+
             }
         });
 
@@ -68,7 +70,7 @@ public class AppPopupMenu extends JPopupMenu {
                                 appManager.installApplication(AppPopupMenu.this.application.getAppName(), ((JMenuItem) e.getSource()).getText());
                                 iform.setVisible(false);
                                 iform = null;
-                                gui.init();
+                                //gui.init();
                                 gui.launch();
                             }
                         }
@@ -90,7 +92,6 @@ public class AppPopupMenu extends JPopupMenu {
                     public void run() {
 
                         appManager.deleteApplication(AppPopupMenu.this.application.getAppPath());
-                        gui.init();
                         gui.launch();
                     }
                 }

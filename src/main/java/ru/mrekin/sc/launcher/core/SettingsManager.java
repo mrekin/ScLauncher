@@ -12,14 +12,14 @@ import java.util.*;
  * Created by MRekin on 27.08.2014.
  */
 public class SettingsManager {
-    private static Properties settings, appProperties, pluginProperties;
+    private Properties settings, appProperties, pluginProperties;
     private XMLConfiguration xmlConfiguration;
     private static SettingsManager instance;
     File localSettingsFile;
 
     private SettingsManager() {
 
-        System.setProperty("java.net.preferIPv4Stack","true");
+        System.setProperty("java.net.preferIPv4Stack", "true");
 
         localSettingsFile = getLocalSettingsFile();
         settings = new Properties();
@@ -53,7 +53,7 @@ public class SettingsManager {
 
                     xmlConfiguration = new XMLConfiguration();
                     for (Object key : settings.keySet()) {
-                        if(((String)key).matches("[_a-zA-Z0-9 -]*")) {
+                        if (((String) key).matches("[_a-zA-Z0-9 -]*")) {
                             xmlConfiguration.addProperty((String) key, settings.get(key));
                         }
                     }
@@ -86,6 +86,10 @@ public class SettingsManager {
         return new File(LauncherConstants.SettingsFileName);
     }
 
+    public XMLConfiguration getXmlConfiguration() {
+        return xmlConfiguration;
+    }
+
     private static InputStream getDefaultSettings() {
 
         return SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
@@ -107,7 +111,7 @@ public class SettingsManager {
      * @param name
      * @return
      */
-    public static String getPropertyByName(String name) {
+    public String getPropertyByName(String name) {
 
         return getPropertyByName(name, "");
     }
@@ -118,7 +122,7 @@ public class SettingsManager {
      * @param name
      * @return
      */
-    public static String getPropertyByName(String name, String defValue) {
+    public String getPropertyByName1(String name, String defValue) {
         return settings.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
 
@@ -128,9 +132,9 @@ public class SettingsManager {
      * @param name
      * @return
      */
-    public String getPropertyByName2(String name, String defValue) {
+    public String getPropertyByName(String name, String defValue) {
         String value = (String) xmlConfiguration.getProperty(name);
-        return "".equals(value) ? defValue : value;
+        return "".equals(value) ? appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)) : value;
         //return xmlConfiguration.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
 
@@ -225,7 +229,7 @@ public class SettingsManager {
     public void loadPluginProperties() {
         try {
             Properties temp = new Properties();
-            ArrayList<File> props = FileDriver.listFiles(SettingsManager.getPropertyByName(LauncherConstants.PluginDirectory, "plugins"), ".props");
+            ArrayList<File> props = FileDriver.listFiles(SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugins"), ".props");
             for (File f : props) {
                 temp.clear();
                 temp.load(new FileInputStream(f));

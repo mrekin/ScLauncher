@@ -95,7 +95,7 @@ public class Application {
     }
 
     private void calculateRunCommand() {
-        String appFullPath = SettingsManager.getPropertyByName(LauncherConstants.ApplicationDirectory) + getAppPath() + "/" + getExecFile();
+        String appFullPath = SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory) + getAppPath() + "/" + getExecFile();
         if (LauncherConstants.ApplicationTypeWin.equals(appType)) {
             runCommand = appFullPath;
         } else if (LauncherConstants.ApplicationTypeJava.equals(appType)) {

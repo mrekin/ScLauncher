@@ -20,11 +20,11 @@ public class Launch {
         } else {
             //launch
             SettingsManager.updateLocalSettings();
-            //SettingsManager.getInstance();
+            SettingsManager.getInstance();
             AppManager.getInstance();
 
             //Checking if need to update launcher
-            if ("true".equals(SettingsManager.getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
+            if ("true".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
                 String version = AutoUpdater.checkForUpdates();
                 if (version != null) {
                     AutoUpdater.update(version);

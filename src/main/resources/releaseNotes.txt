@@ -1,6 +1,19 @@
+=============Version 0.2.2===============
+1. SCL will add new settings to config file when needed
+2. Added "Delete" option
+3. Added SCL argument  '--prepare app' which creates needed config files for app deployment. Need to run in app directory
+=========================================
 =============Version 0.2.3===============
 1. Added plugin functionality and Nexus reposiitory support
 2. Some GUI changes - menu bar (under development)
 3. Fixed bugs: settings error, IPv6 error (WA), removing apps error
 4. Fixed bugs: memory leaks on app installing
+=========================================
+=============Version 0.2.4===============
+1. Added settings management window
+2. Some GUI changes: status bar changed, some other changes
+3. Some code optimizations
+4. Now xml settings used. Old settings imports.
+5. Fixed bugs: settings error, memory leaks fixed (perm gen on plugin loading)
+6. Known bugs: repository settings not working (hard code), normal logging not implemented
 =========================================

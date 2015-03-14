@@ -1,14 +1,15 @@
 package ru.mrekin.sc.launcher.gui;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
-import ru.mrekin.sc.launcher.core.PluginManager;
-import ru.mrekin.sc.launcher.plugin.Plugin;
+import ru.mrekin.sc.launcher.core.SettingsManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,18 +18,20 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by xam on 04.02.2015.
  */
-public class PluginRepoForm extends JFrame {
+public class SettingsForm extends JFrame {
     JTable table;
-    List<Plugin> plugins;
+    //List<Plugin> plugins;
+    XMLConfiguration configuration;
     JScrollPane jspane;
     JPanel tablePanel;
 
-    public PluginRepoForm() {
+    public SettingsForm() {
         init();
         launch();
     }
@@ -45,7 +48,8 @@ public class PluginRepoForm extends JFrame {
             System.out.println(ioe.getLocalizedMessage());
         }
         setIconImage(mainIcon);
-        setTitle(LauncherConstants.PluginsFormTitle);
+        setTitle(LauncherConstants.SettingsFormTitle);
+
 
         JPanel panel = new JPanel();
 
@@ -56,22 +60,29 @@ public class PluginRepoForm extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(0, 1));
 
-        final JButton installButton = new JButton("Install");
+        final JButton saveButton = new JButton("Save");
         //JButton updateButton = new JButton("Update");
-        final JButton deleteButton = new JButton("Delete");
+        //final JButton deleteButton = new JButton("Delete");
 
-        installButton.addActionListener(new ActionListener() {
+        saveButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                if (!(table.getSelectedRow() == -1)) {
-                    PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
-                    PluginManager.getInstance().loadInstalledPlugins();
-                    launch();
+                try {
+                    int rows = table.getModel().getRowCount();
+
+                    for (int i = 0; i < rows; i++) {
+                        configuration.setProperty(String.valueOf(table.getModel().getValueAt(i, 0)), table.getModel().getValueAt(i, 1));
+                    }
+
+                    configuration.save();
+                    dispose();
+                } catch (ConfigurationException ce) {
+                    ce.printStackTrace();
                 }
             }
         });
 
-        deleteButton.addActionListener(new ActionListener() {
+ /*       deleteButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
                     //TODO need to restart launcher and remove plugin before loading SCL
@@ -83,9 +94,7 @@ public class PluginRepoForm extends JFrame {
                 }
             }
         });
-
-        //TODO Before logic implemented
-        deleteButton.setEnabled(false);
+*/
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -97,9 +106,23 @@ public class PluginRepoForm extends JFrame {
         });
 
 
-        buttonPanel.add(installButton);
+        //TODO Before logic implemented
+        // deleteButton.setEnabled(false);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                //LauncherGui.getInstance().init();
+                LauncherGui.getInstance().launch();
+                System.out.println("!!!! Settings window closing");
+                super.windowClosed(e);
+            }
+        });
+
+
+        buttonPanel.add(saveButton);
         //buttonPanel.add(updateButton);
-        buttonPanel.add(deleteButton);
+        //buttonPanel.add(deleteButton);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.NORTH;
@@ -108,38 +131,40 @@ public class PluginRepoForm extends JFrame {
         JPanel east = new JPanel(new GridBagLayout());
         east.add(buttonPanel, gbc);
 
-        // tablePanel = new JPanel();
+        tablePanel = new JPanel();
         //tablePanel.add(new JScrollPane(table));
         //jspane = new JScrollPane(table);
         //tablePanel.add(jspane);
 
-        //    add(tablePanel);
+        add(tablePanel);
 
 
         add(east, BorderLayout.EAST);
         table = new JTable();
         table.getTableHeader().setReorderingAllowed(false);
-        jspane = new JScrollPane();
-        add(jspane);
+
         setLocationRelativeTo(null);
     }
 
     private void launch() {
-        remove(jspane);
+        //remove(tablePanel);
         //tablePanel = new JPanel();
-        //PluginManager.getInstance().load();
-        PluginManager.getInstance().loadAvaliablePlugins();
-        plugins = PluginManager.getInstance().getAllPlugins();
-        createTable(plugins);
-        //tablePanel.add();
+
+        configuration = SettingsManager.getInstance().getXmlConfiguration();
+        createTable(configuration);
         jspane = new JScrollPane(table);
+        jspane.setBorder(new LineBorder(Color.green));
+        //jspane.setPreferredSize(table.getMaximumSize());
+        //jspane.size
+        //tablePanel.add(jspane);
+        //tablePanel.setBorder(new LineBorder(Color.red));
         add(jspane);
         pack();
         setVisible(true);
     }
 
-    private void createTable(List<Plugin> plugins) {
-        MyTableModel model = new MyTableModel(plugins);
+    private void createTable(XMLConfiguration configuration) {
+        MyTableModel model = new MyTableModel(configuration);
         table.setModel(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -152,27 +177,34 @@ public class PluginRepoForm extends JFrame {
 
 
     private class MyTableModel extends AbstractTableModel {
-        private List<Plugin> plugins;
-        private String[] selectedValues;
+        private ArrayList<String[]> properties = new ArrayList<String[]>(1);
+        //private String[] selectedValues;
 
-        public MyTableModel(List<Plugin> plugins) {
-            this.plugins = plugins;
-            selectedValues = new String[this.plugins.size()];
+        public MyTableModel(XMLConfiguration configuration) {
+
+            Iterator<String> iter = configuration.getKeys();
+            while (iter.hasNext()) {
+                String nextElement = iter.next();
+                System.out.println(nextElement + ": " + configuration.getProperty(nextElement));
+                this.properties.add(new String[]{nextElement, configuration.getProperty(nextElement).toString()});
+            }
+            //selectedValues = new String[this.plugins.size()];
+
+
         }
 
 
         public int getRowCount() {
-            return plugins.size();
+            return properties.size();
         }
 
 
         public int getColumnCount() {
-            //Plugin name
-            //Plugin installed version
-            //Plugin avaliable version
-            //Plugin RepoName version
+            //name
+            //value
+
             //Plugin what ?
-            return 4;
+            return 2;
         }
 
 
@@ -180,13 +212,9 @@ public class PluginRepoForm extends JFrame {
         public String getColumnName(int columnIndex) {
             switch (columnIndex) {
                 case 0:
-                    return "Plugin name";
+                    return "Name";
                 case 1:
-                    return "Installed version";
-                case 2:
-                    return "Avaliable versions";
-                case 3:
-                    return "Repository";
+                    return "Value";
                 default:
                     return "Unknown column";
             }
@@ -206,11 +234,7 @@ public class PluginRepoForm extends JFrame {
                 case 0:
                     return false;
                 case 1:
-                    return false;
-                case 2:
                     return true;
-                case 3:
-                    return false;
                 default:
                     return false;
             }
@@ -218,39 +242,7 @@ public class PluginRepoForm extends JFrame {
 
 
         public Object getValueAt(int rowIndex, int columnIndex) {
-            switch (columnIndex) {
-                case 0:
-                    return plugins.get(rowIndex).getPluginName();
-                case 1:
-                    return plugins.get(rowIndex).getPluginVersion();
-                case 2: {
-                    String[] array = new String[plugins.get(rowIndex).getPluginVersions().size()];
-                    plugins.get(rowIndex).getPluginVersions().keySet().toArray(array);
-                    //array = new String[]{"1", "2", "3"};
-                    JComboBox box = new JComboBox(array);
-                    table.getColumnModel().getColumn(columnIndex).setCellEditor(new DefaultCellEditor(box));
-                    DefaultTableCellRenderer renderer =
-                            new DefaultTableCellRenderer();
-                    renderer.setToolTipText("Click for combo box");
-                    renderer.setBackground(Color.LIGHT_GRAY);
-                    if (plugins.get(rowIndex).isInstalled() && plugins.get(rowIndex).getPluginVersion().equals(plugins.get(rowIndex).getLatestVersion())) {
-                        renderer.setForeground(Color.GREEN);
-                    } else {
-                        renderer.setForeground(Color.RED);
-                    }
-
-                    table.getColumnModel().getColumn(columnIndex).setCellRenderer(renderer);
-
-                    if (selectedValues[rowIndex] == null) {
-                        selectedValues[rowIndex] = (String) box.getSelectedItem();
-                    }
-                    return selectedValues[rowIndex];
-                }
-                case 3:
-                    return plugins.get(rowIndex).getRepository();
-                default:
-                    return "Something goes wrong";
-            }
+            return properties.get(rowIndex)[columnIndex]; //plugins.get(rowIndex).getPluginName();
         }
 
         /*
@@ -265,7 +257,9 @@ public class PluginRepoForm extends JFrame {
         }
 
         public void setValueAt(Object value, int row, int col) {
-            selectedValues[row] = (String) value;
+            String[] property = properties.get(row);
+            property[col] = String.valueOf(value);
+            properties.set(row, property);
             fireTableCellUpdated(row, col);
         }
 

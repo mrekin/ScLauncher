@@ -4,7 +4,8 @@ package ru.mrekin.sc.launcher.gui;
 
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.Application;
-import ru.mrekin.sc.launcher.core.FileDriver;
+import ru.mrekin.sc.launcher.core.PluginManager;
+import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,17 +27,14 @@ public class LauncherGui extends JFrame {
 
     static LauncherGui instance;
     ArrayList<Application> appList;
-    //, svnAppList, localApps;
-    FileDriver fileDriver;
-    //    SvnClient svnClient;
     JPanel mainPanel, statusPanel;
     BufferedImage mainIcon;
     ImageIcon redIcon, greenIcon;
     JMenuBar menuBar;
     JMenu pluginMenu, settingsMenu, helpMenu;
-    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem;
+    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem;
     PluginRepoForm pluginRepoForm;
-    private AppManager appManager;
+    SettingsForm settingsForm;
 
     public LauncherGui() {
         super("SC launcher");
@@ -77,33 +75,17 @@ public class LauncherGui extends JFrame {
         }
 
 
-        appManager = AppManager.getInstance();
-        appManager.init();
 //        fileDriver = appManager.getFileDriver();
-        appList = appManager.getAppList();
+
 
         menuBar = new JMenuBar();
+        menuBar.setToolTipText("menu");
         //menuBar.setMaximumSize(new Dimension(0, 25));
         menuBar.setSize(new Dimension(0, 25));
         //menuBar.setMinimumSize(new Dimension(0, 20));
 
         //this.getContentPane().setMaximumSize(new Dimension(300,menuBar.getHeight()+ 55 * appList.size()));
         //setMinimumSize(new Dimension(300, menuBar.getHeight() + 55 * appList.size()));
-
-
-    }
-
-    public void launch() {
-        //TODO Need to add menu panel with settings, plugin list, about page,tool for prepare apps for publishing, may be Help menu
-        String appLocalVersionDef = "Need to install";
-        //setContentPane(new Container());
-        this.getContentPane().removeAll();
-//        mainPanel = new JPanel(new GridLayout(svnAppList.size() + localApps.size(), 2));
-        // MenuBar start
-
-//        menuBar.setSize(new Dimension(200, 20));
-        menuBar.setToolTipText("menu");
-
         pluginMenu = new JMenu("Plugins");
         pluginMenu.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 
@@ -115,23 +97,50 @@ public class LauncherGui extends JFrame {
                     pluginRepoForm = new PluginRepoForm();
                 } else if (!pluginRepoForm.isVisible()) {
                     pluginRepoForm = new PluginRepoForm();
-                } else {
-
                 }
-
                 pluginRepoForm.setEnabled(true);
             }
         });
 
         pluginSettingsMenuItem = new JMenuItem("Plugin settings");
+        settingsMenu = new JMenu("Settings");
+        settingMenuItem = new JMenuItem("Settings");
+
+        settingMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (settingsForm == null) {
+                    settingsForm = new SettingsForm();
+                } else if (!settingsForm.isVisible()) {
+                    settingsForm = new SettingsForm();
+                }
+                settingsForm.setEnabled(true);
+            }
+        });
+
+    }
+
+    public void launch() {
+        //TODO Need to add menu panel with settings, plugin list, about page,tool for prepare apps for publishing, may be Help menu
+        String appLocalVersionDef = "Need to install";
+        //setContentPane(new Container());
+        PluginManager.getInstance().loadInstalledPlugins();
+        AppManager.getInstance().loadLocalAppInfo();
+        appList = AppManager.getInstance().getAppList();
+        this.getContentPane().removeAll();
+//        mainPanel = new JPanel(new GridLayout(svnAppList.size() + localApps.size(), 2));
+        // MenuBar start
+
+//        menuBar.setSize(new Dimension(200, 20));
+
 
         pluginMenu.add(pluginRepoMenuItem);
         pluginMenu.add(pluginSettingsMenuItem);
 
-        settingsMenu = new JMenu("Settings");
+
+        settingsMenu.add(settingMenuItem);
 
         //TODO remove this after implementing logic
-        settingsMenu.setEnabled(false);
+        // settingsMenu.setEnabled(false);
         pluginSettingsMenuItem.setEnabled(false);
 
         menuBar.add(pluginMenu);
@@ -174,7 +183,7 @@ public class LauncherGui extends JFrame {
             label.setHorizontalAlignment(SwingConstants.CENTER);
 
 
-            label.setComponentPopupMenu(new AppPopupMenu(this, localApp, appManager));
+            label.setComponentPopupMenu(new AppPopupMenu(this, localApp, AppManager.getInstance()));
             if (localApp.isInstalled() && localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.GREEN);
                 button.setEnabled(true);
@@ -214,19 +223,38 @@ public class LauncherGui extends JFrame {
 
         statusPanel.setBorder(BorderFactory.createLoweredBevelBorder());
         //TODO implements plugin status logic
-        statusPanel.setToolTipText("Status");
-        JLabel lbl = new JLabel();
-        JLabel lbl2 = new JLabel();
+        //statusPanel.setToolTipText("Status");
+        JLabel lbl = null;
+        JLabel lbl2 = null;
         //if (appManager.getSvnClient().checkSvnConnection()) {
+        lbl = new JLabel();
+        lbl2 = new JLabel();
+        lbl.setText("Connection status:");
+        lbl.setMaximumSize(new Dimension(20, 20));
+        boolean connStatus = false;
+        String connStatusFull = "";
+        for (Plugin pl : PluginManager.getInstance().getPlugins()) {
+            connStatusFull = connStatusFull.concat(pl.getPluginSimpleName());
+            connStatusFull = connStatusFull.concat(": ");
+            try {
+                if (pl.getPluginObj().checkConnection()) {
+                    connStatus = true;
+                    connStatusFull = connStatusFull.concat("connected");
+                } else {
+                    connStatusFull = connStatusFull.concat("disconnected");
+                }
 
-        if (true) {
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            connStatusFull = connStatusFull.concat("; ");
+        }
+        if (connStatus) {
             lbl2.setIcon(greenIcon);
         } else {
             lbl2.setIcon(redIcon);
         }
-        lbl.setText("Svn:");
-        lbl.setMaximumSize(new Dimension(20, 20));
-
+        statusPanel.setToolTipText(connStatusFull);
         statusPanel.add(lbl, BorderLayout.EAST);
         statusPanel.add(lbl2, BorderLayout.EAST);
 
