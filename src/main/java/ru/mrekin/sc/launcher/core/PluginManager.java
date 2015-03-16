@@ -60,7 +60,7 @@ public class PluginManager {
                     URL jarURL = f.toURI().toURL();
                     installed = false;
                     for (Plugin p : tempList) {
-                        if (p.getPluginPath().equals(jarURL)) {
+                        if (p.getPluginPath() != null && p.getPluginPath().equals(jarURL)) {
                             installed = true;
                             //
                             p.getPluginObj().disconnect();
@@ -76,28 +76,27 @@ public class PluginManager {
 
                     JarFile jf = new JarFile(f);
 
-                    //oldVersion
-                    //mainClass = jf.getManifest().getMainAttributes().getValue(Attributes.Name.MAIN_CLASS);
-                    // mainClass = "ru/mrekin/sc/launcher/plugin/SvnClient.class";
-                    //mainClass = findClassByInterface(jf, jarURL,IRemoteStorageClient.class);
-                    //URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
-
-
                     Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
                     jf.close();
                     if (!IRemoteStorageClient.class.isAssignableFrom(cl)) {
                         System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IRemoteStorageClient.class.getCanonicalName());
                         continue;
                     }
-
-                    IRemoteStorageClient instance = (IRemoteStorageClient) cl.newInstance();
                     Plugin plugin = new Plugin();
+                    IRemoteStorageClient instance = null;
                     try {
+                        instance = (IRemoteStorageClient) cl.newInstance();
+
+
                         pluginName = "".equals(instance.getPluginName()) ? cl.getSimpleName() : instance.getPluginName();
                         pluginVersion = "".equals(instance.getPluginVersion()) ? "-1" : instance.getPluginVersion();
                     } catch (AbstractMethodError ame) {
                         //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
                         System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
+                    } catch (IncompatibleClassChangeError ice) {
+                        System.out.println("Plugin manager: can't load plugin " + f.getAbsolutePath());
+                        System.out.println(ice.getLocalizedMessage());
+                        continue;
                     }
                     plugin.setPluginName(pluginName);
                     plugin.setPluginVersion(pluginVersion);
@@ -124,62 +123,6 @@ public class PluginManager {
 
     public void loadAvaliablePlugins() {
         //TODO need to move all file names to constans class //
-        // Get all RepoClients
-        //Get plugin list from each + RepoClientID
-/*
-        String serverURL = SettingsManager.getPropertyByName(LauncherConstants.PluginRepoServerURL) + "plugin.list";
-        HttpURLConnection connection = null;
-        URL serverAddress;
-
-        try {
-            serverAddress = new URL(serverURL);
-            //set up out communications stuff
-            connection = null;
-
-            //Set up the initial connection
-            connection = (HttpURLConnection) serverAddress.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setDoOutput(true);
-            connection.setReadTimeout(10000);
-
-            connection.connect();
-
-            //read the result from the server
-
-            Properties props = new Properties();
-            props.load(connection.getInputStream());
-
-            for (Map.Entry e : props.entrySet()) {
-
-                if ("true".equals(e.getValue().toString())) {
-                    //1. Read settings from settings file (at least jar name) 2. Load plugin info (version, description)
-                    //2. Store plugin path info for further install process
-                    Properties settings = new Properties();
-                    serverAddress = new URL(SettingsManager.getPropertyByName(LauncherConstants.PluginRepoServerURL) + e.getKey() + "/" + LauncherConstants.SettingsFileName);
-                    connection = (HttpURLConnection) serverAddress.openConnection();
-                    connection.connect();
-                    settings.load(connection.getInputStream());
-                    JarURLConnection j = new JarURLConnection(new URL(serverURL + e.getKey() + "/"), new Handler());
-
-
-                }
-            }
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //close the connection, set all objects to null
-            if (connection != null) {
-                connection.disconnect();
-            }
-
-        }
-
-*/
         this.avaliabledPlugins = PluginRepoManager.getInstance().getAvaliablePlugins();
     }
 
@@ -220,12 +163,6 @@ public class PluginManager {
                 }
             }
         }
-        /*try {
-            classLoader.close();
-        }catch (IOException ioe){
-            ioe.printStackTrace();
-        }
-        */
         return null;
     }
 
@@ -239,7 +176,7 @@ public class PluginManager {
                 installedPlugins.add(pl);
             }
         }
-//        installedPlugins.addAll(avaliabledPlugins);
+
         return installedPlugins;
     }
 
@@ -249,11 +186,10 @@ public class PluginManager {
         loadInstalledPlugins();
     }
 
+    //TODO need to delete plugin with restarting scLauncher. No way to unload classes and release jar file.
     public void remove(Plugin plugin) {
         installedPlugins.remove(plugin);
         try {
-            //((URLClassLoader) plugin.getClass().getClassLoader()).;
-
             plugin.getPluginObj().disconnect();
             plugin = null;
         } catch (Exception e) {

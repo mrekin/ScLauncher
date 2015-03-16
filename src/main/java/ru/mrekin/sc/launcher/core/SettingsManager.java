@@ -50,7 +50,7 @@ public class SettingsManager {
             if (!file.exists() || !file.isFile()) {
                 //first run
                 try {
-
+                    System.out.println("Applying old configuration.");
                     xmlConfiguration = new XMLConfiguration();
                     for (Object key : settings.keySet()) {
                         if (((String) key).matches("[_a-zA-Z0-9 -]*")) {
@@ -75,7 +75,7 @@ public class SettingsManager {
                 //if(configurationEvent.getType()== AbstractConfiguration.){
                 //}
 
-                log("Changed property: " + configurationEvent.getPropertyName());
+                //log("Changed property: " + configurationEvent.getPropertyName());
             }
         });
 

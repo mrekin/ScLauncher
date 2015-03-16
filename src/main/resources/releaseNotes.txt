@@ -13,8 +13,9 @@
 1. Added settings management window
 2. Some GUI changes: status bar changed, some other changes
 3. Some code optimizations
-4. Now xml settings used. Old settings imports.
-5. Fixed bugs: settings error, memory leaks fixed (perm gen on plugin loading)
-6. Known bugs: repository settings not working (hard code), normal logging not implemented.
+4. Now xml settings used. Old settings imports if needed.
+5. !!!Note!!! New SVN plugin must be used!
+6. Fixed bugs: settings error, memory leaks fixed (perm gen on plugin loading)
+7. Known bugs: repository settings not working (hard code), normal logging not implemented.
                Plugin removing not working - duplicate plugins avaliable.
 =========================================

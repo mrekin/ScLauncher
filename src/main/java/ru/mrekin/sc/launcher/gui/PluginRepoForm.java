@@ -65,7 +65,7 @@ public class PluginRepoForm extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
                     PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
-                    PluginManager.getInstance().loadInstalledPlugins();
+                    //PluginManager.getInstance().loadInstalledPlugins();
                     launch();
                 }
             }
