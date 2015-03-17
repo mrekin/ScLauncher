@@ -92,10 +92,15 @@ public class AutoUpdater {
             connection = null;
         }
 
-        if (currentVersion.equals(serverVersion)) {
+        if (currentVersion != null && currentVersion.equals(serverVersion)) {
             //no new version
             return null;
-        } else return serverVersion;
+        } else if (currentVersion == null) {
+            System.out.println("Current version is null");
+            return null;
+        } else {
+            return serverVersion;
+        }
     }
 
     public static void update(String version) {

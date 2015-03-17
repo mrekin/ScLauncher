@@ -180,6 +180,7 @@ public class PluginRepoManager {
             //TODO for all repositories from settings
             //TODO need to set setting for plugin from XMLSettingsManager
             String url = plugin.getPluginVersions().get(version);
+            System.out.println("Installing plugin: " + url);
             try {
                 props = repoPlugin.getPluginObj().getDefaultProperties();
                 repoPlugin.getPluginObj().connect(props.getProperty("user"), props.getProperty("pass"), props.getProperty("URL"));

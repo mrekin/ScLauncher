@@ -134,7 +134,7 @@ public class SettingsManager {
      */
     public String getPropertyByName(String name, String defValue) {
         String value = (String) xmlConfiguration.getProperty(name);
-        return "".equals(value) ? appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)) : value;
+        return value == null || "".equals(value) ? appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)) : value;
         //return xmlConfiguration.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
 
