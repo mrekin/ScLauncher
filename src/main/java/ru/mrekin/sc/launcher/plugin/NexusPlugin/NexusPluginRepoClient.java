@@ -120,7 +120,7 @@ public class NexusPluginRepoClient implements IPluginRepoClient {
         connection = (HttpURLConnection) serverAddress.openConnection();
         connection.setRequestMethod("GET");
         connection.setDoOutput(true);
-        connection.setReadTimeout(10000);
+        connection.setReadTimeout(100000);
         connection.connect();
         //ByteArrayInputStream bais = (ByteArrayInputStream)connection.getInputStream();
         return connection.getInputStream();
