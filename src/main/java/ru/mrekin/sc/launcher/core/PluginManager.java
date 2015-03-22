@@ -22,6 +22,7 @@ public class PluginManager {
     private String pluginDir = "";
     private ArrayList<Plugin> installedPlugins = new ArrayList<Plugin>(1);
     private ArrayList<Plugin> avaliabledPlugins = new ArrayList<Plugin>(1);
+    private boolean avaliablePluginsLoaded = false;
 
     private PluginManager() {
         loadProperties();
@@ -124,10 +125,15 @@ public class PluginManager {
     public void loadAvaliablePlugins() {
         //TODO need to move all file names to constans class //
         this.avaliabledPlugins = PluginRepoManager.getInstance().getAvaliablePlugins();
+        avaliablePluginsLoaded = true;
     }
 
     public void loadProperties() {
         pluginDir = SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugin/");
+    }
+
+    public boolean isAvaliablePluginsLoaded() {
+        return avaliablePluginsLoaded;
     }
 
     public ArrayList<Plugin> getPlugins() {

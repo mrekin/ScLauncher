@@ -17,5 +17,10 @@
 5. !!!Note!!! New SVN plugin must be used!
 6. Fixed bugs: settings error, memory leaks fixed (perm gen on plugin loading)
 7. Known bugs: repository settings not working (hard code), normal logging not implemented.
-               Plugin removing not working - duplicate plugins avaliable.
+               Plugin removing not working - plugins may duplicate.
+=========================================
+=============Version 0.2.5===============
+1. Mandatory plugins now install automatically
+2. Some GUI changes
+3. Some code optimizations and cleaning
 =========================================

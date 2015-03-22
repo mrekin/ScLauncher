@@ -120,48 +120,34 @@ public class LauncherGui extends JFrame {
     }
 
     public void launch() {
-        //TODO Need to add menu panel with settings, plugin list, about page,tool for prepare apps for publishing, may be Help menu
+        //TODO Need to add menu panel about page,tool for prepare apps for publishing, may be Help menu
         String appLocalVersionDef = "Need to install";
         //setContentPane(new Container());
         PluginManager.getInstance().loadInstalledPlugins();
         AppManager.getInstance().loadLocalAppInfo();
         appList = AppManager.getInstance().getAppList();
         this.getContentPane().removeAll();
-//        mainPanel = new JPanel(new GridLayout(svnAppList.size() + localApps.size(), 2));
-        // MenuBar start
-
-//        menuBar.setSize(new Dimension(200, 20));
-
 
         pluginMenu.add(pluginRepoMenuItem);
         pluginMenu.add(pluginSettingsMenuItem);
-
-
         settingsMenu.add(settingMenuItem);
 
-        //TODO remove this after implementing logic
-        // settingsMenu.setEnabled(false);
         pluginSettingsMenuItem.setEnabled(false);
 
         menuBar.add(pluginMenu);
         menuBar.add(settingsMenu);
         setJMenuBar(menuBar);
-// MenuBar end
+
         mainPanel = new JPanel(new GridLayout(appList.size(), 2));
         mainPanel.setBorder(new LineBorder(Color.GRAY));
 
 
         statusPanel = new JPanel();
-        //setVisible(true);
-        // setVisible(false);
         for (Application localApp : appList) {
             JButtonEx button = new JButtonEx();
-            //String appTitle = "";
             String appLocalVersion = appLocalVersionDef;
             String localPath = "";
 
-
-            //appTitle = localApp.getAppTitle();
             if (localApp.isInstalled()) {
                 appLocalVersion = localApp.getAppVersion();
             }
@@ -211,9 +197,6 @@ public class LauncherGui extends JFrame {
 
             mainPanel.add(button);
             mainPanel.add(label);
-            //    add(box);
-
-
         }
 
         mainPanel.setVisible(true);
@@ -222,11 +205,8 @@ public class LauncherGui extends JFrame {
         statusPanel.setMaximumSize(new Dimension(0, 20));
 
         statusPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-        //TODO implements plugin status logic
-        //statusPanel.setToolTipText("Status");
         JLabel lbl = null;
         JLabel lbl2 = null;
-        //if (appManager.getSvnClient().checkSvnConnection()) {
         lbl = new JLabel();
         lbl2 = new JLabel();
         lbl.setText("Connection status:");
@@ -260,12 +240,8 @@ public class LauncherGui extends JFrame {
 
         getContentPane().add(statusPanel, BorderLayout.SOUTH);
         setVisible(true);
-
-
         setIconImage(mainIcon);
         pack();
-
-
     }
 
     private class JButtonEx extends JButton {
@@ -276,15 +252,8 @@ public class LauncherGui extends JFrame {
             addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-
                         //This is the simple way to launch apps.
                         Runtime.getRuntime().exec(app);
-
-                        //JarFile jar = new JarFile(app);
-                        //String mainClass = (String)jar.getManifest().getMainAttributes().get("Main-Class");
-                        //read this http://stackoverflow.com/questions/60764/how-should-i-load-jars-dynamically-at-runtime
-                        //Jar plugins not need there - > moved to plugin manager
-
                     } catch (Exception ioe) {
                         ioe.printStackTrace();
                     }
@@ -301,9 +270,4 @@ public class LauncherGui extends JFrame {
         }
 
     }
-
-
-//JarFile
-
-
 }

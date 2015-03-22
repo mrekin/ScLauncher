@@ -21,6 +21,7 @@ public class Launch {
             //launch
             SettingsManager.updateLocalSettings();
             SettingsManager.getInstance();
+            ApplicationTools.prepareToStart();
             AppManager.getInstance();
 
             //Checking if need to update launcher
