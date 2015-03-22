@@ -133,9 +133,40 @@ public class SettingsManager {
      * @return
      */
     public String getPropertyByName(String name, String defValue) {
+        String[] test = xmlConfiguration.getStringArray(name);
         String value = (String) xmlConfiguration.getProperty(name);
         return value == null || "".equals(value) ? appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)) : value;
         //return xmlConfiguration.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
+    }
+
+    /**
+     * Return setting value or property value or empty string. If exist setting and property with same name - setting will be returned.
+     *
+     * @param name
+     * @return
+     */
+    public String[] getPropertiesArrayByName(String name, String defValue) {
+        String[] value = xmlConfiguration.getStringArray(name);
+        if (value == null || value.length == 0 || (value.length == 1 && "".equals(value[0]))) {
+            String property = appProperties.getProperty(name, pluginProperties.getProperty(name, defValue));
+            if (!"".equals(property)) {
+                value = new String[]{property};
+            } else {
+                value = new String[0];
+            }
+        }
+        return value;
+
+    }
+
+    /**
+     * Return setting value or property value or empty string. If exist setting and property with same name - setting will be returned.
+     *
+     * @param name
+     * @return
+     */
+    public String[] getPropertiesArrayByName(String name) {
+        return getPropertiesArrayByName(name, "");
     }
 
 

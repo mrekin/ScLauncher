@@ -29,11 +29,20 @@
             <version>3.2.1</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>2.2</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.1.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.6</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
@@ -121,6 +130,12 @@
 			    <filters> 
                 		<filter>
 					<artifact>commons-logging:commons-logging</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                        </filter>
+                    <filter>
+                        <artifact>ch.qos.logback:logback-core</artifact>
 					<includes>
 						<include>**</include>
 	        			</includes>
