@@ -19,3 +19,7 @@ For more information [Wiki](https://github.com/mrekin/ScLauncher/wiki)
 
 ###Lincense
 SCLauncher is released as open-source software under the GNU General Public License (GPL), version 2 or later.
+
+### Download
+
+http://mrekin.github.io/ScLauncher/
