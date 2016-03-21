@@ -68,6 +68,9 @@ public class SettingsForm extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 try {
+		    if (table.isEditing()) {
+                         table.getCellEditor().stopCellEditing();
+			}
                     int rows = table.getModel().getRowCount();
 
                     for (int i = 0; i < rows; i++) {
