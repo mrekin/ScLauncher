@@ -5,6 +5,7 @@ package ru.mrekin.sc.launcher.gui;
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.Application;
 import ru.mrekin.sc.launcher.core.PluginManager;
+import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import javax.imageio.ImageIO;
@@ -37,7 +38,7 @@ public class LauncherGui extends JFrame {
     SettingsForm settingsForm;
 
     public LauncherGui() {
-        super("SC launcher");
+        super("SC launcher "+ SettingsManager.getInstance().getPropertyByName("Application.version"));
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
