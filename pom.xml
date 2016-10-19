@@ -5,9 +5,22 @@
     <groupId>ru.mrekin.sc</groupId>
     <artifactId>sc-launcher</artifactId>
     <packaging>jar</packaging>
-    <version>0.2.6</version>
+    <version>0.3.2</version>
     <description>Tool for launching app</description>
-    <dependencies>
+
+<properties>
+    <aetherVersion>1.1.0</aetherVersion>
+    <mavenVersion>3.3.9</mavenVersion>
+</properties>
+
+<dependencies>
+<dependency>
+  <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+  <groupId>org.jsoup</groupId>
+  <artifactId>jsoup</artifactId>
+  <version>1.9.2</version>
+</dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

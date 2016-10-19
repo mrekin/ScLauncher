@@ -13,11 +13,17 @@ import ru.mrekin.sc.launcher.update.AutoUpdater;
 public class Launch {
 
     public static void main(String[] args) {
+        try {
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        boolean isStart = true;
         if (args.length > 0) {
             //execute tools
-            ApplicationTools.execute(args);
-        } else {
+            isStart = ApplicationTools.execute(args);
+        }
+        if (isStart) {
             //launch
             SettingsManager.updateLocalSettings();
             SettingsManager.getInstance();

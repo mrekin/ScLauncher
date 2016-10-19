@@ -24,3 +24,14 @@
 2. Some GUI changes
 3. Some code optimizations and cleaning
 =========================================
+=============Version 0.3.0===============
+1. Added new plugin repository
+2. Old properties full removed
+3. Added @force option
+=========================================
+=============Version 0.3.1===============
+1. Some fixes
+=========================================
+=============Version 0.3.2===============
+1. Default setting updated
+=========================================

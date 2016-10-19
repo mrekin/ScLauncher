@@ -12,8 +12,8 @@ import java.util.*;
  * Created by MRekin on 27.08.2014.
  */
 public class SettingsManager {
-    private Properties settings, appProperties, pluginProperties;
-    private XMLConfiguration xmlConfiguration;
+    private Properties appProperties, pluginProperties;
+    private XMLConfiguration xmlConfiguration, settings;
     private static SettingsManager instance;
     File localSettingsFile;
 
@@ -22,7 +22,7 @@ public class SettingsManager {
         System.setProperty("java.net.preferIPv4Stack", "true");
 
         localSettingsFile = getLocalSettingsFile();
-        settings = new Properties();
+        settings = new XMLConfiguration();
 
         pluginProperties = new Properties();
 
@@ -43,7 +43,7 @@ public class SettingsManager {
 
     }
 
-    private XMLConfiguration loadXMLConfiguration(Properties defaultProperties) {
+    private XMLConfiguration loadXMLConfiguration(XMLConfiguration defaultProperties) {
         XMLConfiguration xmlConfiguration = null;
         try {
             File file = new File(LauncherConstants.SettingsFileName2);
@@ -51,15 +51,9 @@ public class SettingsManager {
                 //first run
                 try {
                     System.out.println("Applying old configuration.");
-                    xmlConfiguration = new XMLConfiguration();
-                    for (Object key : settings.keySet()) {
-                        if (((String) key).matches("[_a-zA-Z0-9 -]*")) {
-                            xmlConfiguration.addProperty((String) key, settings.get(key));
-                        }
-                    }
-                    file.createNewFile();
-                    xmlConfiguration.save(file);
-                } catch (IOException ioe) {
+                    applyDefaultSettings();
+                    xmlConfiguration = new XMLConfiguration(file);
+                } catch (Exception ioe) {
                     log(ioe.getLocalizedMessage());
                 }
             } else {
@@ -83,7 +77,7 @@ public class SettingsManager {
     }
 
     private static File getLocalSettingsFile() {
-        return new File(LauncherConstants.SettingsFileName);
+        return new File(LauncherConstants.SettingsFileName2);
     }
 
     public XMLConfiguration getXmlConfiguration() {
@@ -92,7 +86,7 @@ public class SettingsManager {
 
     private static InputStream getDefaultSettings() {
 
-        return SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
+        return SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName2);
     }
 
 
@@ -122,9 +116,10 @@ public class SettingsManager {
      * @param name
      * @return
      */
-    public String getPropertyByName1(String name, String defValue) {
+ /*   public String getPropertyByName1(String name, String defValue) {
         return settings.getProperty(name, appProperties.getProperty(name, pluginProperties.getProperty(name, defValue)));
     }
+*/
 
     /**
      * Return setting value or property value or empty string. If exist setting and property with same name - setting will be returned.
@@ -179,7 +174,7 @@ public class SettingsManager {
      */
     private static void applyDefaultSettings() {
 
-        InputStream is = SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName);
+        InputStream is = SettingsManager.class.getClassLoader().getResourceAsStream(LauncherConstants.SettingsFileName2);
         try {
             FileOutputStream fos = new FileOutputStream(getLocalSettingsFile());
             int c;
@@ -196,15 +191,14 @@ public class SettingsManager {
 
     public static boolean updateLocalSettings() {
 
+        //System.setProperty("ru.mrekin.sc.sclauncher.forceSettings", "true");
+//      System.getProperty("ru.mrekin.sc.sclauncher.forceSettings", "true");
+        boolean forceSettings = Boolean.getBoolean("ru.mrekin.sc.sclauncher.forceSettings");
+        log("Force setting is: " + forceSettings);
         //Properties with sorted keys
-        Properties localSettings = new Properties() {
-            @Override
-            public synchronized Enumeration<Object> keys() {
-                return Collections.enumeration(new TreeSet<Object>(super.keySet()));
-            }
-        };
-        Properties tempLocalSettings;// = new Properties();
-        Properties defaultSettings = new Properties();
+        XMLConfiguration localSettings;
+        XMLConfiguration tempLocalSettings;// = new Properties();
+        XMLConfiguration defaultSettings = new XMLConfiguration();
         try {
             File lsf = getLocalSettingsFile();
             log(lsf.getAbsolutePath());
@@ -212,8 +206,8 @@ public class SettingsManager {
                 log("Local settings file " + lsf.getAbsolutePath() + " not found");
                 applyDefaultSettings();
             } else {
-                localSettings.load(new FileInputStream(lsf));
-                tempLocalSettings = (Properties) localSettings.clone();
+                localSettings = new XMLConfiguration(lsf);
+                tempLocalSettings = (XMLConfiguration) localSettings.clone();
                 InputStream dsf = getDefaultSettings();
                 if (dsf == null) {
                     log("Can't load default settings. Jar file is corrupted or you need to package project first.");
@@ -221,31 +215,39 @@ public class SettingsManager {
                 }
                 defaultSettings.load(dsf);
 
-                for (String key : defaultSettings.stringPropertyNames()) {
+                Iterator iterator = defaultSettings.getKeys();
+                String key;
+                while (iterator.hasNext())
+                //for (String key : defaultSettings.stringPropertyNames())
+                {
+                    key = (String) iterator.next();
                     if (!localSettings.containsKey(key)) {
-                        localSettings.put(key, defaultSettings.getProperty(key));
+                        localSettings.addProperty(key, defaultSettings.getProperty(key));
+                    } else {
+                        if (forceSettings && "true".equals(defaultSettings.getString(key + "[@force]"))) {
+                            localSettings.setProperty(key, defaultSettings.getProperty(key));
+                            log("Force update property: " + key);
+                        }
                     }
                 }
                 if (!localSettings.equals(tempLocalSettings)) {
-                    localSettings.store(new FileOutputStream(lsf), null);
+                    localSettings.save(lsf);
                 }
 
             }
-        } catch (FileNotFoundException fnfe) {
-            log(fnfe.getLocalizedMessage());
-            return false;
-        } catch (IOException ioe) {
-            log(ioe.getLocalizedMessage());
+        } catch (ConfigurationException ce) {
+            log(ce.getLocalizedMessage());
             return false;
         }
+
         return true;
     }
 
     public void loadLauncherSettings() {
         try {
-            settings.load(new FileInputStream(localSettingsFile));
-        } catch (IOException ioe) {
-            log(ioe.getLocalizedMessage());
+            settings = new XMLConfiguration(localSettingsFile);
+        } catch (ConfigurationException ce) {
+            log(ce.getLocalizedMessage());
         }
     }
 

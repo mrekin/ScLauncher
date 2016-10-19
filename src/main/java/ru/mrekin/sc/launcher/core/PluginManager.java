@@ -124,7 +124,7 @@ public class PluginManager {
 
     public void loadAvaliablePlugins() {
         //TODO need to move all file names to constans class //
-        this.avaliabledPlugins = PluginRepoManager.getInstance().getAvaliablePlugins();
+        this.avaliabledPlugins = PluginRepoManager.getInstance().getAvaliablePlugins2();
         avaliablePluginsLoaded = true;
     }
 

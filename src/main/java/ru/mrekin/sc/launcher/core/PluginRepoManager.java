@@ -1,5 +1,7 @@
 package ru.mrekin.sc.launcher.core;
 
+
+import ru.mrekin.sc.launcher.plugin.ApacheListingDirectory.ApacheListingDirectoryRepoClient;
 import ru.mrekin.sc.launcher.plugin.IPluginRepoClient;
 import ru.mrekin.sc.launcher.plugin.NexusPlugin.NexusPluginRepoClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
@@ -50,6 +52,8 @@ public class PluginRepoManager {
 
             //Loading builInPlugins
             RepoPlugin plugin = getLoadedPlugin(NexusPluginRepoClient.class);
+            installedPlugins.add(plugin);
+            plugin = getLoadedPlugin(ApacheListingDirectoryRepoClient.class);
             installedPlugins.add(plugin);
 
             //LoadingIntalledPlugins
@@ -108,6 +112,36 @@ public class PluginRepoManager {
         //Get all repoClients
         //Get plugins from each repository
         //Merge plugins and versions
+
+
+        if (installedPlugins == null || installedPlugins.size() == 0) {
+            System.out.println("No plugin avaliable. Please install repository client");
+            return null;
+        }
+        ArrayList<Plugin> plugins = new ArrayList<Plugin>();
+        Properties props;
+
+        for (RepoPlugin repoPlugin : installedPlugins) {
+            //TODO for all repositories from settings
+            //TODO need to set setting for plugin from XMLSettingsManager
+            try {
+                props = repoPlugin.getPluginObj().getDefaultProperties();
+                repoPlugin.getPluginObj().connect(props.getProperty("user"), props.getProperty("pass"), props.getProperty("URL"));
+                plugins.addAll((ArrayList<Plugin>) repoPlugin.getPluginObj().getPluginsList());
+            } catch (Exception e) {
+                System.out.println("RepoClient connecting: " + e.getLocalizedMessage());
+            }
+
+        }
+        return plugins;
+    }
+
+    public ArrayList<Plugin> getAvaliablePlugins2() {
+        // GET plugins from repositories
+        //Get all repoClients
+        //Get plugins from each repository
+        //Merge plugins and versions
+
 
         if (installedPlugins == null || installedPlugins.size() == 0) {
             System.out.println("No plugin avaliable. Please install repository client");
@@ -192,4 +226,6 @@ public class PluginRepoManager {
 
         }
     }
+
+
 }

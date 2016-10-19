@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+    <MandatoryPlugins force="true">scl-svn-plugin</MandatoryPlugins>
+    <SVNUser force="true">submitter</SVNUser>
+    <AutoUpdaterServerURL>http://bssdev:8888/SCLauncher/</AutoUpdaterServerURL>
+    <AutoUpdaterEnabled>true</AutoUpdaterEnabled>
+    <AutoUpdaterDevMode force="true">false</AutoUpdaterDevMode>
+    <SVNRepoURL force="true">https://ms-d50909-09.bee.vimpelcom.ru/svn/deployment/.m2/repository/com/vimpelcom/sc/tools</SVNRepoURL>
+    <ApplicationDirectory>apps/</ApplicationDirectory>
+    <ApplicationShowReleaseNotes>true</ApplicationShowReleaseNotes>
+    <PluginDirectory>plugins/</PluginDirectory>
+    <SVNPassword force="true">subpass</SVNPassword>
+    <PluginRepoServerURL force="true">http://sclauncher.ru/nexus/repository/maven-releases/ru/mrekin/sc/scl-plugins/
+    </PluginRepoServerURL>
+</configuration>

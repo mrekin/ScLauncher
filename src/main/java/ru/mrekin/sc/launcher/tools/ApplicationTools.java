@@ -35,12 +35,16 @@ public class ApplicationTools {
             logger.trace("--prepare found");
             if (arguments.size() == 0) {
                 logger.trace("No arguments found");
-                return false;
+                return true;
             }
             if ("app".equals(arguments.get(0)) || ("application".equals(arguments.get(0)))) {
                 logger.trace("Start prepeare application");
                 ApplicationPrepare.appPrepare("./");
+                return false;
             }
+        } else if ("--forceSettings".equals(command)) {
+            System.setProperty("ru.mrekin.sc.sclauncher.forceSettings", "true");
+            return true;
         }
 
         return true;

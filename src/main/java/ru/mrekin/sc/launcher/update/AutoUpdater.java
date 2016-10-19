@@ -53,7 +53,7 @@ public class AutoUpdater {
             connection = (HttpURLConnection) serverAddress.openConnection();
             connection.setRequestMethod("GET");
             connection.setDoOutput(true);
-            connection.setReadTimeout(10000);
+            connection.setReadTimeout(1000);
 
             connection.connect();
             int responce = connection.getResponseCode();
@@ -196,7 +196,7 @@ public class AutoUpdater {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    Runtime.getRuntime().exec("java -jar " + args[2] + ".jar");
+                    Runtime.getRuntime().exec("java -jar " + args[2] + ".jar --forceSettings");
                     System.exit(0);
                 } catch (IOException ioe) {
                     ioe.printStackTrace();

@@ -38,7 +38,7 @@ public class LauncherGui extends JFrame {
     SettingsForm settingsForm;
 
     public LauncherGui() {
-        super("SC launcher "+ SettingsManager.getInstance().getPropertyByName("Application.version"));
+        super("SC launcher " + SettingsManager.getInstance().getPropertyByName("Application.version"));
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
