@@ -5,7 +5,7 @@
     <groupId>ru.mrekin.sc</groupId>
     <artifactId>sc-launcher</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
     <description>Tool for launching app</description>
 
 <properties>

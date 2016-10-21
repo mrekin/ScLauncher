@@ -35,3 +35,7 @@
 =============Version 0.3.2===============
 1. Default setting updated
 =========================================
+=============Version 0.3.3===============
+1. Fixed plugin support with multiple plugin versions
+2. Added tray notifications
+=========================================

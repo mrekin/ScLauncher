@@ -4,8 +4,11 @@ import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
+import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.tools.ApplicationTools;
 import ru.mrekin.sc.launcher.update.AutoUpdater;
+
+import javax.swing.*;
 
 /**
  * Created by MRekin on 30.07.2014.
@@ -41,6 +44,8 @@ public class Launch {
 
             //Launching launcher :)
             LauncherGui gui = new LauncherGui();
+
+
         }
     }
 

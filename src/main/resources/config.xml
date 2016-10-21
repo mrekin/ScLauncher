@@ -5,7 +5,9 @@
     <AutoUpdaterServerURL>http://bssdev:8888/SCLauncher/</AutoUpdaterServerURL>
     <AutoUpdaterEnabled>true</AutoUpdaterEnabled>
     <AutoUpdaterDevMode force="true">false</AutoUpdaterDevMode>
-    <SVNRepoURL force="true">https://ms-d50909-09.bee.vimpelcom.ru/svn/deployment/.m2/repository/com/vimpelcom/sc/tools</SVNRepoURL>
+    <SVNRepoURL force="true">
+        https://ms-d50909-09.bee.vimpelcom.ru/svn/deployment/.m2/repository/com/vimpelcom/sc/tools
+    </SVNRepoURL>
     <ApplicationDirectory>apps/</ApplicationDirectory>
     <ApplicationShowReleaseNotes>true</ApplicationShowReleaseNotes>
     <PluginDirectory>plugins/</PluginDirectory>

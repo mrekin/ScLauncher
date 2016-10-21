@@ -1,5 +1,6 @@
 package ru.mrekin.sc.launcher.core;
 
+import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
@@ -19,7 +20,7 @@ import java.util.jar.JarFile;
 public class PluginManager {
 
     private static PluginManager instance;
-    private String pluginDir = "";
+    private static String pluginDir = "";
     private ArrayList<Plugin> installedPlugins = new ArrayList<Plugin>(1);
     private ArrayList<Plugin> avaliabledPlugins = new ArrayList<Plugin>(1);
     private boolean avaliablePluginsLoaded = false;
@@ -43,6 +44,7 @@ public class PluginManager {
         this.installedPlugins = new ArrayList<Plugin>(1);
         this.avaliabledPlugins = new ArrayList<Plugin>(1);
         loadInstalledPlugins();
+        loadAvaliablePlugins();
         //loadAvaliablePlugins();
     }
 
@@ -66,7 +68,7 @@ public class PluginManager {
                             //
                             p.getPluginObj().disconnect();
                             p.setPluginObj(p.getPluginObj().getClass().newInstance());
-                            p.getPluginObj().connect();
+                            boolean is = p.getPluginObj().connect();
                             installedPlugins.add(p);
                             break;
                         }
@@ -105,6 +107,7 @@ public class PluginManager {
                     plugin.setPluginPath(f.toURI().toURL());
                     plugin.setInstalled(true);
                     plugin.setPluginSimpleName(f.getName().replace(".jar", ""));
+                    plugin.setRepository("");
                     installedPlugins.add(plugin);
 
                 } catch (MalformedURLException e) {
@@ -128,7 +131,7 @@ public class PluginManager {
         avaliablePluginsLoaded = true;
     }
 
-    public void loadProperties() {
+    public static void loadProperties() {
         pluginDir = SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugin/");
     }
 
@@ -149,7 +152,7 @@ public class PluginManager {
         return null;
     }
 
-    private Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
+    private static Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
         Enumeration<JarEntry> entries = jar.entries();
         URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
         Class cl = null;
@@ -193,13 +196,96 @@ public class PluginManager {
     }
 
     //TODO need to delete plugin with restarting scLauncher. No way to unload classes and release jar file.
-    public void remove(Plugin plugin) {
-        installedPlugins.remove(plugin);
+    public void update(Plugin plugin, final String targetVersion) {
+        TrayPopup.displayMessage("SCLauncher will restart to remove old version of plugin");
+        final String  plName = plugin.getPluginSimpleName();
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    sleep(5000);
+
+                String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName +  " --installPlugin " + plName + " " + targetVersion;
+                System.out.println(command);
+                Runtime.getRuntime().exec(command);
+                }catch (Exception e){
+                    System.out.println(e.getLocalizedMessage());
+                }
+                System.exit(0);
+            }
+        }.run();
+
+    }
+
+    public static boolean remove(String pluginName) {
+        //  installedPlugins.remove(plugin);
         try {
-            plugin.getPluginObj().disconnect();
-            plugin = null;
+            File f = getPluginFile(pluginName);
+            if (f != null) {
+                return f.delete();
+            } else {
+                System.out.println("Plugin for remove not found");
+            }
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
+        return false;
     }
+
+    public static int compareVersions(String v1, String v2) {
+        String[] components1 = v1.split("\\.");
+        String[] components2 = v2.split("\\.");
+        int length = Math.min(components1.length, components2.length);
+        for (int i = 0; i < length; i++) {
+            //int result = new Integer(components1[i]).compareTo(Integer.parseInt(components2[i]));
+            int result = ( new Integer(components1[i]) < Integer.parseInt(components2[i])) ? -1 : (( new Integer(components1[i]) == Integer.parseInt(components2[i])) ? 0 : 1);
+                    //new Integer(components1[i]).compareTo(Integer.parseInt(components2[i]));
+            if (result != 0) {
+                return result;
+            }
+        }
+        return components1.length < components2.length ? -1: (components1.length == components2.length ? 0 : 1);
+    }
+
+    private static File getPluginFile(String pluginName) {
+        loadProperties();
+        try {
+            ArrayList<File> jars = FileDriver.listFiles(pluginDir, ".jar");
+            for (File f : jars) {
+                try {
+/*                    URL jarURL = f.toURI().toURL();
+                    JarFile jf = new JarFile(f);
+                    Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
+                    jf.close();
+                    if (!IRemoteStorageClient.class.isAssignableFrom(cl)) {
+                        System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + IRemoteStorageClient.class + "\' must implement " + IRemoteStorageClient.class.getCanonicalName());
+                        continue;
+                    }
+                    String clPluginName = cl.getSimpleName();
+                    if (pluginName.equals(clPluginName)) {
+                        return f;
+                    }*/
+
+                    if (f.getCanonicalPath().contains(pluginName+".jar")) {
+                        return f;
+                    }
+
+                } catch (AbstractMethodError ame) {
+                    //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
+                    System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
+                } catch (IncompatibleClassChangeError ice) {
+                    System.out.println("Plugin manager: can't get plugin " + f.getAbsolutePath());
+                    System.out.println(ice.getLocalizedMessage());
+                    continue;
+                }
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
 }

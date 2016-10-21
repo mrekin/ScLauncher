@@ -157,6 +157,7 @@ public class PluginRepoManager {
                 props = repoPlugin.getPluginObj().getDefaultProperties();
                 repoPlugin.getPluginObj().connect(props.getProperty("user"), props.getProperty("pass"), props.getProperty("URL"));
                 plugins.addAll((ArrayList<Plugin>) repoPlugin.getPluginObj().getPluginsList());
+
             } catch (Exception e) {
                 System.out.println("RepoClient connecting: " + e.getLocalizedMessage());
             }

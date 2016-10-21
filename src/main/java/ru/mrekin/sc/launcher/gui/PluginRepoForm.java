@@ -64,9 +64,14 @@ public class PluginRepoForm extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
-                    PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
+                    if(plugins.get(table.getSelectedRow()).isInstalled()){
+                        PluginManager.getInstance().update(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
+                    }
+                    else{
+                        PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
+                        launch();
+                        }
                     //PluginManager.getInstance().loadInstalledPlugins();
-                    launch();
                 }
             }
         });
@@ -228,12 +233,14 @@ public class PluginRepoForm extends JFrame {
                     plugins.get(rowIndex).getPluginVersions().keySet().toArray(array);
                     //array = new String[]{"1", "2", "3"};
                     JComboBox box = new JComboBox(array);
+                    box.setSelectedIndex(array.length - 1);
                     table.getColumnModel().getColumn(columnIndex).setCellEditor(new DefaultCellEditor(box));
                     DefaultTableCellRenderer renderer =
                             new DefaultTableCellRenderer();
                     renderer.setToolTipText("Click for combo box");
                     renderer.setBackground(Color.LIGHT_GRAY);
-                    if (plugins.get(rowIndex).isInstalled() && plugins.get(rowIndex).getPluginVersion().equals(plugins.get(rowIndex).getLatestVersion())) {
+                    //                   if (plugins.get(rowIndex).isInstalled() && plugins.get(rowIndex).getPluginVersion().equals(plugins.get(rowIndex).getLatestVersion())) {
+                    if (plugins.get(rowIndex).isInstalled() && PluginManager.compareVersions(plugins.get(rowIndex).getPluginVersion(), plugins.get(rowIndex).getLatestVersion()) >= 0) {
                         renderer.setForeground(Color.GREEN);
                     } else {
                         renderer.setForeground(Color.RED);
@@ -247,11 +254,13 @@ public class PluginRepoForm extends JFrame {
                     return selectedValues[rowIndex];
                 }
                 case 3:
-                    return plugins.get(rowIndex).getRepository();
+                    String selectedVer = (String) table.getValueAt(rowIndex, 2);
+                    return plugins.get(rowIndex).getPluginVersions().get(selectedVer);
                 default:
                     return "Something goes wrong";
             }
         }
+
 
         /*
                 @Override

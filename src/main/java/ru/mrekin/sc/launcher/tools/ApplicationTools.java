@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.PluginManager;
 import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -14,37 +15,79 @@ import java.util.ArrayList;
  */
 public class ApplicationTools {
     final static Logger logger = LoggerFactory.getLogger(ApplicationTools.class);
+    static ArrayList<Command> commands = new ArrayList<Command>();
+    static Command cmd = new Command();
 
     public static boolean execute(String[] args) {
-        String command = "";
         logger.trace("Starting execute command");
         ArrayList<String> arguments = new ArrayList<String>(1);
+
+
         if (args.length > 0) {
-            command = args[0];
-            logger.trace("Command: " + command);
+
+            for (int i = 0; i < args.length; i++) {
+                if (args[i].startsWith("--")) {
+/*                    if(!"".equals(cmd.command) && cmd.command != null){
+                        commands.add(cmd);
+                    }
+  */
+                    cmd = new Command();
+                    commands.add(cmd);
+                    cmd.command = args[i];
+                    logger.trace("Command: " + cmd.command);
+                } else {
+                    cmd.commandArgs.add(args[i]);
+                }
+
+
+            }
         } else {
             return false;
         }
-        if (args.length > 1) {
-            for (int i = 1; i < args.length; i++) {
-                arguments.add(args[i]);
-            }
-        }
+
 // Prepare directories for SCL usage
-        if ("--prepare".equals(command)) {
-            logger.trace("--prepare found");
-            if (arguments.size() == 0) {
-                logger.trace("No arguments found");
-                return true;
+
+        for (Command cmd : commands) {
+            // prepare application for SClauncher
+            if ("--prepare".equals(cmd.command)) {
+                logger.trace("--prepare found");
+                if (arguments.size() == 0) {
+                    logger.trace("No arguments found");
+                    return true;
+                }
+                if ("app".equals(arguments.get(0)) || ("application".equals(arguments.get(0)))) {
+                    logger.trace("Start prepeare application");
+                    ApplicationPrepare.appPrepare("./");
+                    return false;
+                }
+
+                // force update settings (on SCLauncher update usually)
+            } else if ("--forceSettings".equals(cmd.command)) {
+                System.setProperty("ru.mrekin.sc.sclauncher.forceSettings", "true");
+           //     return true;
+                // delete plugin on restart
+            } else if ("--deletePlugin".equals(cmd.command)) {
+                if (cmd.commandArgs.size() == 0 || cmd.commandArgs.get(0) == null) {
+                    logger.trace("Plugin name for delete not specified!");
+                    return true;
+                }
+                if (PluginManager.remove(cmd.commandArgs.get(0))) {
+                    logger.trace("Plugin " + cmd.commandArgs.get(0) + " removed");
+                }
+         //       return true;
             }
-            if ("app".equals(arguments.get(0)) || ("application".equals(arguments.get(0)))) {
-                logger.trace("Start prepeare application");
-                ApplicationPrepare.appPrepare("./");
-                return false;
+
+            else if ("--installPlugin".equals(cmd.command)) {
+                if (cmd.commandArgs.size() == 0 || cmd.commandArgs.get(0) == null) {
+                    logger.trace("Plugin name for install not specified!");
+                    return true;
+                }
+                PluginManager.getInstance().getAllPlugins();
+                Plugin pl = PluginManager.getInstance().getPluginByName(cmd.commandArgs.get(0));
+                PluginManager.getInstance().install(pl,cmd.commandArgs.get(1));
+           //     return true;
             }
-        } else if ("--forceSettings".equals(command)) {
-            System.setProperty("ru.mrekin.sc.sclauncher.forceSettings", "true");
-            return true;
+
         }
 
         return true;
@@ -79,8 +122,11 @@ public class ApplicationTools {
             for (Plugin plugin : PluginManager.getInstance().getAllPlugins()) {
                 if (plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     installed = plugin.isInstalled();
-                    logger.trace("Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
-                    break;
+                    if (plugin.isInstalled() && PluginManager.compareVersions(plugin.getPluginVersion(), plugin.getLatestVersion()) < 0) {
+                        TrayPopup.displayMessage("New version of "+ plugin.getPluginSimpleName() + " plugin avaliable!");
+                        logger.trace("Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
+                        break;
+                    }
                 }
             }
             if (installed) {
@@ -108,5 +154,10 @@ public class ApplicationTools {
 
         }
 
+    }
+
+    static class Command {
+        public String command;
+        public ArrayList<String> commandArgs = new ArrayList<String>();
     }
 }
