@@ -8,6 +8,8 @@ import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 /**
@@ -123,7 +125,6 @@ public class ApplicationTools {
                 if (plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     installed = plugin.isInstalled();
                     if (plugin.isInstalled() && PluginManager.compareVersions(plugin.getPluginVersion(), plugin.getLatestVersion()) < 0) {
-                        TrayPopup.displayMessage("New version of "+ plugin.getPluginSimpleName() + " plugin avaliable!");
                         logger.trace("Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
                         break;
                     }

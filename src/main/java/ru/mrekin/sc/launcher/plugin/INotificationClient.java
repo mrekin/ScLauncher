@@ -27,5 +27,7 @@ public interface INotificationClient {
 
     public Properties getDefaultProperties();
 
+    public void setMessageService(INotificationService ins);
+
 
 }

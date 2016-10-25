@@ -27,10 +27,21 @@ public class PluginRepoForm extends JFrame {
     List<Plugin> plugins;
     JScrollPane jspane;
     JPanel tablePanel;
+    private static PluginRepoForm instance = null;
 
-    public PluginRepoForm() {
+    private PluginRepoForm() {
+        instance = this;
         init();
         launch();
+    }
+
+    public static PluginRepoForm getInstance(){
+        if (instance != null) {
+
+            return instance;
+        } else {
+            return new PluginRepoForm();
+        }
     }
 
     private void init() {

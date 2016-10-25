@@ -2,6 +2,7 @@ package ru.mrekin.sc.launcher;
 
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.PluginManager;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
@@ -28,10 +29,19 @@ public class Launch {
         }
         if (isStart) {
             //launch
-            SettingsManager.updateLocalSettings();
-            SettingsManager.getInstance();
-            ApplicationTools.prepareToStart();
-            AppManager.getInstance();
+          Thread th =  new Thread(){
+                @Override
+                public void run() {
+                    SettingsManager.updateLocalSettings();
+                    SettingsManager.getInstance();
+                    ApplicationTools.prepareToStart();
+                    AppManager.getInstance();
+                    PluginManager.getInstance().checkNewPluginVersions();
+
+                }
+            };
+            th.start();
+
 
             //Checking if need to update launcher
             if ("true".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
@@ -43,7 +53,7 @@ public class Launch {
 
 
             //Launching launcher :)
-            LauncherGui gui = new LauncherGui();
+            LauncherGui.getInstance();
 
 
         }

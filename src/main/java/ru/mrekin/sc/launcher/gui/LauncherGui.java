@@ -34,17 +34,19 @@ public class LauncherGui extends JFrame {
     JMenuBar menuBar;
     JMenu pluginMenu, settingsMenu, helpMenu;
     JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem;
-    PluginRepoForm pluginRepoForm;
+    //PluginRepoForm pluginRepoForm;
     SettingsForm settingsForm;
 
     public LauncherGui() {
         super("SC launcher " + SettingsManager.getInstance().getPropertyByName("Application.version"));
+        System.out.println("New gui!");
+        instance = this;
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         init();
-        launch();
+        //launch();
         instance = this;
     }
 
@@ -94,12 +96,11 @@ public class LauncherGui extends JFrame {
         pluginRepoMenuItem.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                if (pluginRepoForm == null) {
-                    pluginRepoForm = new PluginRepoForm();
-                } else if (!pluginRepoForm.isVisible()) {
-                    pluginRepoForm = new PluginRepoForm();
+                if (!PluginRepoForm.getInstance().isVisible()) {
+                    PluginRepoForm.getInstance().setVisible(true);;
                 }
-                pluginRepoForm.setEnabled(true);
+                PluginRepoForm.getInstance().setEnabled(true);
+
             }
         });
 

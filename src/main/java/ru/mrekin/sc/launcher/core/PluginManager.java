@@ -1,9 +1,13 @@
 package ru.mrekin.sc.launcher.core;
 
+import ru.mrekin.sc.launcher.gui.LauncherGui;
+import ru.mrekin.sc.launcher.gui.PluginRepoForm;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -29,6 +33,7 @@ public class PluginManager {
         loadProperties();
         load();
         instance = this;
+        LauncherGui.getInstance().launch();
     }
 
     public static PluginManager getInstance() {
@@ -46,6 +51,7 @@ public class PluginManager {
         loadInstalledPlugins();
         loadAvaliablePlugins();
         //loadAvaliablePlugins();
+
     }
 
     public void loadInstalledPlugins() {
@@ -180,6 +186,7 @@ public class PluginManager {
     }
 
     public ArrayList<Plugin> getAllPlugins() {
+
         for (Plugin pl : avaliabledPlugins) {
             if (!installedPlugins.contains(pl)) {
                 installedPlugins.add(pl);
@@ -187,6 +194,34 @@ public class PluginManager {
         }
 
         return installedPlugins;
+    }
+
+    public void checkNewPluginVersions() {
+        if(!avaliablePluginsLoaded){
+            loadAvaliablePlugins();
+        }
+        ArrayList<Plugin> plugins = getAllPlugins();
+        StringBuffer sb = new StringBuffer();
+        for(Plugin pl : plugins){
+
+            if(compareVersions(pl.getPluginVersion(),pl.getLatestVersion())==-1){
+                if(sb.length()!=0){
+                    sb.append("\n");
+                }
+                System.out.println(pl.getPluginVersion()+" " +pl.getLatestVersion());
+                sb.append("New version of "+ pl.getPluginSimpleName() + " plugin avaliable!");
+            }
+        }
+        if(sb.length()!=0){
+            MouseAdapter ma = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    PluginRepoForm.getInstance().setEnabled(true);
+                    PluginRepoForm.getInstance().setVisible(true);
+                }
+            };
+            TrayPopup.displayMessage(sb.toString(),ma);
+        }
     }
 
     public void install(Plugin plugin, String version) {
@@ -203,7 +238,7 @@ public class PluginManager {
             @Override
             public void run() {
                 try {
-                    sleep(5000);
+                    sleep(3000);
 
                 String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName +  " --installPlugin " + plName + " " + targetVersion;
                 System.out.println(command);

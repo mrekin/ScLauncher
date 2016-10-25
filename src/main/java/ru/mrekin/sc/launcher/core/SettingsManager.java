@@ -4,6 +4,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
+import ru.mrekin.sc.launcher.gui.LauncherGui;
 
 import java.io.*;
 import java.util.*;
@@ -40,7 +41,7 @@ public class SettingsManager {
         //TODO Need to use XMLConfiguration for config management, Properties not very usefull
         xmlConfiguration = loadXMLConfiguration(settings);
 
-
+      //  LauncherGui.getInstance().launch();
     }
 
     private XMLConfiguration loadXMLConfiguration(XMLConfiguration defaultProperties) {
@@ -91,6 +92,7 @@ public class SettingsManager {
 
 
     public static SettingsManager getInstance() {
+
         if (instance != null) {
 
             return instance;
