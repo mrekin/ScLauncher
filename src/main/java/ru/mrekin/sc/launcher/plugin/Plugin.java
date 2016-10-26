@@ -10,7 +10,7 @@ import java.util.HashMap;
  */
 public class Plugin {
 
-    private static String pluginName = "";
+    private String pluginName = "";
     private String pluginSimpleName = "";
     private String pluginVersion = "";
     private HashMap<String, String> pluginVersions = null;
@@ -20,7 +20,7 @@ public class Plugin {
     private String repository = "";
 
 
-    public static String getPluginName() {
+    public String getPluginName() {
         return pluginName;
     }
 

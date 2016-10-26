@@ -39,3 +39,10 @@
 1. Fixed plugin support with multiple plugin versions
 2. Added tray notifications
 =========================================
+=============Version 0.4.0===============
+1. Fixed plugin support with multiple plugins
+2. Fixed plugin form with multiple plugins
+3. Fixed bug in plugin naming
+4. Added support for notification plugins (need to redisign some things). 
+5. MQ Notification plugin added
+=========================================

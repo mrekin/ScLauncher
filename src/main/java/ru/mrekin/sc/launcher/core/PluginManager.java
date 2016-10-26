@@ -2,7 +2,9 @@ package ru.mrekin.sc.launcher.core;
 
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.gui.PluginRepoForm;
+import ru.mrekin.sc.launcher.gui.SettingsForm;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
+import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
@@ -15,6 +17,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -72,8 +76,8 @@ public class PluginManager {
                         if (p.getPluginPath() != null && p.getPluginPath().equals(jarURL)) {
                             installed = true;
                             //
-                            p.getPluginObj().disconnect();
-                            p.setPluginObj(p.getPluginObj().getClass().newInstance());
+                            if(p.getPluginObj()!=null) {p.getPluginObj().disconnect();}
+                            //p.setPluginObj(p.getPluginObj().getClass().newInstance());
                             boolean is = p.getPluginObj().connect();
                             installedPlugins.add(p);
                             break;
@@ -85,36 +89,49 @@ public class PluginManager {
 
                     JarFile jf = new JarFile(f);
 
-                    Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
-                    jf.close();
-                    if (!IRemoteStorageClient.class.isAssignableFrom(cl)) {
-                        System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IRemoteStorageClient.class.getCanonicalName());
-                        continue;
-                    }
-                    Plugin plugin = new Plugin();
-                    IRemoteStorageClient instance = null;
-                    try {
-                        instance = (IRemoteStorageClient) cl.newInstance();
 
 
-                        pluginName = "".equals(instance.getPluginName()) ? cl.getSimpleName() : instance.getPluginName();
-                        pluginVersion = "".equals(instance.getPluginVersion()) ? "-1" : instance.getPluginVersion();
-                    } catch (AbstractMethodError ame) {
-                        //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
-                        System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
-                    } catch (IncompatibleClassChangeError ice) {
-                        System.out.println("Plugin manager: can't load plugin " + f.getAbsolutePath());
-                        System.out.println(ice.getLocalizedMessage());
+                    Class  cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
+
+                    if (cl!=null && IRemoteStorageClient.class.isAssignableFrom(cl)) {
+                        jf.close();
+                        Plugin plugin = new Plugin();
+                        IRemoteStorageClient instance = null;
+                        try {
+                            instance = (IRemoteStorageClient) cl.newInstance();
+                            pluginName = "".equals(instance.getPluginName()) ? cl.getSimpleName() : instance.getPluginName();
+                            pluginVersion = "".equals(instance.getPluginVersion()) ? "-1" : instance.getPluginVersion();
+                        } catch (AbstractMethodError ame) {
+                            //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
+                            System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
+                        } catch (IncompatibleClassChangeError ice) {
+                            System.out.println("Plugin manager: can't load plugin " + f.getAbsolutePath());
+                            System.out.println(ice.getLocalizedMessage());
+                            continue;
+                        }
+                        if (cl!=null && INotificationClient.class.isAssignableFrom(cl)) {
+                            ((INotificationClient)instance).setMessageService(new TrayPopup());
+                            Properties props =((INotificationClient)instance).getDefaultProperties();
+                            for(Object key: props.keySet()){
+                                if(!SettingsManager.getInstance().getXmlConfiguration().containsKey((String)key)){
+                                    SettingsManager.getInstance().getXmlConfiguration().setProperty((String)key,props.getProperty((String)key));
+                                }else{
+                                    props.setProperty((String)key,(String)SettingsManager.getInstance().getXmlConfiguration().getProperty((String)key));
+                                }
+                            }
+                            SettingsManager.getInstance().save();
+                            ((INotificationClient)instance).loadProperties(props);
+                        }
+                        plugin.setPluginName(pluginName);
+                        plugin.setPluginVersion(pluginVersion);
+                        plugin.setPluginObj(instance);
+                        plugin.setPluginPath(f.toURI().toURL());
+                        plugin.setInstalled(true);
+                        plugin.setPluginSimpleName(f.getName().replace(".jar", ""));
+                        plugin.setRepository("");
+                        installedPlugins.add(plugin);
                         continue;
                     }
-                    plugin.setPluginName(pluginName);
-                    plugin.setPluginVersion(pluginVersion);
-                    plugin.setPluginObj(instance);
-                    plugin.setPluginPath(f.toURI().toURL());
-                    plugin.setInstalled(true);
-                    plugin.setPluginSimpleName(f.getName().replace(".jar", ""));
-                    plugin.setRepository("");
-                    installedPlugins.add(plugin);
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -203,7 +220,9 @@ public class PluginManager {
         ArrayList<Plugin> plugins = getAllPlugins();
         StringBuffer sb = new StringBuffer();
         for(Plugin pl : plugins){
-
+            if(!pl.isInstalled()){
+                continue;
+            }
             if(compareVersions(pl.getPluginVersion(),pl.getLatestVersion())==-1){
                 if(sb.length()!=0){
                     sb.append("\n");
@@ -268,18 +287,23 @@ public class PluginManager {
     }
 
     public static int compareVersions(String v1, String v2) {
-        String[] components1 = v1.split("\\.");
-        String[] components2 = v2.split("\\.");
-        int length = Math.min(components1.length, components2.length);
-        for (int i = 0; i < length; i++) {
-            //int result = new Integer(components1[i]).compareTo(Integer.parseInt(components2[i]));
-            int result = ( new Integer(components1[i]) < Integer.parseInt(components2[i])) ? -1 : (( new Integer(components1[i]) == Integer.parseInt(components2[i])) ? 0 : 1);
-                    //new Integer(components1[i]).compareTo(Integer.parseInt(components2[i]));
-            if (result != 0) {
-                return result;
+        try {
+            String[] components1 = v1.split("\\.");
+            String[] components2 = v2.split("\\.");
+            int length = Math.min(components1.length, components2.length);
+            for (int i = 0; i < length; i++) {
+                //int result = new Integer(components1[i]).compareTo(Integer.parseInt(components2[i]));
+                int result = (new Integer(components1[i]) < Integer.parseInt(components2[i])) ? -1 : ((new Integer(components1[i]) == Integer.parseInt(components2[i])) ? 0 : 1);
+                //new Integer(components1[i]).compareTo(Integer.parseInt(components2[i]));
+                if (result != 0) {
+                    return result;
+                }
             }
+            return components1.length < components2.length ? -1 : (components1.length == components2.length ? 0 : 1);
+        }catch (Exception e){
+            System.out.println(e.getLocalizedMessage());
+            return 1;
         }
-        return components1.length < components2.length ? -1: (components1.length == components2.length ? 0 : 1);
     }
 
     private static File getPluginFile(String pluginName) {

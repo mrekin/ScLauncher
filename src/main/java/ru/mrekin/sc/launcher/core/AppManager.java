@@ -2,6 +2,7 @@ package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
+import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
@@ -84,7 +85,7 @@ public class AppManager {
 
         for (Plugin pl : plugins) {
 
-            if (pl.isInstalled()) {
+            if (pl.isInstalled() && pl.getPluginObj() instanceof IRemoteStorageClient && !(pl.getPluginObj() instanceof INotificationClient)) {
                 ArrayList<Application> apps = new ArrayList<Application>(1);
                 try {
                     pl.getPluginObj().connect();

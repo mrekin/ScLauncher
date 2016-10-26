@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * Created by MRekin on 02.09.2014.
  */
-public interface INotificationClient {
+public interface INotificationClient extends IRemoteStorageClient {
 
     public boolean loadProperties(Properties props) throws Exception;
 

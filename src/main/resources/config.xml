@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
+
     <MandatoryPlugins force="true">scl-svn-plugin</MandatoryPlugins>
+
     <SVNUser force="true">submitter</SVNUser>
     <AutoUpdaterServerURL>http://bssdev:8888/SCLauncher/</AutoUpdaterServerURL>
     <AutoUpdaterEnabled>true</AutoUpdaterEnabled>

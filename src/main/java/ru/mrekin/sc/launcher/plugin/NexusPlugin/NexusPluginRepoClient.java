@@ -126,7 +126,7 @@ public class NexusPluginRepoClient implements IPluginRepoClient {
         return connection.getInputStream();
     }
 
-    @Override
+
     public Properties getDefaultProperties() {
         Properties properties = new Properties();
         properties.setProperty("user", "");
@@ -136,12 +136,11 @@ public class NexusPluginRepoClient implements IPluginRepoClient {
         return properties;
     }
 
-    @Override
     public String getRepoPluginName() {
         return name;
     }
 
-    @Override
+
     public String getRepoPluginVersion() {
         return version;
     }

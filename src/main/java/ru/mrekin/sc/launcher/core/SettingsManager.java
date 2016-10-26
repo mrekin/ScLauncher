@@ -81,6 +81,14 @@ public class SettingsManager {
         return new File(LauncherConstants.SettingsFileName2);
     }
 
+    public void save(){
+        try {
+            xmlConfiguration.save(getLocalSettingsFile());
+        }catch (ConfigurationException ce){
+            System.out.println(ce.getLocalizedMessage());
+        }
+    }
+
     public XMLConfiguration getXmlConfiguration() {
         return xmlConfiguration;
     }
