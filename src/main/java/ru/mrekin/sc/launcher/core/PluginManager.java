@@ -286,6 +286,26 @@ public class PluginManager {
         return false;
     }
 
+    public void removeWithRestart(Plugin plugin) {
+        TrayPopup.displayMessage("SCLauncher will restart to remove plugin");
+        final String  plName = plugin.getPluginSimpleName();
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    sleep(3000);
+
+                    String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName;
+                    System.out.println(command);
+                    Runtime.getRuntime().exec(command);
+                }catch (Exception e){
+                    System.out.println(e.getLocalizedMessage());
+                }
+                System.exit(0);
+            }
+        }.run();
+    }
+
     public static int compareVersions(String v1, String v2) {
         try {
             String[] components1 = v1.split("\\.");

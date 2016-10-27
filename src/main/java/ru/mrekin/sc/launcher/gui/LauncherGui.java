@@ -14,8 +14,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,10 +43,41 @@ public class LauncherGui extends JFrame {
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        TrayPopup.createGUI();
+
+        MouseAdapter ma = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(getState()==Frame.ICONIFIED) {
+                    setVisible(true);
+                    setEnabled(true);
+                    setState(Frame.NORMAL);
+                }else{
+                    setVisible(false);
+                    setEnabled(false);
+                    setState(Frame.ICONIFIED);
+                }
+            }
+        };
+        TrayPopup.getTrayIcon().addMouseListener(ma);
+        this.addWindowStateListener(new WindowStateListener() {
+            public void windowStateChanged(WindowEvent e) {
+                if (e.getNewState()==Frame.ICONIFIED){
+                    setVisible(false);
+                    setEnabled(false);
+                    TrayPopup.displayMessage("SCLauncher still running");
+                }else {
+                    setVisible(true);
+                    setEnabled(true);
+                }
+            }
+        });
+
+
         setLocationRelativeTo(null);
         init();
         //launch();
-        instance = this;
+
     }
 
     public static LauncherGui getInstance() {
@@ -242,6 +272,7 @@ public class LauncherGui extends JFrame {
 
         getContentPane().add(statusPanel, BorderLayout.SOUTH);
         setVisible(true);
+        setEnabled(true);
         setIconImage(mainIcon);
         pack();
     }

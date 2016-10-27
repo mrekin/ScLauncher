@@ -17,6 +17,11 @@ import java.net.*;
 public class TrayPopup implements INotificationService {
 
     private static final String APPLICATION_NAME = "SClauncher";
+
+    public static TrayIcon getTrayIcon() {
+        return trayIcon;
+    }
+
     private static TrayIcon trayIcon = null;
     private static String message;
 
@@ -92,7 +97,7 @@ public class TrayPopup implements INotificationService {
     }
 
 
-    public static void displayMessage(String message, MouseListener ml) {
+    public static void displayMessage(final String message, MouseListener ml) {
         TrayPopup.message = message;
         final MouseListener fml = ml;
 
@@ -105,7 +110,9 @@ public class TrayPopup implements INotificationService {
                 }if(tml!=null){
                     trayIcon.addMouseListener(tml);
                 }
-                trayIcon.displayMessage(APPLICATION_NAME, TrayPopup.message, TrayIcon.MessageType.INFO);
+                if(message!=null) {
+                    trayIcon.displayMessage(APPLICATION_NAME, TrayPopup.message, TrayIcon.MessageType.INFO);
+                }
             }
 
             public Thread setMouseListener(MouseListener ml){
