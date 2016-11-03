@@ -1,9 +1,5 @@
 package ru.mrekin.sc.launcher.plugin;
 
-import ru.mrekin.sc.launcher.core.Application;
-
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Properties;
 
 /**

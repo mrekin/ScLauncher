@@ -27,8 +27,9 @@ public class AppManager {
     ArrayList<Application> appList;
 
     private AppManager() {
-        init();
         instance = this;
+        init();
+
     }
 
     public static AppManager getInstance() {

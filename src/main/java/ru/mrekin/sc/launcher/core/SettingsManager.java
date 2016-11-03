@@ -4,10 +4,11 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
-import ru.mrekin.sc.launcher.gui.LauncherGui;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Properties;
 
 /**
  * Created by MRekin on 27.08.2014.
@@ -41,7 +42,7 @@ public class SettingsManager {
         //TODO Need to use XMLConfiguration for config management, Properties not very usefull
         xmlConfiguration = loadXMLConfiguration(settings);
 
-      //  LauncherGui.getInstance().launch();
+        //  LauncherGui.getInstance().launch();
     }
 
     private XMLConfiguration loadXMLConfiguration(XMLConfiguration defaultProperties) {
@@ -81,10 +82,10 @@ public class SettingsManager {
         return new File(LauncherConstants.SettingsFileName2);
     }
 
-    public void save(){
+    public void save() {
         try {
             xmlConfiguration.save(getLocalSettingsFile());
-        }catch (ConfigurationException ce){
+        } catch (ConfigurationException ce) {
             System.out.println(ce.getLocalizedMessage());
         }
     }

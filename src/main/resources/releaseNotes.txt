@@ -46,3 +46,8 @@
 4. Added support for notification plugins (need to redisign some things). 
 5. MQ Notification plugin added
 =========================================
+=============Version 0.4.1===============
+1. Fixed plugin loading (few problems not solved)
+2. Now SCLauncher minimized to tray
+3. Delete plugin button now works, but mandatory plugin will be installed at start up
+=========================================

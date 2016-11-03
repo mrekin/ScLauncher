@@ -2,16 +2,11 @@ package ru.mrekin.sc.launcher.plugin.ApacheListingDirectory;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.w3c.dom.NodeList;
 import ru.mrekin.sc.launcher.plugin.IPluginRepoClient;
-import ru.mrekin.sc.launcher.plugin.NexusPlugin.NexusXmlResources;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;

@@ -36,7 +36,7 @@ public class LauncherGui extends JFrame {
     //PluginRepoForm pluginRepoForm;
     SettingsForm settingsForm;
 
-    public LauncherGui() {
+    private LauncherGui() {
         super("SC launcher " + SettingsManager.getInstance().getPropertyByName("Application.version"));
         System.out.println("New gui!");
         instance = this;
@@ -48,11 +48,11 @@ public class LauncherGui extends JFrame {
         MouseAdapter ma = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(getState()==Frame.ICONIFIED) {
+                if (getState() == Frame.ICONIFIED) {
                     setVisible(true);
                     setEnabled(true);
                     setState(Frame.NORMAL);
-                }else{
+                } else {
                     setVisible(false);
                     setEnabled(false);
                     setState(Frame.ICONIFIED);
@@ -62,11 +62,11 @@ public class LauncherGui extends JFrame {
         TrayPopup.getTrayIcon().addMouseListener(ma);
         this.addWindowStateListener(new WindowStateListener() {
             public void windowStateChanged(WindowEvent e) {
-                if (e.getNewState()==Frame.ICONIFIED){
+                if (e.getNewState() == Frame.ICONIFIED) {
                     setVisible(false);
                     setEnabled(false);
                     TrayPopup.displayMessage("SCLauncher still running");
-                }else {
+                } else {
                     setVisible(true);
                     setEnabled(true);
                 }
@@ -99,6 +99,8 @@ public class LauncherGui extends JFrame {
             greenIcon = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResource("green.png")));
             redIcon = new ImageIcon(ImageIO.read(getClass().getClassLoader().getResource("red.png")));
 
+            PluginManager.getInstance().loadInstalledPlugins();
+
         } catch (
                 IOException ioe
                 )
@@ -127,7 +129,8 @@ public class LauncherGui extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 if (!PluginRepoForm.getInstance().isVisible()) {
-                    PluginRepoForm.getInstance().setVisible(true);;
+                    PluginRepoForm.getInstance().setVisible(true);
+                    ;
                 }
                 PluginRepoForm.getInstance().setEnabled(true);
 
@@ -155,7 +158,7 @@ public class LauncherGui extends JFrame {
         //TODO Need to add menu panel about page,tool for prepare apps for publishing, may be Help menu
         String appLocalVersionDef = "Need to install";
         //setContentPane(new Container());
-        PluginManager.getInstance().loadInstalledPlugins();
+
         AppManager.getInstance().loadLocalAppInfo();
         appList = AppManager.getInstance().getAppList();
         this.getContentPane().removeAll();
@@ -249,7 +252,7 @@ public class LauncherGui extends JFrame {
             connStatusFull = connStatusFull.concat(pl.getPluginSimpleName());
             connStatusFull = connStatusFull.concat(": ");
             try {
-                if (pl.getPluginObj().checkConnection()) {
+                if (pl.getPluginObj() != null && pl.getPluginObj().checkConnection()) {
                     connStatus = true;
                     connStatusFull = connStatusFull.concat("connected");
                 } else {

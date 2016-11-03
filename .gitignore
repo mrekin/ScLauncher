@@ -41,3 +41,4 @@ plugins/
 config.xml
 log.txt
 sc-launcher.i*
+src/main/resources/config.xml

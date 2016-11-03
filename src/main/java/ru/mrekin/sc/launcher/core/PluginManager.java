@@ -1,8 +1,6 @@
 package ru.mrekin.sc.launcher.core;
 
-import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.gui.PluginRepoForm;
-import ru.mrekin.sc.launcher.gui.SettingsForm;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
@@ -18,7 +16,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -34,10 +31,11 @@ public class PluginManager {
     private boolean avaliablePluginsLoaded = false;
 
     private PluginManager() {
+        instance = this;
         loadProperties();
         load();
-        instance = this;
-        LauncherGui.getInstance().launch();
+
+//        LauncherGui.getInstance().launch();
     }
 
     public static PluginManager getInstance() {
@@ -63,7 +61,7 @@ public class PluginManager {
         String mainClass = "";
         String pluginName = "";
         String pluginVersion = "";
-        ArrayList<Plugin> tempList = (ArrayList<Plugin>) installedPlugins.clone();
+        ArrayList<Plugin> alreadyInstalled = (ArrayList<Plugin>) installedPlugins.clone();
         installedPlugins = new ArrayList<Plugin>(1);
         boolean installed = false;
         try {
@@ -72,12 +70,15 @@ public class PluginManager {
                 try {
                     URL jarURL = f.toURI().toURL();
                     installed = false;
-                    for (Plugin p : tempList) {
+                    for (Plugin p : alreadyInstalled) {
                         if (p.getPluginPath() != null && p.getPluginPath().equals(jarURL)) {
                             installed = true;
                             //
-                            if(p.getPluginObj()!=null) {p.getPluginObj().disconnect();}
-                            //p.setPluginObj(p.getPluginObj().getClass().newInstance());
+                            if (p.getPluginObj() != null) {
+                                p.getPluginObj().disconnect();
+                            } else {
+                                p.setPluginObj(p.getPluginObj().getClass().newInstance());
+                            }
                             boolean is = p.getPluginObj().connect();
                             installedPlugins.add(p);
                             break;
@@ -90,10 +91,9 @@ public class PluginManager {
                     JarFile jf = new JarFile(f);
 
 
+                    Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
 
-                    Class  cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
-
-                    if (cl!=null && IRemoteStorageClient.class.isAssignableFrom(cl)) {
+                    if (cl != null && IRemoteStorageClient.class.isAssignableFrom(cl)) {
                         jf.close();
                         Plugin plugin = new Plugin();
                         IRemoteStorageClient instance = null;
@@ -109,18 +109,18 @@ public class PluginManager {
                             System.out.println(ice.getLocalizedMessage());
                             continue;
                         }
-                        if (cl!=null && INotificationClient.class.isAssignableFrom(cl)) {
-                            ((INotificationClient)instance).setMessageService(new TrayPopup());
-                            Properties props =((INotificationClient)instance).getDefaultProperties();
-                            for(Object key: props.keySet()){
-                                if(!SettingsManager.getInstance().getXmlConfiguration().containsKey((String)key)){
-                                    SettingsManager.getInstance().getXmlConfiguration().setProperty((String)key,props.getProperty((String)key));
-                                }else{
-                                    props.setProperty((String)key,(String)SettingsManager.getInstance().getXmlConfiguration().getProperty((String)key));
+                        if (cl != null && INotificationClient.class.isAssignableFrom(cl)) {
+                            ((INotificationClient) instance).setMessageService(new TrayPopup());
+                            Properties props = ((INotificationClient) instance).getDefaultProperties();
+                            for (Object key : props.keySet()) {
+                                if (!SettingsManager.getInstance().getXmlConfiguration().containsKey((String) key)) {
+                                    SettingsManager.getInstance().getXmlConfiguration().setProperty((String) key, props.getProperty((String) key));
+                                } else {
+                                    props.setProperty((String) key, (String) SettingsManager.getInstance().getXmlConfiguration().getProperty((String) key));
                                 }
                             }
                             SettingsManager.getInstance().save();
-                            ((INotificationClient)instance).loadProperties(props);
+                            ((INotificationClient) instance).loadProperties(props);
                         }
                         plugin.setPluginName(pluginName);
                         plugin.setPluginVersion(pluginVersion);
@@ -203,35 +203,35 @@ public class PluginManager {
     }
 
     public ArrayList<Plugin> getAllPlugins() {
-
+        ArrayList<Plugin> tmp = (ArrayList<Plugin>)installedPlugins.clone();
         for (Plugin pl : avaliabledPlugins) {
             if (!installedPlugins.contains(pl)) {
-                installedPlugins.add(pl);
+                tmp.add(pl);
             }
         }
 
-        return installedPlugins;
+        return tmp;
     }
 
     public void checkNewPluginVersions() {
-        if(!avaliablePluginsLoaded){
+        if (!avaliablePluginsLoaded) {
             loadAvaliablePlugins();
         }
         ArrayList<Plugin> plugins = getAllPlugins();
         StringBuffer sb = new StringBuffer();
-        for(Plugin pl : plugins){
-            if(!pl.isInstalled()){
+        for (Plugin pl : plugins) {
+            if (!pl.isInstalled()) {
                 continue;
             }
-            if(compareVersions(pl.getPluginVersion(),pl.getLatestVersion())==-1){
-                if(sb.length()!=0){
+            if (compareVersions(pl.getPluginVersion(), pl.getLatestVersion()) == -1) {
+                if (sb.length() != 0) {
                     sb.append("\n");
                 }
-                System.out.println(pl.getPluginVersion()+" " +pl.getLatestVersion());
-                sb.append("New version of "+ pl.getPluginSimpleName() + " plugin avaliable!");
+                System.out.println(pl.getPluginVersion() + " " + pl.getLatestVersion());
+                sb.append("New version of " + pl.getPluginSimpleName() + " plugin avaliable!");
             }
         }
-        if(sb.length()!=0){
+        if (sb.length() != 0) {
             MouseAdapter ma = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -239,7 +239,7 @@ public class PluginManager {
                     PluginRepoForm.getInstance().setVisible(true);
                 }
             };
-            TrayPopup.displayMessage(sb.toString(),ma);
+            TrayPopup.displayMessage(sb.toString(), ma);
         }
     }
 
@@ -252,17 +252,17 @@ public class PluginManager {
     //TODO need to delete plugin with restarting scLauncher. No way to unload classes and release jar file.
     public void update(Plugin plugin, final String targetVersion) {
         TrayPopup.displayMessage("SCLauncher will restart to remove old version of plugin");
-        final String  plName = plugin.getPluginSimpleName();
-        new Thread(){
+        final String plName = plugin.getPluginSimpleName();
+        new Thread() {
             @Override
             public void run() {
                 try {
                     sleep(3000);
 
-                String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName +  " --installPlugin " + plName + " " + targetVersion;
-                System.out.println(command);
-                Runtime.getRuntime().exec(command);
-                }catch (Exception e){
+                    String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName + " --installPlugin " + plName + " " + targetVersion;
+                    System.out.println(command);
+                    Runtime.getRuntime().exec(command);
+                } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
                 }
                 System.exit(0);
@@ -288,8 +288,8 @@ public class PluginManager {
 
     public void removeWithRestart(Plugin plugin) {
         TrayPopup.displayMessage("SCLauncher will restart to remove plugin");
-        final String  plName = plugin.getPluginSimpleName();
-        new Thread(){
+        final String plName = plugin.getPluginSimpleName();
+        new Thread() {
             @Override
             public void run() {
                 try {
@@ -298,7 +298,7 @@ public class PluginManager {
                     String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName;
                     System.out.println(command);
                     Runtime.getRuntime().exec(command);
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.out.println(e.getLocalizedMessage());
                 }
                 System.exit(0);
@@ -320,7 +320,7 @@ public class PluginManager {
                 }
             }
             return components1.length < components2.length ? -1 : (components1.length == components2.length ? 0 : 1);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
             return 1;
         }
@@ -345,7 +345,7 @@ public class PluginManager {
                         return f;
                     }*/
 
-                    if (f.getCanonicalPath().contains(pluginName+".jar")) {
+                    if (f.getCanonicalPath().contains(pluginName + ".jar")) {
                         return f;
                     }
 

@@ -5,11 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.PluginManager;
 import ru.mrekin.sc.launcher.core.SettingsManager;
-import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 /**
@@ -66,7 +63,7 @@ public class ApplicationTools {
                 // force update settings (on SCLauncher update usually)
             } else if ("--forceSettings".equals(cmd.command)) {
                 System.setProperty("ru.mrekin.sc.sclauncher.forceSettings", "true");
-           //     return true;
+                //     return true;
                 // delete plugin on restart
             } else if ("--deletePlugin".equals(cmd.command)) {
                 if (cmd.commandArgs.size() == 0 || cmd.commandArgs.get(0) == null) {
@@ -76,18 +73,16 @@ public class ApplicationTools {
                 if (PluginManager.remove(cmd.commandArgs.get(0))) {
                     logger.trace("Plugin " + cmd.commandArgs.get(0) + " removed");
                 }
-         //       return true;
-            }
-
-            else if ("--installPlugin".equals(cmd.command)) {
+                //       return true;
+            } else if ("--installPlugin".equals(cmd.command)) {
                 if (cmd.commandArgs.size() == 0 || cmd.commandArgs.get(0) == null) {
                     logger.trace("Plugin name for install not specified!");
                     return true;
                 }
                 PluginManager.getInstance().getAllPlugins();
                 Plugin pl = PluginManager.getInstance().getPluginByName(cmd.commandArgs.get(0));
-                PluginManager.getInstance().install(pl,cmd.commandArgs.get(1));
-           //     return true;
+                PluginManager.getInstance().install(pl, cmd.commandArgs.get(1));
+                //     return true;
             }
 
         }

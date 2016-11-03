@@ -11,7 +11,10 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
@@ -32,7 +35,7 @@ public class PluginRepoForm extends JFrame {
         launch();
     }
 
-    public static PluginRepoForm getInstance(){
+    public static PluginRepoForm getInstance() {
         if (instance != null) {
 
             return instance;
@@ -72,13 +75,12 @@ public class PluginRepoForm extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 if (!(table.getSelectedRow() == -1)) {
-                    if(plugins.get(table.getSelectedRow()).isInstalled()){
+                    if (plugins.get(table.getSelectedRow()).isInstalled()) {
                         PluginManager.getInstance().update(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
-                    }
-                    else{
+                    } else {
                         PluginManager.getInstance().install(plugins.get(table.getSelectedRow()), (String) table.getValueAt(table.getSelectedRow(), 2));
                         launch();
-                        }
+                    }
                     //PluginManager.getInstance().loadInstalledPlugins();
                 }
             }

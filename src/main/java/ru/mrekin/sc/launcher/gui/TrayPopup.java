@@ -6,13 +6,12 @@ package ru.mrekin.sc.launcher.gui;
 
 import ru.mrekin.sc.launcher.plugin.INotificationService;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
-import java.lang.reflect.Method;
-import java.net.*;
+import java.net.URL;
 
 public class TrayPopup implements INotificationService {
 
@@ -73,7 +72,7 @@ public class TrayPopup implements INotificationService {
                 */
     }
 
-   public void displayMsg(String message) {
+    public void displayMsg(String message) {
 
         TrayPopup.displayMessage(message);
     }
@@ -88,7 +87,7 @@ public class TrayPopup implements INotificationService {
                 if (trayIcon == null) {
                     createGUI();
                 }
-                    trayIcon.displayMessage(APPLICATION_NAME, TrayPopup.message, TrayIcon.MessageType.INFO);
+                trayIcon.displayMessage(APPLICATION_NAME, TrayPopup.message, TrayIcon.MessageType.INFO);
 
             }
         };
@@ -101,21 +100,23 @@ public class TrayPopup implements INotificationService {
         TrayPopup.message = message;
         final MouseListener fml = ml;
 
-        Thread th = new Thread(){
+        Thread th = new Thread() {
             MouseListener tml = null;
+
             @Override
             public void run() {
                 if (trayIcon == null) {
                     createGUI();
-                }if(tml!=null){
+                }
+                if (tml != null) {
                     trayIcon.addMouseListener(tml);
                 }
-                if(message!=null) {
+                if (message != null) {
                     trayIcon.displayMessage(APPLICATION_NAME, TrayPopup.message, TrayIcon.MessageType.INFO);
                 }
             }
 
-            public Thread setMouseListener(MouseListener ml){
+            public Thread setMouseListener(MouseListener ml) {
                 tml = ml;
                 return this;
             }
@@ -123,5 +124,5 @@ public class TrayPopup implements INotificationService {
 
         //SwingUtilities.invokeLater(th);
         th.start();
-  }
+    }
 }

@@ -1,7 +1,6 @@
 package ru.mrekin.sc.launcher.core;
 
 
-import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.ApacheListingDirectory.ApacheListingDirectoryRepoClient;
 import ru.mrekin.sc.launcher.plugin.IPluginRepoClient;
 import ru.mrekin.sc.launcher.plugin.NexusPlugin.NexusPluginRepoClient;
@@ -227,7 +226,7 @@ public class PluginRepoManager {
             }
 
         }
-        LauncherGui.getInstance().launch();
+//        LauncherGui.getInstance().launch();
     }
 
 
