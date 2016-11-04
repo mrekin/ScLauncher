@@ -23,7 +23,7 @@ public class Launch {
 //      LauncherGui.getInstance();
         if (isStart) {
             //launch
- /*         Thread th =  new Thread(){
+         Thread th =  new Thread(){
                 @Override
                 public void run() {
                     SettingsManager.updateLocalSettings();
@@ -35,13 +35,13 @@ public class Launch {
                 }
             };
             th.start();
-*/
-            SettingsManager.updateLocalSettings();
+
+ /*           SettingsManager.updateLocalSettings();
             SettingsManager.getInstance();
             ApplicationTools.prepareToStart();
             AppManager.getInstance();
             PluginManager.getInstance().checkNewPluginVersions();
-
+*/
             //Checking if need to update launcher
             if ("true".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
                 String version = AutoUpdater.checkForUpdates();

@@ -98,7 +98,7 @@ public class TrayPopup implements INotificationService {
 
     public static void displayMessage(final String message, MouseListener ml) {
         TrayPopup.message = message;
-        final MouseListener fml = ml;
+//        final MouseListener fml = ml;
 
         Thread th = new Thread() {
             MouseListener tml = null;

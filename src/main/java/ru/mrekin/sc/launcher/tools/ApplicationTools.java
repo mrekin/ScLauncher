@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.PluginManager;
 import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -139,6 +140,7 @@ public class ApplicationTools {
                     logger.trace("Plugin " + plName + " not installed. Installing version " + plVersion);
                     PluginManager.getInstance().install(plugin, plVersion);
                     logger.trace("Plugin " + plName + ":" + plVersion + " installed");
+                    TrayPopup.displayMessage("Mandatory plugin " + plName + " installed\n It may require restart.");
                     avaliable = true;
                     break;
                 }
