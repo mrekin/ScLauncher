@@ -8,6 +8,11 @@ import ru.mrekin.sc.launcher.core.SettingsManager;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 
 /**
@@ -157,5 +162,22 @@ public class ApplicationTools {
     static class Command {
         public String command;
         public ArrayList<String> commandArgs = new ArrayList<String>();
+    }
+
+    public static boolean isAlreadyRunning() {
+        try {
+            final RandomAccessFile file = new RandomAccessFile(new File("lock"), "rw");
+            final FileLock lock = file.getChannel().tryLock();
+            System.out.println("Got the lock? "+(null != lock));
+            if(null == lock){
+                return true;
+            }
+        } catch (FileNotFoundException e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

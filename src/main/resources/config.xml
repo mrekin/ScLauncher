@@ -14,6 +14,6 @@
     <ApplicationShowReleaseNotes>true</ApplicationShowReleaseNotes>
     <PluginDirectory>plugins/</PluginDirectory>
     <SVNPassword force="true">subpass</SVNPassword>
-    <PluginRepoServerURL force="true">http://sclauncher.ru/nexus/repository/maven-releases/ru/mrekin/sc/scl-plugins/
+    <PluginRepoServerURL force="true">http://sclauncher.ru/ftprepo/ru/mrekin/sc/scl-plugins/
     </PluginRepoServerURL>
 </configuration>

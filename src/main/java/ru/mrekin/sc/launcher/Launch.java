@@ -15,6 +15,10 @@ public class Launch {
 
     public static void main(String[] args) {
 
+        if(ApplicationTools.isAlreadyRunning()){
+            System.exit(0);
+        }
+
         boolean isStart = true;
         if (args.length > 0) {
             //execute tools
@@ -57,5 +61,7 @@ public class Launch {
 
         }
     }
+
+
 
 }

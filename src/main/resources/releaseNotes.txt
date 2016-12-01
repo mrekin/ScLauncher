@@ -51,3 +51,7 @@
 2. Now SCLauncher minimized to tray
 3. Delete plugin button now works, but mandatory plugin will be installed at start up
 =========================================
+=============Version 0.4.2===============
+1. Fixed plugin repo URL.
+2. Now SCLauncher not started if already running.
+=========================================
