@@ -5,7 +5,7 @@
     <groupId>ru.mrekin.sc</groupId>
     <artifactId>sc-launcher</artifactId>
     <packaging>jar</packaging>
-    <version>0.4.2</version>
+    <version>0.4.3</version>
     <description>Tool for launching app</description>
 
 <properties>
@@ -93,12 +93,12 @@
         <name>Nexus repo</name>
         <url>http://sclauncher.ru/nexus/content/repositories/releases</url>
 
-        <releases>
+        <!--releases>
           <enabled>true</enabled>
         </releases>
         <snapshots>
           <enabled>true</enabled>
-        </snapshots>
+        </snapshots-->
       </repository>
 
 
@@ -117,8 +117,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
 

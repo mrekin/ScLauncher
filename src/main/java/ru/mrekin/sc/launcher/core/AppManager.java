@@ -2,6 +2,7 @@ package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
+import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
@@ -71,10 +72,11 @@ public class AppManager {
     public void loadLocalAppInfo() {
         FileDriver.getInstance().loadAppsSettings();
         appList = FileDriver.getInstance().getAppList();
+        System.out.println("Local appList loaded: " + appList.size());
     }
 
     public ArrayList<Application> getAppList() {
-        updateAppList();
+        // updateAppList();
         return appList;
     }
 
@@ -82,33 +84,44 @@ public class AppManager {
      * Method fill appList by apps from remote storages
      */
     public void updateAppList() {
+
         ArrayList<Plugin> plugins = PluginManager.getInstance().getPlugins();
+        Runnable task2 = () -> {
+            for (Plugin pl : plugins) {
 
-        for (Plugin pl : plugins) {
 
-            if (pl.isInstalled() && pl.getPluginObj() instanceof IRemoteStorageClient && !(pl.getPluginObj() instanceof INotificationClient)) {
-                ArrayList<Application> apps = new ArrayList<Application>(1);
-                try {
-                    pl.getPluginObj().connect();
-                    apps = pl.getPluginObj().getAppList();
-                } catch (Exception e) {
-                    System.out.println(e.getLocalizedMessage());
-                }
-                for (Application app : apps) {
-                    app.setSourcePlugin(pl.getPluginName());
-                    //Check if app installed (already in list. May be later will check by isInstalled
-                    if (appList.contains(app)) {
-                        //If app already installed - set avaliable versions and sourcePlugin
-                        appList.get(appList.indexOf(app)).setAppVersions(app.getAppVersions());
-                        appList.get(appList.indexOf(app)).setSourcePlugin(app.getSourcePlugin());
-                    } else {
-                        //If not installed - add to list
-                        appList.add(app);
+                if (pl.isInstalled() && pl.getPluginObj() instanceof IRemoteStorageClient && !(pl.getPluginObj() instanceof INotificationClient)) {
+                    ArrayList<Application> apps = new ArrayList<Application>(1);
+                    try {
+                        pl.getPluginObj().connect();
+                        apps = pl.getPluginObj().getAppList();
+                        System.out.println("Plugin '" + pl.getPluginName() + "' connected.");
+                        System.out.println("Applist loaded. Size " + apps.size());
+                    } catch (Exception e) {
+                        System.out.println(e.getLocalizedMessage());
                     }
+                    for (Application app : apps) {
+                        app.setSourcePlugin(pl.getPluginName());
+                        //Check if app installed (already in list. May be later will check by isInstalled
+                        if (appList.contains(app)) {
+                            //If app already installed - set avaliable versions and sourcePlugin
+                            appList.get(appList.indexOf(app)).setAppVersions(app.getAppVersions());
+                            appList.get(appList.indexOf(app)).setSourcePlugin(app.getSourcePlugin());
+                            System.out.println("App updated: " + app.getAppName() + ". Added versions: " + app.getAppVersions());
+                        } else {
+                            //If not installed - add to list
+                            appList.add(app);
+                        }
 
+                    }
                 }
+                //AppManager.getInstance().updateAppList();
+
+
             }
-        }
+            LauncherGui.getInstance().launch();
+        };
+        new Thread(task2).start();
 
         return;
     }
@@ -139,6 +152,8 @@ public class AppManager {
         }
         deleteApplication(appPath);
         installApplication(name, version);
+       // AppManager.getInstance().updateAppList();
+        //LauncherGui.getInstance().launch();
 
     }
 
@@ -154,21 +169,27 @@ public class AppManager {
 
     public void installApplication(String appName, String version) {
 
-
+        System.out.println("Installing: "+appName + " " + version);
         client = PluginManager.getInstance().getPluginByName(getAppByName(appName).getSourcePlugin()).getPluginObj();
         try {
             if (!client.checkConnection()) {
-                System.out.println("Can't access to " + client.getPluginName() + " storage, check connection");
-                return;
+                try {
+                    client.connect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Can't access to " + client.getPluginName() + " storage, check connection");
+                    return;
+                }
+
             }
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
-        try {
+    /*    try {
             client.connect();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         class MyThread extends Thread {
             boolean run = true;
 
@@ -216,6 +237,8 @@ public class AppManager {
 
             public void stopT() {
                 run = false;
+                AppManager.getInstance().loadLocalAppInfo();
+                AppManager.getInstance().updateAppList();
             }
 
 
@@ -224,6 +247,7 @@ public class AppManager {
                 this.appName = appName;
                 this.version = version;
                 appPath = getAppByName(appName).getAppPath();
+
 
             }
         }
@@ -256,6 +280,7 @@ public class AppManager {
             System.out.println(ioe.getLocalizedMessage());
         }
         //loadLocalAppInfo();
+        AppManager.getInstance().updateAppList();
     }
 
 

@@ -31,4 +31,5 @@ public interface IRemoteStorageClient {
 
     public InputStream getFile(String appPath, String version, String fileName);
 
+
 }

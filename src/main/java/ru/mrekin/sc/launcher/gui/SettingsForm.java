@@ -1,7 +1,10 @@
 package ru.mrekin.sc.launcher.gui;
 
+import org.apache.commons.configuration.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
+
+import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 
@@ -99,7 +102,7 @@ public class SettingsForm extends JFrame {
         });
 */
 
-        addWindowListener(new WindowAdapter() {
+  /*      addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
                 //LauncherGui.getInstance().init();
@@ -107,7 +110,7 @@ public class SettingsForm extends JFrame {
                 super.windowClosed(e);
             }
         });
-
+*/
 
         //TODO Before logic implemented
         // deleteButton.setEnabled(false);
@@ -116,7 +119,8 @@ public class SettingsForm extends JFrame {
             @Override
             public void windowClosed(WindowEvent e) {
                 //LauncherGui.getInstance().init();
-                LauncherGui.getInstance().launch();
+                AppManager.getInstance().updateAppList();
+                //LauncherGui.getInstance().launch();
                 System.out.println("!!!! Settings window closing");
                 super.windowClosed(e);
             }

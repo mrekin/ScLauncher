@@ -58,6 +58,7 @@ public class PluginManager {
 
     public void loadInstalledPlugins() {
         //TODO need to change logic -> scl must find class implementing rsc without manifest
+        //
         String mainClass = "";
         String pluginName = "";
         String pluginVersion = "";
@@ -66,7 +67,9 @@ public class PluginManager {
         boolean installed = false;
         try {
             ArrayList<File> jars = FileDriver.listFiles(pluginDir, ".jar");
+
             for (File f : jars) {
+
                 try {
                     URL jarURL = f.toURI().toURL();
                     installed = false;
@@ -94,6 +97,7 @@ public class PluginManager {
                     Class cl = findClassByInterface(jf, jarURL, IRemoteStorageClient.class);
 
                     if (cl != null && IRemoteStorageClient.class.isAssignableFrom(cl)) {
+
                         jf.close();
                         Plugin plugin = new Plugin();
                         IRemoteStorageClient instance = null;
@@ -142,10 +146,14 @@ public class PluginManager {
 
             }
 
+
+//
+
         } catch (IOException ioe) {
             System.out.println(ioe.getLocalizedMessage());
         }
-
+        /*     };
+         */
     }
 
     public void loadAvaliablePlugins() {
@@ -203,7 +211,7 @@ public class PluginManager {
     }
 
     public ArrayList<Plugin> getAllPlugins() {
-        ArrayList<Plugin> tmp = (ArrayList<Plugin>)installedPlugins.clone();
+        ArrayList<Plugin> tmp = (ArrayList<Plugin>) installedPlugins.clone();
         for (Plugin pl : avaliabledPlugins) {
             if (!installedPlugins.contains(pl)) {
                 tmp.add(pl);

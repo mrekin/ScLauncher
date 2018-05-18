@@ -156,10 +156,12 @@ public class LauncherGui extends JFrame {
 
     public void launch() {
         //TODO Need to add menu panel about page,tool for prepare apps for publishing, may be Help menu
+        System.out.println("Launching gui..");
         String appLocalVersionDef = "Need to install";
+
         //setContentPane(new Container());
 
-        AppManager.getInstance().loadLocalAppInfo();
+
         appList = AppManager.getInstance().getAppList();
         this.getContentPane().removeAll();
 
@@ -279,6 +281,7 @@ public class LauncherGui extends JFrame {
         setIconImage(mainIcon);
         pack();
     }
+
 
     private class JButtonEx extends JButton {
         private String app = "";

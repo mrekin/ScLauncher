@@ -56,6 +56,8 @@ public class AppPopupMenu extends JPopupMenu {
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
+
+
         if (this.application.getAppVersions() != null) {
             for (String ver : this.application.getAppVersions()) {
 

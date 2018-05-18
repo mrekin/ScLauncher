@@ -54,10 +54,11 @@ public class Launch {
                 }
             }
 
-
+            AppManager.getInstance().loadLocalAppInfo();
             //Launching launcher :)
             LauncherGui.getInstance();
             LauncherGui.getInstance().launch();
+            AppManager.getInstance().updateAppList();
 
         }
     }
