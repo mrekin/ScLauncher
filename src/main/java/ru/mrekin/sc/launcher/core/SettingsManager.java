@@ -20,8 +20,8 @@ public class SettingsManager {
     private static SettingsManager instance;
     File localSettingsFile;
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     private SettingsManager() {
@@ -84,7 +84,6 @@ public class SettingsManager {
     }
 
     /**
-     *
      * @return
      */
     private static File getLocalSettingsFile() {

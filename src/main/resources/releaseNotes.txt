@@ -65,4 +65,5 @@
 3. Updated startUp logic
 4. Some GUI updates
 5. Updated app exec logic (first triyng to open with system associated application, later by exec(). For java added option to use "java -jar" instead system JRE)
+6. Added gui tools to prepare app and logs view
 =========================================

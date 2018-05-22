@@ -31,13 +31,14 @@ public class LauncherGui extends JFrame {
     BufferedImage mainIcon;
     ImageIcon redIcon, greenIcon;
     JMenuBar menuBar;
-    JMenu pluginMenu, settingsMenu, helpMenu;
-    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem, helpMenuItem;
+    JMenu pluginMenu, settingsMenu, toolsMenu;
+    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem, viewLogMenuItem, appPrepareMenuItem;
     //PluginRepoForm pluginRepoForm;
     SettingsForm settingsForm;
+    ApplicationPrepareForm applicationPrepareForm;
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     private LauncherGui() {
@@ -156,15 +157,29 @@ public class LauncherGui extends JFrame {
             }
         });
 
-        helpMenu = new JMenu("Help");
-        helpMenuItem = new JMenuItem("View logs");
+        toolsMenu = new JMenu("Tools");
 
-        helpMenuItem.addActionListener(new ActionListener() {
+        appPrepareMenuItem = new JMenuItem("Prepare application");
+        appPrepareMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (applicationPrepareForm == null) {
+                    applicationPrepareForm = new ApplicationPrepareForm();
+                } else if (!applicationPrepareForm.isVisible()) {
+                    applicationPrepareForm = new ApplicationPrepareForm();
+                }
+                applicationPrepareForm.setEnabled(true);
+
+            }
+        });
+
+
+        viewLogMenuItem = new JMenuItem("View logs");
+        viewLogMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 java.io.File file = new File(SCLogger.getLogFileName());
                 try {
                     Desktop.getDesktop().open(file);
-                }catch (IOException ioe){
+                } catch (IOException ioe) {
                     log(ioe.getLocalizedMessage());
                 }
             }
@@ -176,14 +191,15 @@ public class LauncherGui extends JFrame {
 
         settingsMenu.add(settingMenuItem);
 
-        helpMenu.add(helpMenuItem);
+        toolsMenu.add(appPrepareMenuItem);
+        toolsMenu.add(viewLogMenuItem);
 
         pluginSettingsMenuItem.setEnabled(false);
 
         //FORMING MENU BAR
         menuBar.add(pluginMenu);
         menuBar.add(settingsMenu);
-        menuBar.add(helpMenu);
+        menuBar.add(toolsMenu);
 
         setJMenuBar(menuBar);
 
@@ -199,7 +215,6 @@ public class LauncherGui extends JFrame {
 
         appList = AppManager.getInstance().getAppList();
         this.getContentPane().removeAll();
-
 
 
         mainPanel = new JPanel(new GridLayout(appList.size(), 2));
@@ -322,15 +337,15 @@ public class LauncherGui extends JFrame {
                         File file = new File(app);
                         Desktop.getDesktop().open(file);
                         //
-                    }catch (IllegalArgumentException iae){
-                        log("Get exception: "+iae.getLocalizedMessage()+". Open with exec().");
+                    } catch (IllegalArgumentException iae) {
+                        log("Get exception: " + iae.getLocalizedMessage() + ". Open with exec().");
                         try {
                             Runtime.getRuntime().exec(app);
-                        }catch (IOException ioe){
+                        } catch (IOException ioe) {
                             log(ioe.getLocalizedMessage());
                         }
                     } catch (Exception ex) {
-                       log(ex.getLocalizedMessage());
+                        log(ex.getLocalizedMessage());
                     }
                 }
             });

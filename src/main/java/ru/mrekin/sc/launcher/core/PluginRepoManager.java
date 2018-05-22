@@ -36,8 +36,8 @@ public class PluginRepoManager {
     }
 
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     public static PluginRepoManager getInstance() {
@@ -169,7 +169,7 @@ public class PluginRepoManager {
             }
 
         }
-        log("Loaded avaliable plugins: "+plugins.size());
+        log("Loaded avaliable plugins: " + plugins.size());
         return plugins;
     }
 

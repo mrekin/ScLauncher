@@ -18,8 +18,8 @@ public class AppPopupMenu extends JPopupMenu {
     private AppManager appManager;
     private Application application;
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     public AppPopupMenu(final LauncherGui gui, Application application, AppManager appMan) {
@@ -31,7 +31,7 @@ public class AppPopupMenu extends JPopupMenu {
         JMenuItem updateItem = new JMenuItem();
         updateItem.setText("Update");
         try {
-            if(application.getSourcePlugin()!=null  && !"".equals(application.getSourcePlugin()))
+            if (application.getSourcePlugin() != null && !"".equals(application.getSourcePlugin()))
                 updateItem.setEnabled(PluginManager.getInstance().getPluginByName(application.getSourcePlugin()).getPluginObj().checkConnection());
         } catch (Exception e) {
             log(e.getLocalizedMessage());
@@ -59,7 +59,7 @@ public class AppPopupMenu extends JPopupMenu {
 
         JMenu installItem = new JMenu("Install");
         try {
-            if(application.getSourcePlugin()!=null && !"".equals(application.getSourcePlugin()))
+            if (application.getSourcePlugin() != null && !"".equals(application.getSourcePlugin()))
                 installItem.setEnabled(PluginManager.getInstance().getPluginByName(application.getSourcePlugin()).getPluginObj().checkConnection());
         } catch (Exception e) {
             log(e.getLocalizedMessage());
@@ -117,10 +117,10 @@ public class AppPopupMenu extends JPopupMenu {
             public void actionPerformed(ActionEvent e) {
                 class run implements Runnable {
                     public void run() {
-                        java.io.File file = new File(SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory)+AppPopupMenu.this.application.getAppPath());
+                        java.io.File file = new File(SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory) + AppPopupMenu.this.application.getAppPath());
                         try {
                             Desktop.getDesktop().open(file);
-                        }catch (IOException ioe){
+                        } catch (IOException ioe) {
                             log(ioe.getLocalizedMessage());
                         }
                     }
@@ -129,8 +129,7 @@ public class AppPopupMenu extends JPopupMenu {
                 new run().run();
             }
         });
-        if(!AppPopupMenu.this.application.isInstalled())
-        {
+        if (!AppPopupMenu.this.application.isInstalled()) {
             viewFolderItem.setEnabled(false);
         }
 

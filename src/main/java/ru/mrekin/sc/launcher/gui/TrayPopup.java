@@ -35,8 +35,8 @@ public class TrayPopup implements INotificationService {
         });
     }
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     public static void createGUI() {

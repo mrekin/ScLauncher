@@ -3,7 +3,6 @@ package ru.mrekin.sc.launcher.core;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.jar.Attributes;

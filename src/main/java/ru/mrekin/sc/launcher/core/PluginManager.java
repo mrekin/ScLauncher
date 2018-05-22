@@ -38,8 +38,8 @@ public class PluginManager {
 //        LauncherGui.getInstance().launch();
     }
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(PluginManager.class.getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(PluginManager.class.getName(), "INFO", msg);
     }
 
     public static PluginManager getInstance() {
@@ -67,7 +67,7 @@ public class PluginManager {
         String pluginName = "";
         String pluginVersion = "";
         ArrayList<Plugin> alreadyInstalled = (ArrayList<Plugin>) installedPlugins.clone();
-        log("Already installed: "+ alreadyInstalled.size());
+        log("Already installed: " + alreadyInstalled.size());
         installedPlugins = new ArrayList<Plugin>(1);
         boolean installed = false;
         try {
@@ -153,7 +153,7 @@ public class PluginManager {
 
 
 //
-            log("Loaded installed plugins: "+installedPlugins.size());
+            log("Loaded installed plugins: " + installedPlugins.size());
         } catch (IOException ioe) {
             log(ioe.getLocalizedMessage());
         }

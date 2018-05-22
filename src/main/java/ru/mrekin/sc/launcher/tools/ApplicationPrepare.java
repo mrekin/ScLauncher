@@ -17,9 +17,10 @@ import java.util.ArrayList;
 public class ApplicationPrepare {
     //TODO need to create GUI for this. Now is is simple tool for listing files and prepare some configs.
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
+
     public static void appPrepare(String dir) {
 
         if (dir.lastIndexOf("\\") == dir.length() - 1) {

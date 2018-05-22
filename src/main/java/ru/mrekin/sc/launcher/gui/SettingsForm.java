@@ -1,9 +1,7 @@
 package ru.mrekin.sc.launcher.gui;
 
-import org.apache.commons.configuration.*;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
-
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.SCLogger;
@@ -40,8 +38,9 @@ public class SettingsForm extends JFrame {
         init();
         launch();
     }
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     private void init() {

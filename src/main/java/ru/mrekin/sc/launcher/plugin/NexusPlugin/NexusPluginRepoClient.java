@@ -34,8 +34,8 @@ public class NexusPluginRepoClient implements IPluginRepoClient {
 
     }
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     public void connect(String user, String pass, String serverURL) throws Exception {

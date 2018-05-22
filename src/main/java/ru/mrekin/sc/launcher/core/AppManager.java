@@ -1,7 +1,6 @@
 package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
-import ru.mrekin.sc.launcher.Launch;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
@@ -34,8 +33,8 @@ public class AppManager {
 
     }
 
-    private static void log(String msg){
-        SCLogger.getInstance().log(AppManager.class.getName(),"INFO",msg);
+    private static void log(String msg) {
+        SCLogger.getInstance().log(AppManager.class.getName(), "INFO", msg);
     }
 
 
@@ -158,7 +157,7 @@ public class AppManager {
         }
         deleteApplication(appPath);
         installApplication(name, version);
-       // AppManager.getInstance().updateAppList();
+        // AppManager.getInstance().updateAppList();
         //LauncherGui.getInstance().launch();
 
     }
@@ -175,7 +174,7 @@ public class AppManager {
 
     public void installApplication(String appName, String version) {
 
-        log("Installing: "+appName + " " + version);
+        log("Installing: " + appName + " " + version);
         client = PluginManager.getInstance().getPluginByName(getAppByName(appName).getSourcePlugin()).getPluginObj();
         try {
             if (!client.checkConnection()) {

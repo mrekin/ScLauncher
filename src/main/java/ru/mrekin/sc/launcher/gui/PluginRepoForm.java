@@ -39,8 +39,9 @@ public class PluginRepoForm extends JFrame {
         init();
         launch();
     }
-    private static void log(String msg){
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+
+    private static void log(String msg) {
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
     }
 
     public static PluginRepoForm getInstance() {

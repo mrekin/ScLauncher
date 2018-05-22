@@ -1,9 +1,6 @@
 package ru.mrekin.sc.launcher.core;
 
-import ch.qos.logback.classic.Level;
-
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +19,25 @@ public class SCLogger {
     /**
      *
      */
-    private  SCLogger(){
+    private SCLogger() {
         init();
     }
 
     /**
      *
      */
-    private void init(){
-        Logger rootLog = (Logger)LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+    private void init() {
+        Logger rootLog = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         FileAppender fa = (FileAppender) rootLog.getAppender("FILE");
-        LogFileName =  fa.getFile();
-        log(MethodHandles.lookup().lookupClass().getName(),"INFO","SetUp logger to: " + LogFileName);
+        LogFileName = fa.getFile();
+        log(MethodHandles.lookup().lookupClass().getName(), "INFO", "SetUp logger to: " + LogFileName);
     }
 
     /**
-     *
      * @return
      */
-    public static SCLogger getInstance(){
-        if(instance== null){
+    public static SCLogger getInstance() {
+        if (instance == null) {
             instance = new SCLogger();
         }
 
@@ -49,13 +45,12 @@ public class SCLogger {
     }
 
     /**
-     *
      * @param className
      * @param level
      * @param message
      */
-    public void log(String className, String level, String message){
-        Logger log = (Logger)LoggerFactory.getLogger(className);
+    public void log(String className, String level, String message) {
+        Logger log = (Logger) LoggerFactory.getLogger(className);
         log.info(message);
     }
 

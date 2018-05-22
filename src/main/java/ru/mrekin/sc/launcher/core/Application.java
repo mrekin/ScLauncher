@@ -99,9 +99,9 @@ public class Application {
         if (LauncherConstants.ApplicationTypeWin.equals(appType)) {
             runCommand = appFullPath;
         } else if (LauncherConstants.ApplicationTypeJava.equals(appType)) {
-            if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.JavaAppOpeningMode,"OSMode").equals("OSMode")){
+            if (SettingsManager.getInstance().getPropertyByName(LauncherConstants.JavaAppOpeningMode, "OSMode").equals("OSMode")) {
                 runCommand = appFullPath;
-            }else {
+            } else {
                 runCommand = "java -jar " + appFullPath;
             }
         } else if (LauncherConstants.ApplicationTypeUnix.equals(appType)) {

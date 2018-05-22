@@ -2,14 +2,11 @@ package ru.mrekin.sc.launcher.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.mrekin.sc.launcher.core.LauncherConstants;
-import ru.mrekin.sc.launcher.core.PluginManager;
-import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.core.*;
 import ru.mrekin.sc.launcher.gui.TrayPopup;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
@@ -23,8 +20,12 @@ public class ApplicationTools {
     static ArrayList<Command> commands = new ArrayList<Command>();
     static Command cmd = new Command();
 
+    private static void log(String msg) {
+        SCLogger.getInstance().log(AppManager.class.getName(), "INFO", msg);
+    }
+
     public static boolean execute(String[] args) {
-        logger.trace("Starting execute command");
+        log("Starting execute command");
         ArrayList<String> arguments = new ArrayList<String>(1);
 
 
@@ -39,7 +40,7 @@ public class ApplicationTools {
                     cmd = new Command();
                     commands.add(cmd);
                     cmd.command = args[i];
-                    logger.trace("Command: " + cmd.command);
+                    log("Command: " + cmd.command);
                 } else {
                     cmd.commandArgs.add(args[i]);
                 }
@@ -55,13 +56,13 @@ public class ApplicationTools {
         for (Command cmd : commands) {
             // prepare application for SClauncher
             if ("--prepare".equals(cmd.command)) {
-                logger.trace("--prepare found");
+                log("--prepare found");
                 if (arguments.size() == 0) {
-                    logger.trace("No arguments found");
+                    log("No arguments found");
                     return true;
                 }
                 if ("app".equals(arguments.get(0)) || ("application".equals(arguments.get(0)))) {
-                    logger.trace("Start prepeare application");
+                    log("Start prepeare application");
                     ApplicationPrepare.appPrepare("./");
                     return false;
                 }
@@ -73,16 +74,16 @@ public class ApplicationTools {
                 // delete plugin on restart
             } else if ("--deletePlugin".equals(cmd.command)) {
                 if (cmd.commandArgs.size() == 0 || cmd.commandArgs.get(0) == null) {
-                    logger.trace("Plugin name for delete not specified!");
+                    log("Plugin name for delete not specified!");
                     return true;
                 }
                 if (PluginManager.remove(cmd.commandArgs.get(0))) {
-                    logger.trace("Plugin " + cmd.commandArgs.get(0) + " removed");
+                    log("Plugin " + cmd.commandArgs.get(0) + " removed");
                 }
                 //       return true;
             } else if ("--installPlugin".equals(cmd.command)) {
                 if (cmd.commandArgs.size() == 0 || cmd.commandArgs.get(0) == null) {
-                    logger.trace("Plugin name for install not specified!");
+                    log("Plugin name for install not specified!");
                     return true;
                 }
                 PluginManager.getInstance().getAllPlugins();
@@ -97,7 +98,7 @@ public class ApplicationTools {
     }
 
     public static void prepareToStart() {
-        logger.trace("Method: prepareToStart");
+        log("Method: prepareToStart");
         installMandatoryPlugins();
     }
 
@@ -106,12 +107,12 @@ public class ApplicationTools {
     }
 
     public static void installMandatoryPlugins() {
-        logger.trace("Method: installMandatoryPlugins");
+        log("Method: installMandatoryPlugins");
         boolean installed = false;
         boolean avaliable = false;
         String[] mandatoryPluginsArray = SettingsManager.getInstance().getPropertiesArrayByName(LauncherConstants.MandatoryPlugins);
         for (String mPlugin : mandatoryPluginsArray) {
-            logger.trace("Starting to check plugin: " + mPlugin);
+            log("Starting to check plugin: " + mPlugin);
             String[] tempArray = mPlugin.split(":");
             String plName = "", plVersion = "";
             if (tempArray != null && tempArray.length > 0 && tempArray[0] != null) {
@@ -126,7 +127,7 @@ public class ApplicationTools {
                 if (plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     installed = plugin.isInstalled();
                     if (plugin.isInstalled() && PluginManager.compareVersions(plugin.getPluginVersion(), plugin.getLatestVersion()) < 0) {
-                        logger.trace("Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
+                        log("Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
                         break;
                     }
                 }
@@ -135,16 +136,16 @@ public class ApplicationTools {
                 continue;
             }
             if (!PluginManager.getInstance().isAvaliablePluginsLoaded()) {
-                logger.trace("Begin of loadAvaliablePlugins");
+                log("Begin of loadAvaliablePlugins");
                 PluginManager.getInstance().loadAvaliablePlugins();
-                logger.trace("End of loadAvaliablePlugins");
+                log("End of loadAvaliablePlugins");
             }
             for (Plugin plugin : PluginManager.getInstance().getAllPlugins()) {
                 if (!plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     plVersion = "".equals(plVersion) ? plugin.getLatestVersion() : plVersion;
-                    logger.trace("Plugin " + plName + " not installed. Installing version " + plVersion);
+                    log("Plugin " + plName + " not installed. Installing version " + plVersion);
                     PluginManager.getInstance().install(plugin, plVersion);
-                    logger.trace("Plugin " + plName + ":" + plVersion + " installed");
+                    log("Plugin " + plName + ":" + plVersion + " installed");
                     TrayPopup.displayMessage("Mandatory plugin " + plName + " installed\n It may require restart.");
                     avaliable = true;
                     break;
@@ -152,7 +153,7 @@ public class ApplicationTools {
             }
 
             if (!avaliable) {
-                logger.warn("Plugin '" + plName + "' not avaliable. Please check plugin name or repository connections.");
+                log("Plugin '" + plName + "' not avaliable. Please check plugin name or repository connections.");
             }
 
         }
@@ -168,8 +169,8 @@ public class ApplicationTools {
         try {
             final RandomAccessFile file = new RandomAccessFile(new File("lock"), "rw");
             final FileLock lock = file.getChannel().tryLock();
-            System.out.println("Got the lock? "+(null != lock));
-            if(null == lock){
+            System.out.println("Got the lock? " + (null != lock));
+            if (null == lock) {
                 return true;
             }
         } catch (FileNotFoundException e) {
