@@ -2,10 +2,7 @@ package ru.mrekin.sc.launcher.gui;
 
 //import ru.mrekin.sc.launcher.SvnClient;
 
-import ru.mrekin.sc.launcher.core.AppManager;
-import ru.mrekin.sc.launcher.core.Application;
-import ru.mrekin.sc.launcher.core.PluginManager;
-import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.core.*;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import javax.imageio.ImageIO;
@@ -16,8 +13,11 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+
 
 /**
  * Created by MRekin on 30.07.2014.
@@ -32,13 +32,17 @@ public class LauncherGui extends JFrame {
     ImageIcon redIcon, greenIcon;
     JMenuBar menuBar;
     JMenu pluginMenu, settingsMenu, helpMenu;
-    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem;
+    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem, helpMenuItem;
     //PluginRepoForm pluginRepoForm;
     SettingsForm settingsForm;
 
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
+
     private LauncherGui() {
         super("SC launcher " + SettingsManager.getInstance().getPropertyByName("Application.version"));
-        System.out.println("New gui!");
+        log("New gui!");
         instance = this;
         //setLocationByPlatform(true);
         //  setResizable(false);
@@ -152,11 +156,42 @@ public class LauncherGui extends JFrame {
             }
         });
 
+        helpMenu = new JMenu("Help");
+        helpMenuItem = new JMenuItem("View logs");
+
+        helpMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                java.io.File file = new File(SCLogger.getLogFileName());
+                try {
+                    Desktop.getDesktop().open(file);
+                }catch (IOException ioe){
+                    log(ioe.getLocalizedMessage());
+                }
+            }
+        });
+
+        // FORMING MENUS
+        pluginMenu.add(pluginRepoMenuItem);
+        pluginMenu.add(pluginSettingsMenuItem);
+
+        settingsMenu.add(settingMenuItem);
+
+        helpMenu.add(helpMenuItem);
+
+        pluginSettingsMenuItem.setEnabled(false);
+
+        //FORMING MENU BAR
+        menuBar.add(pluginMenu);
+        menuBar.add(settingsMenu);
+        menuBar.add(helpMenu);
+
+        setJMenuBar(menuBar);
+
     }
 
-    public void launch() {
+    synchronized public void launch() {
         //TODO Need to add menu panel about page,tool for prepare apps for publishing, may be Help menu
-        System.out.println("Launching gui..");
+        log("Launching gui..");
         String appLocalVersionDef = "Need to install";
 
         //setContentPane(new Container());
@@ -165,15 +200,7 @@ public class LauncherGui extends JFrame {
         appList = AppManager.getInstance().getAppList();
         this.getContentPane().removeAll();
 
-        pluginMenu.add(pluginRepoMenuItem);
-        pluginMenu.add(pluginSettingsMenuItem);
-        settingsMenu.add(settingMenuItem);
 
-        pluginSettingsMenuItem.setEnabled(false);
-
-        menuBar.add(pluginMenu);
-        menuBar.add(settingsMenu);
-        setJMenuBar(menuBar);
 
         mainPanel = new JPanel(new GridLayout(appList.size(), 2));
         mainPanel.setBorder(new LineBorder(Color.GRAY));
@@ -292,9 +319,18 @@ public class LauncherGui extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         //This is the simple way to launch apps.
-                        Runtime.getRuntime().exec(app);
-                    } catch (Exception ioe) {
-                        ioe.printStackTrace();
+                        File file = new File(app);
+                        Desktop.getDesktop().open(file);
+                        //
+                    }catch (IllegalArgumentException iae){
+                        log("Get exception: "+iae.getLocalizedMessage()+". Open with exec().");
+                        try {
+                            Runtime.getRuntime().exec(app);
+                        }catch (IOException ioe){
+                            log(ioe.getLocalizedMessage());
+                        }
+                    } catch (Exception ex) {
+                       log(ex.getLocalizedMessage());
                     }
                 }
             });

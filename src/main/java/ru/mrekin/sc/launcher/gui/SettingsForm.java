@@ -6,6 +6,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 
 import ru.mrekin.sc.launcher.core.AppManager;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 
 import javax.imageio.ImageIO;
@@ -21,6 +22,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -38,6 +40,9 @@ public class SettingsForm extends JFrame {
         init();
         launch();
     }
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
 
     private void init() {
         //setResizable(false);
@@ -48,7 +53,7 @@ public class SettingsForm extends JFrame {
 
             mainIcon = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
         } catch (IOException ioe) {
-            System.out.println(ioe.getLocalizedMessage());
+            log(ioe.getLocalizedMessage());
         }
         setIconImage(mainIcon);
         setTitle(LauncherConstants.SettingsFormTitle);
@@ -121,7 +126,7 @@ public class SettingsForm extends JFrame {
                 //LauncherGui.getInstance().init();
                 AppManager.getInstance().updateAppList();
                 //LauncherGui.getInstance().launch();
-                System.out.println("!!!! Settings window closing");
+                log("!!!! Settings window closing");
                 super.windowClosed(e);
             }
         });
@@ -192,7 +197,7 @@ public class SettingsForm extends JFrame {
             Iterator<String> iter = configuration.getKeys();
             while (iter.hasNext()) {
                 String nextElement = iter.next();
-                System.out.println(nextElement + ": " + configuration.getProperty(nextElement));
+                log(nextElement + ": " + configuration.getProperty(nextElement));
                 this.properties.add(new String[]{nextElement, configuration.getProperty(nextElement).toString()});
             }
             //selectedValues = new String[this.plugins.size()];

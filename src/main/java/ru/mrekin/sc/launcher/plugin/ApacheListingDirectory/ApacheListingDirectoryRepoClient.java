@@ -4,10 +4,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.plugin.IPluginRepoClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +31,9 @@ public class ApacheListingDirectoryRepoClient implements IPluginRepoClient {
 
     public ApacheListingDirectoryRepoClient() {
 
+    }
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
     }
 
     public void connect(String user, String pass, String serverURL) throws Exception {
@@ -90,7 +95,7 @@ public class ApacheListingDirectoryRepoClient implements IPluginRepoClient {
             }
         }
         if (serverAddress == null) {
-            System.out.println("No such plugin :" + pluginSimpleName);
+            log("No such plugin :" + pluginSimpleName);
             return null;
         }
         HttpURLConnection connection = null;

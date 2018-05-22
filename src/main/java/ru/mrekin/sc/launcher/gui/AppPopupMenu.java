@@ -1,12 +1,14 @@
 package ru.mrekin.sc.launcher.gui;
 
-import ru.mrekin.sc.launcher.core.AppManager;
-import ru.mrekin.sc.launcher.core.Application;
-import ru.mrekin.sc.launcher.core.PluginManager;
+import ru.mrekin.sc.launcher.core.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Created by MRekin on 03.08.2014.
@@ -15,6 +17,10 @@ public class AppPopupMenu extends JPopupMenu {
 
     private AppManager appManager;
     private Application application;
+
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
 
     public AppPopupMenu(final LauncherGui gui, Application application, AppManager appMan) {
 
@@ -25,9 +31,10 @@ public class AppPopupMenu extends JPopupMenu {
         JMenuItem updateItem = new JMenuItem();
         updateItem.setText("Update");
         try {
-            updateItem.setEnabled(PluginManager.getInstance().getPluginByName(application.getSourcePlugin()).getPluginObj().checkConnection());
+            if(application.getSourcePlugin()!=null  && !"".equals(application.getSourcePlugin()))
+                updateItem.setEnabled(PluginManager.getInstance().getPluginByName(application.getSourcePlugin()).getPluginObj().checkConnection());
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            log(e.getLocalizedMessage());
         }
         updateItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -52,9 +59,10 @@ public class AppPopupMenu extends JPopupMenu {
 
         JMenu installItem = new JMenu("Install");
         try {
-            installItem.setEnabled(PluginManager.getInstance().getPluginByName(application.getSourcePlugin()).getPluginObj().checkConnection());
+            if(application.getSourcePlugin()!=null && !"".equals(application.getSourcePlugin()))
+                installItem.setEnabled(PluginManager.getInstance().getPluginByName(application.getSourcePlugin()).getPluginObj().checkConnection());
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            log(e.getLocalizedMessage());
         }
 
 
@@ -102,12 +110,35 @@ public class AppPopupMenu extends JPopupMenu {
             }
         });
 
+        JMenuItem viewFolderItem = new JMenuItem();
+        viewFolderItem.setText("Open app folder");
+
+        viewFolderItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                class run implements Runnable {
+                    public void run() {
+                        java.io.File file = new File(SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory)+AppPopupMenu.this.application.getAppPath());
+                        try {
+                            Desktop.getDesktop().open(file);
+                        }catch (IOException ioe){
+                            log(ioe.getLocalizedMessage());
+                        }
+                    }
+                }
+
+                new run().run();
+            }
+        });
+        if(!AppPopupMenu.this.application.isInstalled())
+        {
+            viewFolderItem.setEnabled(false);
+        }
 
         this.add(updateItem);
-        this.addSeparator();
         this.add(installItem);
-        this.addSeparator();
         this.add(deleteItem);
+        this.addSeparator();
+        this.add(viewFolderItem);
 
     }
 }

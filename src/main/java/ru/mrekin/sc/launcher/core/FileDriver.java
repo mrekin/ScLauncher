@@ -3,6 +3,7 @@ package ru.mrekin.sc.launcher.core;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -11,7 +12,7 @@ import java.util.jar.JarFile;
 /**
  * Created by MRekin on 31.07.2014.
  */
-public class FileDriver {
+public class FileDriver implements ISCLogger {
 
     private ArrayList<Application> appList;
     private static FileDriver instance = null;
@@ -62,13 +63,13 @@ public class FileDriver {
         ArrayList<File> apps = new ArrayList<File>(1);
         File file = new File(appRoot);
 
-        System.out.println(file.getAbsolutePath());
+        log(file.getAbsolutePath());
         if (!file.exists() || !file.isDirectory()) {
             try {
 
                 boolean f = file.mkdir();
             } catch (Exception ioe) {
-                System.out.println("Can't create apps directory: " + ioe.getLocalizedMessage());
+                log("Can't create apps directory: " + ioe.getLocalizedMessage());
             }
 
         } else {
@@ -99,7 +100,7 @@ public class FileDriver {
                             appList.add(apl);
                             jar.close();
                         } catch (IOException ioe) {
-                            System.out.println("Can't open file: " + f.getAbsolutePath() + ", error: " + ioe.getLocalizedMessage());
+                            log("Can't open file: " + f.getAbsolutePath() + ", error: " + ioe.getLocalizedMessage());
                         }
                     } else {
                         Properties attr = new Properties();
@@ -124,7 +125,7 @@ public class FileDriver {
 
 
             } catch (IOException ioe) {
-                System.out.println("Can't list files: " + ioe.getLocalizedMessage());
+                log("Can't list files: " + ioe.getLocalizedMessage());
             }
         }
 
@@ -141,7 +142,7 @@ public class FileDriver {
 
                     boolean f = appD.mkdirs();
                 } catch (Exception ioe) {
-                    System.out.println("Can't create app directory: " + ioe.getLocalizedMessage());
+                    log("Can't create app directory: " + ioe.getLocalizedMessage());
                 }
             }
 
@@ -202,7 +203,7 @@ public class FileDriver {
                 }
             }
         } catch (IOException ioe) {
-            System.out.println(ioe.getLocalizedMessage());
+            log(ioe.getLocalizedMessage());
             return false;
         }
         return true;

@@ -9,6 +9,7 @@ import ru.mrekin.sc.launcher.plugin.RepoPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -32,6 +33,11 @@ public class PluginRepoManager {
         loadProperties();
         loadInstalledRepoPlugins();
         instance = this;
+    }
+
+
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
     }
 
     public static PluginRepoManager getInstance() {
@@ -67,7 +73,7 @@ public class PluginRepoManager {
                         continue;
                     }
                     if (!IPluginRepoClient.class.isAssignableFrom(cl)) {
-                        System.out.println("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IPluginRepoClient.class.getCanonicalName());
+                        log("Plugin: " + f.toURI().toURL() + ", main class \'" + mainClass + "\' must implement " + IPluginRepoClient.class.getCanonicalName());
                         continue;
                     }
 
@@ -82,9 +88,9 @@ public class PluginRepoManager {
                 }
             }
         } catch (IOException ioe) {
-            System.out.println(ioe.getLocalizedMessage());
+            log(ioe.getLocalizedMessage());
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            log(e.getLocalizedMessage());
         }
     }
 
@@ -98,7 +104,7 @@ public class PluginRepoManager {
             pluginVersion = "".equals(instance.getRepoPluginVersion()) ? "-1" : instance.getRepoPluginVersion();
         } catch (AbstractMethodError ame) {
             //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
-            System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
+            log("Local plugin loading AbstractMethodError: " + ame.getMessage());
         }
         plugin.setPluginName(pluginName);
         plugin.setPluginVersion(pluginVersion);
@@ -115,7 +121,7 @@ public class PluginRepoManager {
 
 
         if (installedPlugins == null || installedPlugins.size() == 0) {
-            System.out.println("No plugin avaliable. Please install repository client");
+            log("No plugin avaliable. Please install repository client");
             return null;
         }
         ArrayList<Plugin> plugins = new ArrayList<Plugin>();
@@ -129,7 +135,7 @@ public class PluginRepoManager {
                 repoPlugin.getPluginObj().connect(props.getProperty("user"), props.getProperty("pass"), props.getProperty("URL"));
                 plugins.addAll((ArrayList<Plugin>) repoPlugin.getPluginObj().getPluginsList());
             } catch (Exception e) {
-                System.out.println("RepoClient connecting: " + e.getLocalizedMessage());
+                log("RepoClient connecting: " + e.getLocalizedMessage());
             }
 
         }
@@ -144,7 +150,7 @@ public class PluginRepoManager {
 
 
         if (installedPlugins == null || installedPlugins.size() == 0) {
-            System.out.println("No plugin avaliable. Please install repository client");
+            log("No plugin avaliable. Please install repository client");
             return null;
         }
         ArrayList<Plugin> plugins = new ArrayList<Plugin>();
@@ -159,10 +165,11 @@ public class PluginRepoManager {
                 plugins.addAll((ArrayList<Plugin>) repoPlugin.getPluginObj().getPluginsList());
 
             } catch (Exception e) {
-                System.out.println("RepoClient connecting: " + e.getLocalizedMessage());
+                log("RepoClient connecting: " + e.getLocalizedMessage());
             }
 
         }
+        log("Loaded avaliable plugins: "+plugins.size());
         return plugins;
     }
 
@@ -197,7 +204,7 @@ public class PluginRepoManager {
                     cl = classLoader.loadClass(element.replace(".class", ""));
                     //cl = classLoader.loadClass(element);
                 } catch (ClassNotFoundException cnfe) {
-                    System.out.println("Entry " + element + " not a class");
+                    log("Entry " + element + " not a class");
                 }
                 if (cl != null && iface.isAssignableFrom(cl)) {
                     return cl;
@@ -215,14 +222,14 @@ public class PluginRepoManager {
             //TODO for all repositories from settings
             //TODO need to set setting for plugin from XMLSettingsManager
             String url = plugin.getPluginVersions().get(version);
-            System.out.println("Installing plugin: " + url);
+            log("Installing plugin: " + url);
             try {
                 props = repoPlugin.getPluginObj().getDefaultProperties();
                 repoPlugin.getPluginObj().connect(props.getProperty("user"), props.getProperty("pass"), props.getProperty("URL"));
                 FileDriver.getInstance().installFile("./plugins", plugin.getPluginSimpleName(), version, plugin.getPluginSimpleName() + ".jar", repoPlugin.getPluginObj().getPluginIS(plugin.getPluginSimpleName(), version));
 
             } catch (Exception e) {
-                System.out.println("RepoClient connecting: " + e.getLocalizedMessage());
+                log("RepoClient connecting: " + e.getLocalizedMessage());
             }
 
         }

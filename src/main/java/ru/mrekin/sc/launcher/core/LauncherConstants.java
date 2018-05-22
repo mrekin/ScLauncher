@@ -8,6 +8,7 @@ public class LauncherConstants {
     public final static String WorkingDirectory = "./";
     public final static String SettingsFileName = "settings.prop";
     public final static String SettingsFileName2 = "config.xml";
+    public final static String SettingsFileName3 = "config.conf";
     public final static String PropertiesFileName = "app.properties";
     public final static String ReliseNotesFileName = "releaseNotes.txt";
     public final static String FilesListFileName = "files.list";
@@ -21,6 +22,7 @@ public class LauncherConstants {
     public final static String AutoUpdaterDevMode = "AutoUpdaterDevMode";
     public final static String ApplicationShowReleaseNotes = "ApplicationShowReleaseNotes";
     public final static String MandatoryPlugins = "MandatoryPlugins";
+    public final static String JavaAppOpeningMode = "JavaAppOpeningMode";
 
     public final static String ApplicationVersion = "Application.version";
     public final static String ApplicationName = "Application.name";

@@ -58,3 +58,11 @@
 =============Version 0.4.3===============
 1. Fixed starup logic: SCL starts faster.
 =========================================
+=============Version 0.4.4===============
+0. !!! Java 8 requred for this version !!!
+1. Fixed Plugins view bug in "repository connection problem" case.
+2. SCLogger implemented. Now SClauncher write logs to sout and file.
+3. Updated startUp logic
+4. Some GUI updates
+5. Updated app exec logic (first triyng to open with system associated application, later by exec(). For java added option to use "java -jar" instead system JRE)
+=========================================

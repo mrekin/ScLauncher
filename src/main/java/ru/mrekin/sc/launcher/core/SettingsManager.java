@@ -6,6 +6,7 @@ import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -18,6 +19,10 @@ public class SettingsManager {
     private XMLConfiguration xmlConfiguration, settings;
     private static SettingsManager instance;
     File localSettingsFile;
+
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
 
     private SettingsManager() {
 
@@ -52,7 +57,7 @@ public class SettingsManager {
             if (!file.exists() || !file.isFile()) {
                 //first run
                 try {
-                    System.out.println("Applying old configuration.");
+                    log("Applying old configuration.");
                     applyDefaultSettings();
                     xmlConfiguration = new XMLConfiguration(file);
                 } catch (Exception ioe) {
@@ -78,6 +83,10 @@ public class SettingsManager {
         return xmlConfiguration;
     }
 
+    /**
+     *
+     * @return
+     */
     private static File getLocalSettingsFile() {
         return new File(LauncherConstants.SettingsFileName2);
     }
@@ -86,7 +95,7 @@ public class SettingsManager {
         try {
             xmlConfiguration.save(getLocalSettingsFile());
         } catch (ConfigurationException ce) {
-            System.out.println(ce.getLocalizedMessage());
+            log(ce.getLocalizedMessage());
         }
     }
 
@@ -177,7 +186,7 @@ public class SettingsManager {
 
 
     private static void log(Object o) {
-        System.out.println(o.toString());
+        log(o.toString());
     }
 
     /**
@@ -232,7 +241,7 @@ public class SettingsManager {
                 //for (String key : defaultSettings.stringPropertyNames())
                 {
                     key = (String) iterator.next();
-                    if (!localSettings.containsKey(key)) {
+                    if (!localSettings.containsKey(key) && !"".equals(key)) {
                         localSettings.addProperty(key, defaultSettings.getProperty(key));
                     } else {
                         if (forceSettings && "true".equals(defaultSettings.getString(key + "[@force]"))) {

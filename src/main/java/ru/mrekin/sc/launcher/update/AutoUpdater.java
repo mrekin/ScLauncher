@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher.update;
 
 import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,6 +24,10 @@ public class AutoUpdater {
     private static JTextArea ta = null;
     //private static String serverURL = "http://bssdev:8888/SCLauncher/";
     private static String serverURL, appURL;
+
+    private static void log3(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
 
     public static String checkForUpdates() {
 
@@ -96,7 +102,7 @@ public class AutoUpdater {
             //no new version
             return null;
         } else if (currentVersion == null) {
-            System.out.println("Current version is null");
+            log("Current version is null");
             return null;
         } else {
             return serverVersion;
@@ -356,14 +362,14 @@ public class AutoUpdater {
     }
 
     private static void log(String text) {
-        System.out.println(text);
+        log3(text);
         if (ta != null) {
             ta.append(text + "\n");
         }
     }
 
     private static void log2(String text) {
-        System.out.print(text);
+        log3(text);
         if (ta != null) {
             ta.append(text);
         }

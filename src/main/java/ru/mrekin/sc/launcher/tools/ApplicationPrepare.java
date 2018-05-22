@@ -3,10 +3,12 @@ package ru.mrekin.sc.launcher.tools;
 
 import ru.mrekin.sc.launcher.core.FileDriver;
 import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.SCLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 /**
@@ -15,6 +17,9 @@ import java.util.ArrayList;
 public class ApplicationPrepare {
     //TODO need to create GUI for this. Now is is simple tool for listing files and prepare some configs.
 
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
     public static void appPrepare(String dir) {
 
         if (dir.lastIndexOf("\\") == dir.length() - 1) {
@@ -80,9 +85,5 @@ public class ApplicationPrepare {
 
     }
 
-
-    private static void log(String s) {
-        System.out.println(s);
-    }
 
 }

@@ -2,10 +2,13 @@ package ru.mrekin.sc.launcher.gui;
 
 import ru.mrekin.sc.launcher.core.LauncherConstants;
 import ru.mrekin.sc.launcher.core.PluginManager;
+import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -17,6 +20,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -27,12 +31,16 @@ public class PluginRepoForm extends JFrame {
     List<Plugin> plugins;
     JScrollPane jspane;
     JPanel tablePanel;
+    JButton installButton;
     private static PluginRepoForm instance = null;
 
     private PluginRepoForm() {
         instance = this;
         init();
         launch();
+    }
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
     }
 
     public static PluginRepoForm getInstance() {
@@ -53,7 +61,7 @@ public class PluginRepoForm extends JFrame {
 
             mainIcon = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
         } catch (IOException ioe) {
-            System.out.println(ioe.getLocalizedMessage());
+            log(ioe.getLocalizedMessage());
         }
         setIconImage(mainIcon);
         setTitle(LauncherConstants.PluginsFormTitle);
@@ -67,7 +75,8 @@ public class PluginRepoForm extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(0, 1));
 
-        final JButton installButton = new JButton("Install");
+        installButton = new JButton("Install");
+
         //JButton updateButton = new JButton("Update");
         final JButton deleteButton = new JButton("Delete");
 
@@ -129,6 +138,7 @@ public class PluginRepoForm extends JFrame {
         add(east, BorderLayout.EAST);
         table = new JTable();
         table.getTableHeader().setReorderingAllowed(false);
+
         jspane = new JScrollPane();
         add(jspane);
         setLocationRelativeTo(null);
@@ -138,7 +148,7 @@ public class PluginRepoForm extends JFrame {
         remove(jspane);
         //tablePanel = new JPanel();
         //PluginManager.getInstance().load();
-        PluginManager.getInstance().loadAvaliablePlugins();
+        // PluginManager.getInstance().loadAvaliablePlugins();
         plugins = PluginManager.getInstance().getAllPlugins();
         createTable(plugins);
         //tablePanel.add();
@@ -153,6 +163,19 @@ public class PluginRepoForm extends JFrame {
         table.setModel(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                // do some actions here, for example
+                // print first column value from selected row
+
+                if (table.getValueAt(table.getSelectedRow(), 2).equals(""))
+                    installButton.setEnabled(false);
+                else installButton.setEnabled(true);
+
+                log(table.getValueAt(table.getSelectedRow(), 0).toString());
+            }
+        });
 
     }
 
@@ -234,33 +257,41 @@ public class PluginRepoForm extends JFrame {
                 case 1:
                     return plugins.get(rowIndex).getPluginVersion();
                 case 2: {
-                    String[] array = new String[plugins.get(rowIndex).getPluginVersions().size()];
-                    plugins.get(rowIndex).getPluginVersions().keySet().toArray(array);
-                    //array = new String[]{"1", "2", "3"};
-                    JComboBox box = new JComboBox(array);
-                    box.setSelectedIndex(array.length - 1);
-                    table.getColumnModel().getColumn(columnIndex).setCellEditor(new DefaultCellEditor(box));
-                    DefaultTableCellRenderer renderer =
-                            new DefaultTableCellRenderer();
-                    renderer.setToolTipText("Click for combo box");
-                    renderer.setBackground(Color.LIGHT_GRAY);
-                    //                   if (plugins.get(rowIndex).isInstalled() && plugins.get(rowIndex).getPluginVersion().equals(plugins.get(rowIndex).getLatestVersion())) {
-                    if (plugins.get(rowIndex).isInstalled() && PluginManager.compareVersions(plugins.get(rowIndex).getPluginVersion(), plugins.get(rowIndex).getLatestVersion()) >= 0) {
-                        renderer.setForeground(Color.GREEN);
+                    if (plugins.get(rowIndex).getPluginVersions() != null) {
+                        String[] array = new String[plugins.get(rowIndex).getPluginVersions().size()];
+                        plugins.get(rowIndex).getPluginVersions().keySet().toArray(array);
+                        //array = new String[]{"1", "2", "3"};
+                        JComboBox box = new JComboBox(array);
+                        box.setSelectedIndex(array.length - 1);
+                        table.getColumnModel().getColumn(columnIndex).setCellEditor(new DefaultCellEditor(box));
+                        DefaultTableCellRenderer renderer =
+                                new DefaultTableCellRenderer();
+                        renderer.setToolTipText("Click for combo box");
+                        renderer.setBackground(Color.LIGHT_GRAY);
+                        //                   if (plugins.get(rowIndex).isInstalled() && plugins.get(rowIndex).getPluginVersion().equals(plugins.get(rowIndex).getLatestVersion())) {
+                        if (plugins.get(rowIndex).isInstalled() && PluginManager.compareVersions(plugins.get(rowIndex).getPluginVersion(), plugins.get(rowIndex).getLatestVersion()) >= 0) {
+                            renderer.setForeground(Color.GREEN);
+                        } else {
+                            renderer.setForeground(Color.RED);
+                        }
+
+                        table.getColumnModel().getColumn(columnIndex).setCellRenderer(renderer);
+
+                        if (selectedValues[rowIndex] == null) {
+                            selectedValues[rowIndex] = (String) box.getSelectedItem();
+                        }
+                        return selectedValues[rowIndex];
                     } else {
-                        renderer.setForeground(Color.RED);
+                        return "";
                     }
-
-                    table.getColumnModel().getColumn(columnIndex).setCellRenderer(renderer);
-
-                    if (selectedValues[rowIndex] == null) {
-                        selectedValues[rowIndex] = (String) box.getSelectedItem();
-                    }
-                    return selectedValues[rowIndex];
                 }
                 case 3:
-                    String selectedVer = (String) table.getValueAt(rowIndex, 2);
-                    return plugins.get(rowIndex).getPluginVersions().get(selectedVer);
+                    if (plugins.get(rowIndex).getPluginVersions() != null) {
+                        String selectedVer = (String) table.getValueAt(rowIndex, 2);
+                        return plugins.get(rowIndex).getPluginVersions().get(selectedVer);
+                    } else {
+                        return "";
+                    }
                 default:
                     return "Something goes wrong";
             }

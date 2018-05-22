@@ -33,9 +33,13 @@ public class PluginManager {
     private PluginManager() {
         instance = this;
         loadProperties();
-        load();
+        loadInstalledPlugins();
 
 //        LauncherGui.getInstance().launch();
+    }
+
+    private static void log(String msg){
+        SCLogger.getInstance().log(PluginManager.class.getName(),"INFO",msg);
     }
 
     public static PluginManager getInstance() {
@@ -56,13 +60,14 @@ public class PluginManager {
 
     }
 
-    public void loadInstalledPlugins() {
+    synchronized public void loadInstalledPlugins() {
         //TODO need to change logic -> scl must find class implementing rsc without manifest
         //
         String mainClass = "";
         String pluginName = "";
         String pluginVersion = "";
         ArrayList<Plugin> alreadyInstalled = (ArrayList<Plugin>) installedPlugins.clone();
+        log("Already installed: "+ alreadyInstalled.size());
         installedPlugins = new ArrayList<Plugin>(1);
         boolean installed = false;
         try {
@@ -73,7 +78,7 @@ public class PluginManager {
                 try {
                     URL jarURL = f.toURI().toURL();
                     installed = false;
-                    for (Plugin p : alreadyInstalled) {
+                    for (Plugin p : installedPlugins) {
                         if (p.getPluginPath() != null && p.getPluginPath().equals(jarURL)) {
                             installed = true;
                             //
@@ -83,7 +88,7 @@ public class PluginManager {
                                 p.setPluginObj(p.getPluginObj().getClass().newInstance());
                             }
                             boolean is = p.getPluginObj().connect();
-                            installedPlugins.add(p);
+                            //installedPlugins.add(p);
                             break;
                         }
                     }
@@ -107,10 +112,10 @@ public class PluginManager {
                             pluginVersion = "".equals(instance.getPluginVersion()) ? "-1" : instance.getPluginVersion();
                         } catch (AbstractMethodError ame) {
                             //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
-                            System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
+                            log("Local plugin loading AbstractMethodError: " + ame.getMessage());
                         } catch (IncompatibleClassChangeError ice) {
-                            System.out.println("Plugin manager: can't load plugin " + f.getAbsolutePath());
-                            System.out.println(ice.getLocalizedMessage());
+                            log("Plugin manager: can't load plugin " + f.getAbsolutePath());
+                            log(ice.getLocalizedMessage());
                             continue;
                         }
                         if (cl != null && INotificationClient.class.isAssignableFrom(cl)) {
@@ -148,9 +153,9 @@ public class PluginManager {
 
 
 //
-
+            log("Loaded installed plugins: "+installedPlugins.size());
         } catch (IOException ioe) {
-            System.out.println(ioe.getLocalizedMessage());
+            log(ioe.getLocalizedMessage());
         }
         /*     };
          */
@@ -195,7 +200,7 @@ public class PluginManager {
                     cl = classLoader.loadClass(element.replace(".class", ""));
                     //cl = classLoader.loadClass(element);
                 } catch (ClassNotFoundException cnfe) {
-                    System.out.println("Entry " + element + " not a class");
+                    log("Entry " + element + " not a class");
                 }
                 if (cl != null && iface.isAssignableFrom(cl)) {
 
@@ -235,7 +240,7 @@ public class PluginManager {
                 if (sb.length() != 0) {
                     sb.append("\n");
                 }
-                System.out.println(pl.getPluginVersion() + " " + pl.getLatestVersion());
+                log(pl.getPluginVersion() + " " + pl.getLatestVersion());
                 sb.append("New version of " + pl.getPluginSimpleName() + " plugin avaliable!");
             }
         }
@@ -252,7 +257,7 @@ public class PluginManager {
     }
 
     public void install(Plugin plugin, String version) {
-        System.out.println("Intalling plugin " + plugin.getPluginName() + ", " + version);
+        log("Intalling plugin " + plugin.getPluginName() + ", " + version);
         PluginRepoManager.getInstance().install(plugin, version);
         loadInstalledPlugins();
     }
@@ -268,10 +273,10 @@ public class PluginManager {
                     sleep(3000);
 
                     String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName + " --installPlugin " + plName + " " + targetVersion;
-                    System.out.println(command);
+                    log(command);
                     Runtime.getRuntime().exec(command);
                 } catch (Exception e) {
-                    System.out.println(e.getLocalizedMessage());
+                    log(e.getLocalizedMessage());
                 }
                 System.exit(0);
             }
@@ -286,10 +291,10 @@ public class PluginManager {
             if (f != null) {
                 return f.delete();
             } else {
-                System.out.println("Plugin for remove not found");
+                log("Plugin for remove not found");
             }
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            log(e.getLocalizedMessage());
         }
         return false;
     }
@@ -304,10 +309,10 @@ public class PluginManager {
                     sleep(3000);
 
                     String command = "java -jar " + SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher") + ".jar --deletePlugin " + plName;
-                    System.out.println(command);
+                    log(command);
                     Runtime.getRuntime().exec(command);
                 } catch (Exception e) {
-                    System.out.println(e.getLocalizedMessage());
+                    log(e.getLocalizedMessage());
                 }
                 System.exit(0);
             }
@@ -329,7 +334,7 @@ public class PluginManager {
             }
             return components1.length < components2.length ? -1 : (components1.length == components2.length ? 0 : 1);
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            log(e.getLocalizedMessage());
             return 1;
         }
     }
@@ -359,10 +364,10 @@ public class PluginManager {
 
                 } catch (AbstractMethodError ame) {
                     //TODO need to implement central logging logic (at first time it can be simple sout, but in one place).
-                    System.out.println("Local plugin loading AbstractMethodError: " + ame.getMessage());
+                    log("Local plugin loading AbstractMethodError: " + ame.getMessage());
                 } catch (IncompatibleClassChangeError ice) {
-                    System.out.println("Plugin manager: can't get plugin " + f.getAbsolutePath());
-                    System.out.println(ice.getLocalizedMessage());
+                    log("Plugin manager: can't get plugin " + f.getAbsolutePath());
+                    log(ice.getLocalizedMessage());
                     continue;
                 }
             }

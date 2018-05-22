@@ -2,7 +2,7 @@
 <configuration>
 
     <MandatoryPlugins force="true">scl-svn-plugin,scl_mq_notif_plugin</MandatoryPlugins>
-
+    <JavaAppOpeningMode force="true">OSMode</JavaAppOpeningMode>>
     <SVNUser force="true">submitter</SVNUser>
     <AutoUpdaterServerURL>http://bssdev:8888/SCLauncher/</AutoUpdaterServerURL>
     <AutoUpdaterEnabled>true</AutoUpdaterEnabled>

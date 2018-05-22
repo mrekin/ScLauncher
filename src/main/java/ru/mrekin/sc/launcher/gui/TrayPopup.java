@@ -4,6 +4,7 @@ package ru.mrekin.sc.launcher.gui;
  * Created by MRekin on 20.10.2016.
  */
 
+import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.plugin.INotificationService;
 
 import javax.swing.*;
@@ -11,6 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 
 public class TrayPopup implements INotificationService {
@@ -33,6 +35,10 @@ public class TrayPopup implements INotificationService {
         });
     }
 
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
+    }
+
     public static void createGUI() {
         setTrayIcon();
     }
@@ -48,7 +54,7 @@ public class TrayPopup implements INotificationService {
         URL imageURL = TrayPopup.class.getClassLoader().getResource("icon.png");
 
         Image icon = Toolkit.getDefaultToolkit().getImage(imageURL);
-        System.out.println("New tray icon creation!");
+        log("New tray icon creation!");
         trayIcon = new TrayIcon(icon, APPLICATION_NAME, trayMenu);
         trayIcon.setImageAutoSize(true);
 
@@ -63,8 +69,8 @@ public class TrayPopup implements INotificationService {
         SystemTray tray = SystemTray.getSystemTray();
         try {
             tray.add(trayIcon);
-        } catch (AWTException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log(e.getLocalizedMessage());
         }
 
         /*trayIcon.displayMessage(APPLICATION_NAME, "SCLauncher started!",

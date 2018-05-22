@@ -3,12 +3,14 @@ package ru.mrekin.sc.launcher.plugin.NexusPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.plugin.IPluginRepoClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +32,10 @@ public class NexusPluginRepoClient implements IPluginRepoClient {
 
     public NexusPluginRepoClient() {
 
+    }
+
+    private static void log(String msg){
+        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(),"INFO",msg);
     }
 
     public void connect(String user, String pass, String serverURL) throws Exception {
@@ -111,7 +117,7 @@ public class NexusPluginRepoClient implements IPluginRepoClient {
             }
         }
         if (serverAddress == null) {
-            System.out.println("No such plugin :" + pluginSimpleName);
+            log("No such plugin :" + pluginSimpleName);
             return null;
         }
         HttpURLConnection connection = null;

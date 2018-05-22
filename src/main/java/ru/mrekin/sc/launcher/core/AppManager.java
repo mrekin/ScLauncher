@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
+import ru.mrekin.sc.launcher.Launch;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
@@ -32,6 +33,11 @@ public class AppManager {
         init();
 
     }
+
+    private static void log(String msg){
+        SCLogger.getInstance().log(AppManager.class.getName(),"INFO",msg);
+    }
+
 
     public static AppManager getInstance() {
         if (instance != null) {
@@ -72,7 +78,7 @@ public class AppManager {
     public void loadLocalAppInfo() {
         FileDriver.getInstance().loadAppsSettings();
         appList = FileDriver.getInstance().getAppList();
-        System.out.println("Local appList loaded: " + appList.size());
+        log("Local appList loaded: " + appList.size());
     }
 
     public ArrayList<Application> getAppList() {
@@ -95,10 +101,10 @@ public class AppManager {
                     try {
                         pl.getPluginObj().connect();
                         apps = pl.getPluginObj().getAppList();
-                        System.out.println("Plugin '" + pl.getPluginName() + "' connected.");
-                        System.out.println("Applist loaded. Size " + apps.size());
+                        log("Plugin '" + pl.getPluginName() + "' connected.");
+                        log("Applist loaded. Size " + apps.size());
                     } catch (Exception e) {
-                        System.out.println(e.getLocalizedMessage());
+                        log(e.getLocalizedMessage());
                     }
                     for (Application app : apps) {
                         app.setSourcePlugin(pl.getPluginName());
@@ -107,7 +113,7 @@ public class AppManager {
                             //If app already installed - set avaliable versions and sourcePlugin
                             appList.get(appList.indexOf(app)).setAppVersions(app.getAppVersions());
                             appList.get(appList.indexOf(app)).setSourcePlugin(app.getSourcePlugin());
-                            System.out.println("App updated: " + app.getAppName() + ". Added versions: " + app.getAppVersions());
+                            log("App updated: " + app.getAppName() + ". Added versions: " + app.getAppVersions());
                         } else {
                             //If not installed - add to list
                             appList.add(app);
@@ -169,7 +175,7 @@ public class AppManager {
 
     public void installApplication(String appName, String version) {
 
-        System.out.println("Installing: "+appName + " " + version);
+        log("Installing: "+appName + " " + version);
         client = PluginManager.getInstance().getPluginByName(getAppByName(appName).getSourcePlugin()).getPluginObj();
         try {
             if (!client.checkConnection()) {
@@ -177,13 +183,13 @@ public class AppManager {
                     client.connect();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    System.out.println("Can't access to " + client.getPluginName() + " storage, check connection");
+                    log("Can't access to " + client.getPluginName() + " storage, check connection");
                     return;
                 }
 
             }
         } catch (Exception e) {
-            System.out.println(e.getLocalizedMessage());
+            log(e.getLocalizedMessage());
         }
     /*    try {
             client.connect();
@@ -212,13 +218,13 @@ public class AppManager {
                             }
                             is = client.getFile(appPath, version, fileName);
                             if (!FileDriver.getInstance().installFile("", appPath, version, fileName, is)) {
-                                System.out.println("Can't install file: " + fileName);
+                                log("Can't install file: " + fileName);
                             }
                             is.close();
                             i++;
                         }
                     } catch (IOException ioe) {
-                        System.out.println(ioe.getLocalizedMessage());
+                        log(ioe.getLocalizedMessage());
                     }
 
 
@@ -277,7 +283,7 @@ public class AppManager {
         try {
             FileUtils.deleteDirectory(f);
         } catch (IOException ioe) {
-            System.out.println(ioe.getLocalizedMessage());
+            log(ioe.getLocalizedMessage());
         }
         //loadLocalAppInfo();
         AppManager.getInstance().updateAppList();

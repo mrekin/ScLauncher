@@ -1,9 +1,6 @@
 package ru.mrekin.sc.launcher;
 
-import ru.mrekin.sc.launcher.core.AppManager;
-import ru.mrekin.sc.launcher.core.LauncherConstants;
-import ru.mrekin.sc.launcher.core.PluginManager;
-import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.core.*;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.tools.ApplicationTools;
 import ru.mrekin.sc.launcher.update.AutoUpdater;
@@ -13,9 +10,12 @@ import ru.mrekin.sc.launcher.update.AutoUpdater;
  */
 public class Launch {
 
-    public static void main(String[] args) {
 
-        if(ApplicationTools.isAlreadyRunning()){
+    public static void main(String[] args) {
+        //SetUp logging
+        SCLogger.getInstance();
+
+        if (ApplicationTools.isAlreadyRunning()) {
             System.exit(0);
         }
 
@@ -27,18 +27,24 @@ public class Launch {
 //      LauncherGui.getInstance();
         if (isStart) {
             //launch
-         Thread th =  new Thread(){
+
+            SettingsManager.updateLocalSettings();
+            SettingsManager.getInstance();
+            //LauncherGui.getInstance();
+            LauncherGui.getInstance().launch();
+
+            Thread th = new Thread() {
                 @Override
                 public void run() {
-                    SettingsManager.updateLocalSettings();
-                    SettingsManager.getInstance();
+                    PluginManager.getInstance().checkNewPluginVersions();
                     ApplicationTools.prepareToStart();
                     AppManager.getInstance();
-                    PluginManager.getInstance().checkNewPluginVersions();
-
                 }
             };
             th.start();
+
+
+            //PluginManager.getInstance().checkNewPluginVersions();
 
  /*           SettingsManager.updateLocalSettings();
             SettingsManager.getInstance();
@@ -56,13 +62,12 @@ public class Launch {
 
             AppManager.getInstance().loadLocalAppInfo();
             //Launching launcher :)
-            LauncherGui.getInstance();
-            LauncherGui.getInstance().launch();
+
+
             AppManager.getInstance().updateAppList();
 
         }
     }
-
 
 
 }
