@@ -23,16 +23,20 @@ public class LauncherConstants {
     public final static String ApplicationShowReleaseNotes = "ApplicationShowReleaseNotes";
     public final static String MandatoryPlugins = "MandatoryPlugins";
     public final static String JavaAppOpeningMode = "JavaAppOpeningMode";
+    public final static String MenuExtendedMode = "MenuExtendedMode";
 
+    //app.properties file params
     public final static String ApplicationVersion = "Application.version";
     public final static String ApplicationName = "Application.name";
     public final static String ApplicationExecFile = "Application.execFile";
     public final static String ApplicationType = "Application.type";
 
+    //Supported applications types
     public final static String ApplicationTypeWin = "win";
     public final static String ApplicationTypeUnix = "unix";
     public final static String ApplicationTypeJava = "java";
 
+    // Forms titles
     public final static String SettingsFormTitle = "Settings";
     public final static String AppPrepareFormTitle = "Prepare application";
     public final static String PluginsFormTitle = "Plugins";

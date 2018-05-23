@@ -157,50 +157,55 @@ public class LauncherGui extends JFrame {
             }
         });
 
-        toolsMenu = new JMenu("Tools");
 
-        appPrepareMenuItem = new JMenuItem("Prepare application");
-        appPrepareMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (applicationPrepareForm == null) {
-                    applicationPrepareForm = new ApplicationPrepareForm();
-                } else if (!applicationPrepareForm.isVisible()) {
-                    applicationPrepareForm = new ApplicationPrepareForm();
+        if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode,"false").equals("true")) {
+            toolsMenu = new JMenu("Tools");
+
+            appPrepareMenuItem = new JMenuItem("Prepare application");
+            appPrepareMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if (applicationPrepareForm == null) {
+                        applicationPrepareForm = new ApplicationPrepareForm();
+                    } else if (!applicationPrepareForm.isVisible()) {
+                        applicationPrepareForm = new ApplicationPrepareForm();
+                    }
+                    applicationPrepareForm.setEnabled(true);
+
                 }
-                applicationPrepareForm.setEnabled(true);
-
-            }
-        });
+            });
 
 
-        viewLogMenuItem = new JMenuItem("View logs");
-        viewLogMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                java.io.File file = new File(SCLogger.getLogFileName());
-                try {
-                    Desktop.getDesktop().open(file);
-                } catch (IOException ioe) {
-                    log(ioe.getLocalizedMessage());
+            viewLogMenuItem = new JMenuItem("View logs");
+            viewLogMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    java.io.File file = new File(SCLogger.getLogFileName());
+                    try {
+                        Desktop.getDesktop().open(file);
+                    } catch (IOException ioe) {
+                        log(ioe.getLocalizedMessage());
+                    }
                 }
-            }
-        });
+            });
 
+            toolsMenu.add(appPrepareMenuItem);
+            toolsMenu.add(viewLogMenuItem);
+        }
         // FORMING MENUS
         pluginMenu.add(pluginRepoMenuItem);
         pluginMenu.add(pluginSettingsMenuItem);
 
         settingsMenu.add(settingMenuItem);
 
-        toolsMenu.add(appPrepareMenuItem);
-        toolsMenu.add(viewLogMenuItem);
+
 
         pluginSettingsMenuItem.setEnabled(false);
 
         //FORMING MENU BAR
         menuBar.add(pluginMenu);
         menuBar.add(settingsMenu);
-        menuBar.add(toolsMenu);
-
+        if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode,"false").equals("true")) {
+            menuBar.add(toolsMenu);
+        }
         setJMenuBar(menuBar);
 
     }

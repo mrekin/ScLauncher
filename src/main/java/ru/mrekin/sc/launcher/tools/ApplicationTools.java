@@ -112,7 +112,7 @@ public class ApplicationTools {
         boolean avaliable = false;
         String[] mandatoryPluginsArray = SettingsManager.getInstance().getPropertiesArrayByName(LauncherConstants.MandatoryPlugins);
         for (String mPlugin : mandatoryPluginsArray) {
-            log("Starting to check plugin: " + mPlugin);
+            log("[Mandatory plugin installer] Starting to check plugin: " + mPlugin);
             String[] tempArray = mPlugin.split(":");
             String plName = "", plVersion = "";
             if (tempArray != null && tempArray.length > 0 && tempArray[0] != null) {
@@ -126,8 +126,11 @@ public class ApplicationTools {
             for (Plugin plugin : PluginManager.getInstance().getAllPlugins()) {
                 if (plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     installed = plugin.isInstalled();
+                    if(plugin.getLatestVersion().equals("-1")){
+                        log("[Mandatory plugin installer] Latest version unknown. Possible repository not reachable.");
+                    }
                     if (plugin.isInstalled() && PluginManager.compareVersions(plugin.getPluginVersion(), plugin.getLatestVersion()) < 0) {
-                        log("Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
+                        log("[Mandatory plugin installer] Plugin " + plugin.getPluginSimpleName() + "is intalled. Break.");
                         break;
                     }
                 }
@@ -136,16 +139,16 @@ public class ApplicationTools {
                 continue;
             }
             if (!PluginManager.getInstance().isAvaliablePluginsLoaded()) {
-                log("Begin of loadAvaliablePlugins");
+                log("[Mandatory plugin installer] Begin of loadAvaliablePlugins");
                 PluginManager.getInstance().loadAvaliablePlugins();
-                log("End of loadAvaliablePlugins");
+                log("[Mandatory plugin installer] End of loadAvaliablePlugins");
             }
             for (Plugin plugin : PluginManager.getInstance().getAllPlugins()) {
                 if (!plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     plVersion = "".equals(plVersion) ? plugin.getLatestVersion() : plVersion;
-                    log("Plugin " + plName + " not installed. Installing version " + plVersion);
+                    log("[Mandatory plugin installer] Plugin " + plName + " not installed. Installing version " + plVersion);
                     PluginManager.getInstance().install(plugin, plVersion);
-                    log("Plugin " + plName + ":" + plVersion + " installed");
+                    log("[Mandatory plugin installer] Plugin " + plName + ":" + plVersion + " installed");
                     TrayPopup.displayMessage("Mandatory plugin " + plName + " installed\n It may require restart.");
                     avaliable = true;
                     break;
@@ -153,7 +156,7 @@ public class ApplicationTools {
             }
 
             if (!avaliable) {
-                log("Plugin '" + plName + "' not avaliable. Please check plugin name or repository connections.");
+                log("[Mandatory plugin installer] Plugin '" + plName + "' not avaliable. Please check plugin name or repository connections.");
             }
 
         }
