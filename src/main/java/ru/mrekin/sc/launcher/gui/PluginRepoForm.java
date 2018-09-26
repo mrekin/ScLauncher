@@ -263,7 +263,8 @@ public class PluginRepoForm extends JFrame {
                         plugins.get(rowIndex).getPluginVersions().keySet().toArray(array);
                         //array = new String[]{"1", "2", "3"};
                         JComboBox box = new JComboBox(array);
-                        box.setSelectedIndex(array.length - 1);
+                        //box.setSelectedIndex(array.length - 1);
+
                         table.getColumnModel().getColumn(columnIndex).setCellEditor(new DefaultCellEditor(box));
                         DefaultTableCellRenderer renderer =
                                 new DefaultTableCellRenderer();

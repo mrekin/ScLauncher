@@ -26,7 +26,8 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must ends with two \r.
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -35,7 +36,7 @@ Icon
 .Spotlight-V100
 .Trashes
 target/
-app/
+apps/
 plugins/
 
 config.xml
@@ -43,3 +44,4 @@ log.txt
 sc-launcher.i*
 src/main/resources/config.xml
 lock
+apps/*

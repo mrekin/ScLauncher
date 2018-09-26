@@ -59,11 +59,17 @@
 1. Fixed starup logic: SCL starts faster.
 =========================================
 =============Version 0.4.4===============
-0. !!! Java 8 requred for this version !!!
+0. !!! Java 8 requred starting from this version !!!
 1. Fixed Plugins view bug in "repository connection problem" case.
 2. SCLogger implemented. Now SClauncher write logs to sout and file.
 3. Updated startUp logic
 4. Some GUI updates
 5. Updated app exec logic (first triyng to open with system associated application, later by exec(). For java added option to use "java -jar" instead system JRE)
 6. Added gui tools to prepare app and logs view
+=========================================
+=============Version 0.5.0===============
+1. New functionality to add link to your application. Just drug&drop target file or .lnk on SCLauncher! Note: works only in OS Windows.
+2. Popup menus fixes: disable Update button when needed
+3. Added different color for local installed apps
+4. Some GUI updates
 =========================================

@@ -133,6 +133,10 @@ public class AppPopupMenu extends JPopupMenu {
             viewFolderItem.setEnabled(false);
         }
 
+        if (AppPopupMenu.this.application.getSourcePlugin().isEmpty()) {
+            updateItem.setEnabled(false);
+        }
+
         this.add(updateItem);
         this.add(installItem);
         this.add(deleteItem);

@@ -36,6 +36,7 @@ public class LauncherGui extends JFrame {
     //PluginRepoForm pluginRepoForm;
     SettingsForm settingsForm;
     ApplicationPrepareForm applicationPrepareForm;
+    ApplicationPrepareLinkForm applicationPrepareLinkForm;
 
     private static void log(String msg) {
         SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
@@ -48,6 +49,7 @@ public class LauncherGui extends JFrame {
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        instance.setDropTarget(AppDropTarget.getInstance());
         TrayPopup.createGUI();
 
         MouseAdapter ma = new MouseAdapter() {
@@ -244,6 +246,8 @@ public class LauncherGui extends JFrame {
             button.setBorder(new EtchedBorder());
             button.setToolTipText((String) localApp.getAppName());
             button.setApp(localPath);
+            button.setEnabled(localApp.isInstalled());
+
 
 
             JLabel label = new JLabel();
@@ -256,14 +260,15 @@ public class LauncherGui extends JFrame {
             label.setComponentPopupMenu(new AppPopupMenu(this, localApp, AppManager.getInstance()));
             if (localApp.isInstalled() && localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.GREEN);
-                button.setEnabled(true);
+            } else if (localApp.isInstalled()&&localApp.getSourcePlugin().isEmpty()) {
+                label.setForeground(Color.ORANGE);
             } else if (localApp.isInstalled() && !localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.RED);
                 button.setEnabled(true);
             } else if (!localApp.isInstalled()) {
                 label.setForeground(Color.LIGHT_GRAY);
-                button.setEnabled(false);
             }
+
 
 
             JComboBox box = new JComboBox();

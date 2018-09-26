@@ -6,6 +6,7 @@ import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
 import ru.mrekin.sc.launcher.plugin.Plugin;
+import ru.mrekin.sc.launcher.tools.ApplicationPrepare;
 
 import java.io.File;
 import java.io.IOException;
@@ -285,6 +286,44 @@ public class AppManager {
             log(ioe.getLocalizedMessage());
         }
         //loadLocalAppInfo();
+        AppManager.getInstance().loadLocalAppInfo();
+        AppManager.getInstance().updateAppList();
+    }
+
+    public void createAppLink(ShellLinkEx link, String appName, String appVersion, String appType) {
+
+        String path = "";
+        if ("".equals(link.resolveTarget()) || link == null) {
+            System.out.print("Nothing to create. Ok.");
+            return;
+        }
+        /*
+        for (Application app : FileDriver.getInstance().getAppList()) {
+            if (app.getAppPath().equals(appPath)) {
+                path = LauncherConstants.WorkingDirectory + SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory) + app.getAppPath();
+                break;
+            }
+        }*/
+        File f = new File(SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory)+"/"+appName);
+        if(f.exists()){
+            log("App ("+f.getAbsolutePath()+") already exists");
+            //return;
+        }
+        try {
+            FileUtils.forceMkdir(f);
+        } catch (IOException ioe) {
+            log(ioe.getLocalizedMessage());
+        }
+
+        //save link to target dir
+        try {
+            link.saveTo(f.getAbsolutePath() + "/" + appName + ".lnk");
+        }catch (IOException ioe){
+            log(ioe.toString());
+        }
+        ApplicationPrepare.appPrepare(f.getAbsolutePath(),appName,appVersion,appType,appName + ".lnk");
+        //loadLocalAppInfo();
+        AppManager.getInstance().loadLocalAppInfo();
         AppManager.getInstance().updateAppList();
     }
 

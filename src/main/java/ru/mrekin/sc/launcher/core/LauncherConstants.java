@@ -39,6 +39,7 @@ public class LauncherConstants {
     // Forms titles
     public final static String SettingsFormTitle = "Settings";
     public final static String AppPrepareFormTitle = "Prepare application";
+    public final static String AppPrepareLinkFormTitle = "Prepare link for application";
     public final static String PluginsFormTitle = "Plugins";
 
 }
