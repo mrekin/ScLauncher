@@ -25,10 +25,6 @@ public class AutoUpdater {
     //private static String serverURL = "http://bssdev:8888/SCLauncher/";
     private static String serverURL, appURL;
 
-    private static void log3(String msg) {
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
-    }
-
     public static String checkForUpdates() {
 
         if ("false".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterDevMode, "false"))) {
@@ -362,14 +358,14 @@ public class AutoUpdater {
     }
 
     private static void log(String text) {
-        log3(text);
+        System.out.println(text);
         if (ta != null) {
             ta.append(text + "\n");
         }
     }
 
     private static void log2(String text) {
-        log3(text);
+        System.out.println(text);
         if (ta != null) {
             ta.append(text);
         }
