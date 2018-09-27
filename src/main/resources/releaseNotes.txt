@@ -73,3 +73,7 @@
 3. Added different color for local installed apps
 4. Some GUI updates
 =========================================
+=============Version 0.5.2===============
+1. Updated prepareLink window (GUI updates)
+2. Fixed app install and delete bugs
+=========================================

@@ -45,3 +45,5 @@ sc-launcher.i*
 src/main/resources/config.xml
 lock
 apps/*
+sc-launcher.jar
+config — копия.xml

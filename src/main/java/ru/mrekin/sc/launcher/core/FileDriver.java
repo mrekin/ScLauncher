@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -53,8 +54,8 @@ public class FileDriver implements ISCLogger {
         return apps;
     }
 
-    public ArrayList<Application> getAppList() {
-        return this.appList;
+    public CopyOnWriteArrayList<Application> getAppList() {
+        return new CopyOnWriteArrayList(this.appList);
     }
 
     public void loadAppsSettings() {

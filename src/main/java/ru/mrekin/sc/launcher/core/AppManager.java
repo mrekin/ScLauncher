@@ -12,7 +12,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 //import ru.mrekin.sc.launcher.SvnClient;
 
@@ -26,7 +28,8 @@ public class AppManager {
     //FileDriver FileDriver.getInstance();
     //SvnClient svnClient;
     IRemoteStorageClient client;
-    ArrayList<Application> appList;
+   // ArrayList<Application> appList;
+    CopyOnWriteArrayList<Application> appList;
 
     private AppManager() {
         instance = this;
@@ -51,7 +54,9 @@ public class AppManager {
     public void init() {
         // this.FileDriver.getInstance() = FileDriver.getInstance();
 //        this.svnClient = new SvnClient();
+
         appList = FileDriver.getInstance().getAppList();
+  //      appList = (ArrayList<Application>) Collections.synchronizedList(appList);
         updateAppList();
 //        svnAppList = svnClient.getAppList();
 
@@ -81,9 +86,35 @@ public class AppManager {
         log("Local appList loaded: " + appList.size());
     }
 
+    public void loadLocalAppInfo2(){
+        CopyOnWriteArrayList<Application> apps = new CopyOnWriteArrayList<Application>();
+
+        FileDriver.getInstance().loadAppsSettings();
+        apps = FileDriver.getInstance().getAppList();
+        log("Local appList loaded (2): " + appList.size());
+
+        for (Application app : apps) {
+            if (appList.contains(app)) {
+                //If app already installed - set avaliable versions and sourcePlugin
+                appList.get(appList.indexOf(app)).setAppVersion(app.getAppVersion());
+                appList.get(appList.indexOf(app)).setInstalled(true);
+                log("App updated: " + app.getAppName() + ". Added versions: " + app.getAppVersions());
+            } else {
+                //If not installed - add to list
+                appList.add(app);
+            }
+
+        }
+        for (Application app : appList) {
+            if (app.isInstalled() && apps.indexOf(app)==-1) {
+                appList.remove(app);
+            }
+        }
+    }
+
     public ArrayList<Application> getAppList() {
         // updateAppList();
-        return appList;
+        return new ArrayList(appList);
     }
 
     /**
@@ -176,7 +207,11 @@ public class AppManager {
     public void installApplication(String appName, String version) {
 
         log("Installing: " + appName + " " + version);
-        client = PluginManager.getInstance().getPluginByName(getAppByName(appName).getSourcePlugin()).getPluginObj();
+        client = PluginManager
+                .getInstance()
+                .getPluginByName(getAppByName(appName)
+                        .getSourcePlugin())
+                .getPluginObj();
         try {
             if (!client.checkConnection()) {
                 try {
@@ -286,7 +321,7 @@ public class AppManager {
             log(ioe.getLocalizedMessage());
         }
         //loadLocalAppInfo();
-        AppManager.getInstance().loadLocalAppInfo();
+        AppManager.getInstance().loadLocalAppInfo2();
         AppManager.getInstance().updateAppList();
     }
 

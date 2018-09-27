@@ -1,5 +1,6 @@
 package ru.mrekin.sc.launcher.gui;
 
+import net.miginfocom.swing.MigLayout;
 import ru.mrekin.sc.launcher.core.*;
 import ru.mrekin.sc.launcher.tools.ApplicationPrepare;
 
@@ -25,14 +26,14 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
     //List<Plugin> plugins;
 
     JPanel jspane;
-    JFileChooser fc;
+    //JFileChooser fc;
     ApplicationPrepareLinkForm instance;
     File selectedFile;
     JLabel mainText;
     JLabel filePath;
     JTextField appName, appVersion, appType;
     String appNameStr,appVersionStr,appTypeStr,appPathStr;
-    JButton saveButton,cancelButton, selectButton;
+    JButton saveButton,cancelButton/*, selectButton*/;
     ShellLinkEx link = null;
 
     public ApplicationPrepareLinkForm() {
@@ -83,19 +84,22 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         /*  File chooser*/
-        log("Creating fileChooser");
+        /*log("Creating fileChooser");
         fc = new JFileChooser();
         fc.setCurrentDirectory(new File("."));
         fc.setDialogTitle("Select folder containing app");
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setAcceptAllFileFilterUsed(false);
-
+        */
         /*File path*/
         log("Creating fields");
         filePath = new JLabel(appPathStr);
         appName = new JTextField(appNameStr);
+        appName.setPreferredSize(new Dimension(200,0));
         appVersion = new JTextField(appVersionStr);
+        appVersion.setPreferredSize(new Dimension(200,0));
         appType = new JTextField(appTypeStr);
+        appType.setPreferredSize(new Dimension(200,0));
 
         /* Main text*/
         mainText = new JLabel("Please check App params and confirm!");
@@ -131,7 +135,7 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         });
 
         cancelButton.setEnabled(true);
-
+        /*
         selectButton = new JButton("Select file..");
         //selectButton.setPreferredSize(new Dimension(0,200));
         //JButton updateButton = new JButton("Update");
@@ -164,7 +168,7 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         });
 
 
-
+        */
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -198,21 +202,28 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
 
     private void launch() {
         log("Launching frame");
+
+        MigLayout ml = new MigLayout(
+                "wrap 2", // Layout Constraints
+                "[:100:]5[]", // Column constraints
+                "[][]");
         //remove(tablePanel);
         //tablePanel = new JPanel();
         jspane = new JPanel();
-        jspane.setLayout(new GridLayout(0, 1));
-        jspane.add(mainText);
-        JPanel filech = new JPanel(new BorderLayout(1,1));
-        {
-            filech.add(filePath,BorderLayout.EAST);
-            filech.add(selectButton,BorderLayout.WEST);
-        }
+        jspane.setLayout(ml);
+        jspane.add(mainText,"span");
 
-        jspane.add(filech);
-        jspane.add(getComponentWithLabel("App name",appName));
-        jspane.add(getComponentWithLabel("App version",appVersion));
-        jspane.add(getComponentWithLabel("App type",appType));
+        jspane.add(new JLabel("Target file:"));
+        jspane.add(filePath);
+
+        jspane.add(new JLabel("App name:"));
+        jspane.add(appName);
+
+        jspane.add(new JLabel("App version:"));
+        jspane.add(appVersion);
+
+        jspane.add(new JLabel("App type:"));
+        jspane.add(appType);
 
         jspane.setBorder(new LineBorder(Color.green));
         //jspane.setPreferredSize(table.getMaximumSize());
