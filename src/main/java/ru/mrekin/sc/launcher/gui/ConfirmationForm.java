@@ -18,10 +18,8 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
 
     public ConfirmationForm() {
 
-        contentPane = new JPanel((new MigLayout(
-                "wrap 2", // Layout Constraints
-                "[:100:]5[]", // Column constraints
-                "[][]")));
+        setTitle("Delete confirmation");
+        contentPane = new JPanel((new MigLayout()));
 
         BufferedImage
                 mainIcon = null;
@@ -39,9 +37,9 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
         setModal(true);
         setModalityType(ModalityType.APPLICATION_MODAL);
         textArea.setEditable(false);
-        contentPane.add(textArea,"span");
-        contentPane.add(buttonOK);
-        contentPane.add(buttonCancel);
+        contentPane.add(textArea,"wrap");
+        contentPane.add(buttonOK, "split 2");
+        contentPane.add(buttonCancel,"gapleft push");
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
