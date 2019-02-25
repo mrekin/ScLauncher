@@ -2,6 +2,7 @@ package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
+import ru.mrekin.sc.launcher.gui.ConfirmationForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
@@ -303,6 +304,12 @@ public class AppManager {
     public void deleteApplication(String appPath) {
         //TODO need not remove local settings file / update settings when updating application
         //TODO need to move this to FileDriver
+        ConfirmationForm cf = new ConfirmationForm();
+        cf.setText("Please confirm application deleting");
+        if(!cf.launch()){
+            return;
+        }
+
         String path = "";
         if ("".equals(appPath) || appPath == null) {
             System.out.print("Nothing to delete. Ok.");

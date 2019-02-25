@@ -77,3 +77,6 @@
 1. Updated prepareLink window (GUI updates)
 2. Fixed app install and delete bugs
 =========================================
+=============Version 0.5.3===============
+1. Delete confirmation added
+=========================================
