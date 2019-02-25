@@ -3,4 +3,4 @@ Before creating Eclipse/Idea project
 //mvn eclipse:eclipse
 run
 //mvn package 
-to update configuration files.
+to update configuration files..

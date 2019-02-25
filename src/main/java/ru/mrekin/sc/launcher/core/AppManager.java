@@ -2,6 +2,7 @@ package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
 import ru.mrekin.sc.launcher.gui.AppInstallForm;
+import ru.mrekin.sc.launcher.gui.ConfirmationForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.plugin.INotificationClient;
 import ru.mrekin.sc.launcher.plugin.IRemoteStorageClient;
@@ -187,8 +188,9 @@ public class AppManager {
                 break;
             }
         }
-        deleteApplication(appPath);
-        installApplication(name, version);
+        if(deleteApplication(appPath, true, "Current version will be deleted!")){
+            installApplication(name, version);
+        }
         // AppManager.getInstance().updateAppList();
         //LauncherGui.getInstance().launch();
 
@@ -300,16 +302,24 @@ public class AppManager {
     }
 
 
-    public void deleteApplication(String appPath) {
+    public boolean deleteApplication(String appPath, boolean needConfirmation, String confirmationText) {
         //TODO need not remove local settings file / update settings when updating application
         //TODO need to move this to FileDriver
+
         String path = "";
         if ("".equals(appPath) || appPath == null) {
             System.out.print("Nothing to delete. Ok.");
-            return;
+            return true;
         }
         for (Application app : FileDriver.getInstance().getAppList()) {
             if (app.getAppPath().equals(appPath)) {
+                if(needConfirmation && app.isInstalled()) {
+                    ConfirmationForm cf = new ConfirmationForm();
+                    cf.setText(confirmationText);
+                    if (!cf.launch()) {
+                        return false;
+                    }
+                }
                 path = LauncherConstants.WorkingDirectory + SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory) + app.getAppPath();
                 break;
             }
@@ -319,10 +329,12 @@ public class AppManager {
             FileUtils.deleteDirectory(f);
         } catch (IOException ioe) {
             log(ioe.getLocalizedMessage());
+            return false;
         }
         //loadLocalAppInfo();
         AppManager.getInstance().loadLocalAppInfo2();
         AppManager.getInstance().updateAppList();
+        return true;
     }
 
     public void createAppLink(ShellLinkEx link, String appName, String appVersion, String appType) {
