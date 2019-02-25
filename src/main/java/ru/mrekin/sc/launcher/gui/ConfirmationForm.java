@@ -7,15 +7,21 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import net.miginfocom.swing.MigLayout;
 
 public class ConfirmationForm extends JDialog  implements ISCLogger {
     private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonCancel;
-    private JTextArea textArea;
+    private JButton buttonOK = new JButton("OK");
+    private JButton buttonCancel = new JButton("Cancel");
+    private JTextArea textArea = new JTextArea();
     private boolean result = false;
 
     public ConfirmationForm() {
+
+        contentPane = new JPanel((new MigLayout(
+                "wrap 2", // Layout Constraints
+                "[:100:]5[]", // Column constraints
+                "[][]")));
 
         BufferedImage
                 mainIcon = null;
@@ -32,6 +38,10 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
         setContentPane(contentPane);
         setModal(true);
         setModalityType(ModalityType.APPLICATION_MODAL);
+        textArea.setEditable(false);
+        contentPane.add(textArea,"span");
+        contentPane.add(buttonOK);
+        contentPane.add(buttonCancel);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
