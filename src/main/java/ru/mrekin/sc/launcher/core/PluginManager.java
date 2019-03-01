@@ -319,6 +319,12 @@ public class PluginManager {
         }.run();
     }
 
+    /**
+     * Comparing versions format x.y.z (1.10.123). Returns "-1" if v1 less than v2, "0" if equal and "1" in case v1 greater than v2
+     * @param v1 - version in x.y.z format
+     * @param v2 - version 2 in x.y.z format
+     * @return -1, 0 ,1
+     */
     public static int compareVersions(String v1, String v2) {
         try {
             String[] components1 = v1.split("\\.");

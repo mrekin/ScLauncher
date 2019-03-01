@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher.update;
 
 import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.PluginManager;
 import ru.mrekin.sc.launcher.core.SCLogger;
 import ru.mrekin.sc.launcher.core.SettingsManager;
 
@@ -94,6 +95,12 @@ public class AutoUpdater {
             connection = null;
         }
 
+        if (PluginManager.compareVersions(currentVersion,serverVersion) == -1){
+            return serverVersion;
+        }else{
+            return null;
+        }
+/*
         if (currentVersion != null && currentVersion.equals(serverVersion)) {
             //no new version
             return null;
@@ -103,6 +110,7 @@ public class AutoUpdater {
         } else {
             return serverVersion;
         }
+  */
     }
 
     public static void update(String version) {

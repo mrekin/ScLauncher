@@ -1,6 +1,7 @@
 package ru.mrekin.sc.launcher;
 
 import ru.mrekin.sc.launcher.core.*;
+import ru.mrekin.sc.launcher.gui.ConfirmationForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.tools.ApplicationTools;
 import ru.mrekin.sc.launcher.update.AutoUpdater;
@@ -33,6 +34,17 @@ public class Launch {
             //LauncherGui.getInstance();
             LauncherGui.getInstance().launch();
 
+            //Checking if need to update launcher
+            if ("true".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
+                String version = AutoUpdater.checkForUpdates();
+                if (version != null) {
+                    if((new ConfirmationForm()).setText("New version " + version + " avaliable!\n Update?").launch())
+                    {
+                        AutoUpdater.update(version);
+                    }
+                }
+            }
+
             Thread th = new Thread() {
                 @Override
                 public void run() {
@@ -44,30 +56,12 @@ public class Launch {
             th.start();
 
 
-            //PluginManager.getInstance().checkNewPluginVersions();
-
- /*           SettingsManager.updateLocalSettings();
-            SettingsManager.getInstance();
-            ApplicationTools.prepareToStart();
-            AppManager.getInstance();
-            PluginManager.getInstance().checkNewPluginVersions();
-*/
-            //Checking if need to update launcher
-            if ("true".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
-                String version = AutoUpdater.checkForUpdates();
-                if (version != null) {
-                    AutoUpdater.update(version);
-                }
-            }
-
             AppManager.getInstance().loadLocalAppInfo();
             //Launching launcher :)
-
 
             AppManager.getInstance().updateAppList();
 
         }
     }
-
 
 }

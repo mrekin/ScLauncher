@@ -18,7 +18,7 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
 
     public ConfirmationForm() {
 
-        setTitle("Delete confirmation");
+        setTitle("Confirmation");
         contentPane = new JPanel((new MigLayout()));
 
         BufferedImage
@@ -70,8 +70,9 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    public void setText(String text){
+    public ConfirmationForm setText(String text){
         textArea.setText(text);
+        return this;
     }
 
     private void onOK() {
