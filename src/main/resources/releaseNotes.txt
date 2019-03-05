@@ -80,6 +80,7 @@
 =============Version 0.5.3===============
 1. Delete confirmation added
 =========================================
-=============Version 0.5.3===============
-1. Delete confirmation added
+=============Version 0.5.4===============
+1. Added update confirmation dialog
+2. Updated version check in update logic
 =========================================
