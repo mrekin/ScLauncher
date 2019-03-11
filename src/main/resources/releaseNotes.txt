@@ -84,3 +84,11 @@
 1. Added update confirmation dialog
 2. Updated version check in update logic
 =========================================
+=============Version 0.5.5===============
+1. Added new AutoUpdater logic to update from Ngnix directory listing server.
+=========================================
+=============Version 0.5.6===============
+1. Updated AutoUpdater logic to update from Apache directory listing server.
+2. Changed update server to sclauncher.ru (forced in settings)
+    Will be fixed: now not possible ignore version, app will ask each time.
+=========================================

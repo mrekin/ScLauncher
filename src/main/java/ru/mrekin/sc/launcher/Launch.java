@@ -14,6 +14,7 @@ public class Launch {
 
 
     public static void main(String[] args) {
+
         //SetUp logging
         SCLogger.getInstance();
 

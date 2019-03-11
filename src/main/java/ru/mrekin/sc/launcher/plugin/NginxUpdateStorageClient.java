@@ -53,7 +53,7 @@ public class NginxUpdateStorageClient implements IUpdateStorageClient, ISCLogger
         ArrayList<String> versions = new ArrayList<>();
 
         String itemsSelector = "a[href$='/'], a[href$='.jar'], a[href$='.txt']";
-        log("Getting data from server: " +serverURL);
+        log("Getting data from server: " + serverURL);
         Document doc = Jsoup.connect(serverURL).get();
         Elements links = doc.select(itemsSelector);
         log("Connected. Checking versions");
@@ -61,7 +61,7 @@ public class NginxUpdateStorageClient implements IUpdateStorageClient, ISCLogger
             String version = e.text().replace("/", "");
             if (version.matches("[0-9][0-9\\.]+")) {
                 versions.add(version);
-                log("   Found: "+version);
+                log("   Found: " + version);
             }
         }
         return versions;
@@ -80,7 +80,7 @@ public class NginxUpdateStorageClient implements IUpdateStorageClient, ISCLogger
     @Override
     public InputStream getFile(String version) throws Exception {
 
-        return new java.net.URL(serverURL+"/"+version+"/"+appName+"-"+version+".jar").openStream();
+        return new java.net.URL(serverURL + "/" + version + "/" + appName + "-" + version + ".jar").openStream();
     }
 
     @Override

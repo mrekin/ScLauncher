@@ -11,13 +11,11 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.nio.file.CopyOption;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.nio.file.*;
+import java.util.*;
 import java.util.List;
-import java.util.Properties;
 import java.util.jar.JarFile;
 
 /**
@@ -34,8 +32,8 @@ public class AutoUpdaterV2 {
     private static AutoUpdaterV2 instance = null;
 
 
-    public static AutoUpdaterV2 getInstance(){
-        if(instance==null){
+    public static AutoUpdaterV2 getInstance() {
+        if (instance == null) {
             instance = new AutoUpdaterV2();
         }
         return instance;
@@ -50,17 +48,18 @@ public class AutoUpdaterV2 {
         }
 
         ArrayList<Class<?>> cls = findClassByInterface(IUpdateStorageClient.class);
-        log("Found UpdateStorageClients: "+ cls.size());
+        log("Found UpdateStorageClients: " + cls.size());
         for (Class cl : cls) {
             try {
                 IUpdateStorageClient instance = ((IUpdateStorageClient) cl.newInstance());
 
                 Properties props = instance.getDefaultProperties();
-                props.setProperty("appName",SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher"));
+                props.setProperty("appName", SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher"));
+                props.setProperty("serverURL", SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterServerURL, props.getProperty("serverURL")));
                 instance.loadProperties(props);
                 try {
                     instance.connect();
-                }catch (Exception e){
+                } catch (Exception e) {
                     log(e.getLocalizedMessage());
                     log(e.getCause().toString());
                     continue;
@@ -75,7 +74,7 @@ public class AutoUpdaterV2 {
             }
         }
         try {
-            log("Avaliable versions: "+ String.valueOf(versions));
+            log("Avaliable versions: " + String.valueOf(versions));
             serverVersion = IUpdateStorageClient.getLatestVersion(versions);
             // System.out.println(sb.toString());
         } catch (Exception e) {
@@ -91,18 +90,18 @@ public class AutoUpdaterV2 {
 
     }
 
-    private InputStream getFISbyVersion(String version){
-        InputStream is =null;
-        if(usc==null||usc.size()==0){
+    private InputStream getFISbyVersion(String version) {
+        InputStream is = null;
+        if (usc == null || usc.size() == 0) {
             log("");
         }
-        for(IUpdateStorageClient ius : usc){
+        for (IUpdateStorageClient ius : usc) {
             try {
                 if (ius.getVersionsList().contains(version)) {
                     is = ius.getFile(version);
                     break;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 log(e.getLocalizedMessage());
             }
         }
@@ -113,7 +112,7 @@ public class AutoUpdaterV2 {
         //loadSettings();
         String appName = SettingsManager.getInstance().getPropertyByName("Application.name", "sc-launcher");
         String fileName = appName + "-" + version + ".jar";
-        FileDriver.getInstance().installFile("update",appName,version,fileName, getFISbyVersion(version));
+        FileDriver.getInstance().installFile("update", appName, version, fileName, getFISbyVersion(version));
 
         String name = AutoUpdaterV2.class.getCanonicalName().replace(".", "/") + ".class";
         String packagePath = AutoUpdaterV2.class.getPackage().getName().replace(".", "/");
@@ -175,33 +174,33 @@ public class AutoUpdaterV2 {
         }
         String version = args[0];
         String appName = args[1];
-        String newFileName = appName+"-"+version+".jar";
+        String newFileName = appName + "-" + version + ".jar";
 
         System.out.println("New launcher version avaliable: " + args[0]);
         File file = new File(".");
-        File newFile = new File("update/"+appName+"/"+version+"/"+newFileName);
+        File newFile = new File("update/" + appName + "/" + version + "/" + newFileName);
 
         System.out.println("Launcher directory: " + file.getAbsolutePath());
         System.out.println("Searching jar files..");
 
 
-        if (newFile!=null&&newFile.exists()&&!newFile.isDirectory()) {
-            if(newFile.length()==0){
+        if (newFile != null && newFile.exists() && !newFile.isDirectory()) {
+            if (newFile.length() == 0) {
                 return;
             }
-        }else{
+        } else {
             log("Update not found in update directory");
             return;
         }
 
-        System.out.println("Installing new version: "+version);
+        System.out.println("Installing new version: " + version);
 
         try {
-            java.nio.file.Files.move(new File(appName+".jar").toPath(),new File(appName+".jar.bak").toPath(), StandardCopyOption.REPLACE_EXISTING);
-            java.nio.file.Files.move(newFile.toPath(), new File(appName+".jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            java.nio.file.Files.move(new File(appName + ".jar").toPath(), new File(appName + ".jar.bak").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            java.nio.file.Files.move(newFile.toPath(), new File(appName + ".jar").toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             Runtime.getRuntime().exec("java -jar " + appName + ".jar --forceSettings");
-        }catch (IOException ioe){
+        } catch (IOException ioe) {
             System.out.println(ioe.getLocalizedMessage());
         }
         System.exit(0);
@@ -209,7 +208,7 @@ public class AutoUpdaterV2 {
 
 
     private static void log(String text) {
-        SCLogger.getInstance().log(AutoUpdaterV2.class.getName(),"INFO",text);
+        SCLogger.getInstance().log(AutoUpdaterV2.class.getName(), "INFO", text);
     }
 
 
@@ -265,17 +264,15 @@ public class AutoUpdaterV2 {
         //ClassLoader classLoader = AutoUpdaterV2.class.getClassLoader();
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         //TODO hack for loading class. Need to resolve this problem
-        NginxUpdateStorageClient ccc = new NginxUpdateStorageClient();
-        classLoader.loadClass(NginxUpdateStorageClient.class.getCanonicalName());
         assert classLoader != null;
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = classLoader.getResources(path);
         List<File> dirs = new ArrayList<File>();
-        
+
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
             dirs.add(new File(resource.getFile()));
-            log("Dirs: "+resource.getFile());
+            log("Dirs: " + resource.getFile());
         }
         ArrayList<Class> classes = new ArrayList<Class>();
         for (File directory : dirs) {
@@ -296,11 +293,19 @@ public class AutoUpdaterV2 {
     public static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
         log(directory.getAbsolutePath());
         List<Class<?>> classes = new ArrayList<Class<?>>();
+        File[] files = null;
         if (!directory.exists()) {
-            return classes;
+
+                classes.add(NginxUpdateStorageClient.class);
+                log(String.valueOf(classes));
+                return classes;
+
+        } else {
+            files = directory.listFiles();
         }
-        File[] files = directory.listFiles();
-        log("Classes: "+ String.valueOf(files));
+        log("Directory: " + directory.length());
+
+        log("Classes: " + files.length + ", " + String.valueOf(files));
         for (File file : files) {
             if (file.isDirectory()) {
                 assert !file.getName().contains(".");

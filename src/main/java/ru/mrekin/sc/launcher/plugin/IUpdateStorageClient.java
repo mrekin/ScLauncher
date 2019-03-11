@@ -3,6 +3,7 @@ package ru.mrekin.sc.launcher.plugin;
 import com.github.sardine.model.Prop;
 import ru.mrekin.sc.launcher.core.ISCLogger;
 import ru.mrekin.sc.launcher.core.PluginManager;
+import ru.mrekin.sc.launcher.core.SCLogger;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.Properties;
 /**
  * Created by MRekin on 06.03.2019.
  */
-public interface IUpdateStorageClient {
+public interface IUpdateStorageClient extends ISCLogger {
 
     public void loadProperties(Properties props);
 
