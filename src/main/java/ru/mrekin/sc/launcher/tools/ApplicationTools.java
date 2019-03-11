@@ -126,7 +126,7 @@ public class ApplicationTools {
             for (Plugin plugin : PluginManager.getInstance().getAllPlugins()) {
                 if (plugin.isInstalled() && plugin.getPluginSimpleName().equals(plName)) {
                     installed = plugin.isInstalled();
-                    if(plugin.getLatestVersion().equals("-1")){
+                    if (plugin.getLatestVersion().equals("-1")) {
                         log("[Mandatory plugin installer] Latest version unknown. Possible repository not reachable.");
                     }
                     if (plugin.isInstalled() && PluginManager.compareVersions(plugin.getPluginVersion(), plugin.getLatestVersion()) < 0) {

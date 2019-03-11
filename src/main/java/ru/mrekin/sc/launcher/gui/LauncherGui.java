@@ -97,9 +97,7 @@ public class LauncherGui extends JFrame {
 
     public void init() {
 
-        try
-
-        {
+        try {
             //TODO need to create new icon :)
             //TODO need to create resource manager
             mainIcon = ImageIO.read(getClass().getClassLoader().getResource("icon.png"));
@@ -110,9 +108,7 @@ public class LauncherGui extends JFrame {
 
         } catch (
                 IOException ioe
-                )
-
-        {
+        ) {
             ioe.printStackTrace();
         }
 
@@ -160,7 +156,7 @@ public class LauncherGui extends JFrame {
         });
 
 
-        if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode,"false").equals("true")) {
+        if (SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode, "false").equals("true")) {
             toolsMenu = new JMenu("Tools");
 
             appPrepareMenuItem = new JMenuItem("Prepare application");
@@ -199,13 +195,12 @@ public class LauncherGui extends JFrame {
         settingsMenu.add(settingMenuItem);
 
 
-
         pluginSettingsMenuItem.setEnabled(false);
 
         //FORMING MENU BAR
         menuBar.add(pluginMenu);
         menuBar.add(settingsMenu);
-        if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode,"false").equals("true")) {
+        if (SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode, "false").equals("true")) {
             menuBar.add(toolsMenu);
         }
         setJMenuBar(menuBar);
@@ -249,7 +244,6 @@ public class LauncherGui extends JFrame {
             button.setEnabled(localApp.isInstalled());
 
 
-
             JLabel label = new JLabel();
             label.setMaximumSize(new Dimension(40, 25));
             label.setText(appLocalVersion);
@@ -260,7 +254,7 @@ public class LauncherGui extends JFrame {
             label.setComponentPopupMenu(new AppPopupMenu(this, localApp, AppManager.getInstance()));
             if (localApp.isInstalled() && localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.GREEN);
-            } else if (localApp.isInstalled()&&localApp.getSourcePlugin().isEmpty()) {
+            } else if (localApp.isInstalled() && localApp.getSourcePlugin().isEmpty()) {
                 label.setForeground(Color.ORANGE);
             } else if (localApp.isInstalled() && !localApp.getAppLastVersion().equals(appLocalVersion)) {
                 label.setForeground(Color.RED);
@@ -268,7 +262,6 @@ public class LauncherGui extends JFrame {
             } else if (!localApp.isInstalled()) {
                 label.setForeground(Color.LIGHT_GRAY);
             }
-
 
 
             JComboBox box = new JComboBox();

@@ -44,7 +44,7 @@ public class AppDropTarget extends DropTarget implements ISCLogger {
                 if (file.getAbsolutePath().endsWith(".lnk")) {
                     link = new ShellLinkEx(file);
                     log(link.resolveTarget());
-                }else{
+                } else {
                     link = ShellLinkEx.createLink(file.getAbsolutePath());
                     log(link.resolveTarget());
                 }
@@ -53,24 +53,22 @@ public class AppDropTarget extends DropTarget implements ISCLogger {
                 }
                 jform.setEnabled(true);
             }
-        }catch (ShellLinkException se){
+        } catch (ShellLinkException se) {
             se.printStackTrace();
             log(se.toString());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             log(ex.toString(), "ERROR");
         }
     }
-/*
-    private static void log(String msg) {
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
-    }
-*/
+
+    /*
+        private static void log(String msg) {
+            SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
+        }
+    */
     private static void log(String msg, String level) {
         SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), level, msg);
     }
-
-
 
 
 }

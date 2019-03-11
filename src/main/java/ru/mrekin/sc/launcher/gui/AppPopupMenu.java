@@ -76,7 +76,7 @@ public class AppPopupMenu extends JPopupMenu {
                         class run implements Runnable {
                             public void run() {
                                 AppInstallForm iform = new AppInstallForm();
-                                if(appManager.deleteApplication(AppPopupMenu.this.application.getAppName(),true,"Current version will be deleted!")) {
+                                if (appManager.deleteApplication(AppPopupMenu.this.application.getAppName(), true, "Current version will be deleted!")) {
                                     appManager.installApplication(AppPopupMenu.this.application.getAppName(), ((JMenuItem) e.getSource()).getText());
                                 }
                                 iform.setVisible(false);
@@ -102,7 +102,7 @@ public class AppPopupMenu extends JPopupMenu {
                 class run implements Runnable {
                     public void run() {
 
-                        appManager.deleteApplication(AppPopupMenu.this.application.getAppPath(),true,"Application will be deleted!");
+                        appManager.deleteApplication(AppPopupMenu.this.application.getAppPath(), true, "Application will be deleted!");
                         gui.launch();
                     }
                 }

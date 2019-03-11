@@ -191,7 +191,7 @@ public class PluginRepoManager {
         return null;
     }
 
-    private Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
+    public static Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
         Enumeration<JarEntry> entries = jar.entries();
         URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
 

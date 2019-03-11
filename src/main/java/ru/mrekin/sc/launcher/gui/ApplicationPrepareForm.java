@@ -73,11 +73,11 @@ public class ApplicationPrepareForm extends JFrame {
 
         ta = new JTextArea();
         ta.setLineWrap(true);
-        DefaultCaret caret = (DefaultCaret)ta.getCaret();
+        DefaultCaret caret = (DefaultCaret) ta.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         ta.setEditable(false);
         ta.setAutoscrolls(true);
-        ta.setPreferredSize(new Dimension(500,200));
+        ta.setPreferredSize(new Dimension(500, 200));
         ta.setVisible(true);
         ta.setText("Select folder contianing application.");
         ta.setBackground(this.getBackground());
@@ -96,8 +96,8 @@ public class ApplicationPrepareForm extends JFrame {
 
             public void actionPerformed(ActionEvent e) {
                 ta.append("\nGenerating cfg files..");
-                ta.append("\n+++"+LauncherConstants.ReliseNotesFileName);
-                ta.append("\n+++"+LauncherConstants.PropertiesFileName);
+                ta.append("\n+++" + LauncherConstants.ReliseNotesFileName);
+                ta.append("\n+++" + LauncherConstants.PropertiesFileName);
                 ApplicationPrepare.appPrepare(selectedFolder.getAbsolutePath());
                 ta.append("\n Done.");
                 ta.append("\nPls don't forget to fill " + LauncherConstants.ReliseNotesFileName + " and " + LauncherConstants.PropertiesFileName);
@@ -118,10 +118,10 @@ public class ApplicationPrepareForm extends JFrame {
                 instance.setAlwaysOnTop(false);
                 if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                     log("getSelectedDir() : " + fc.getSelectedFile());
-                    ta.append("\n Folder selected: "+fc.getSelectedFile());
+                    ta.append("\n Folder selected: " + fc.getSelectedFile());
                     selectedFolder = fc.getSelectedFile();
                     instance.setAlwaysOnTop(true);
-                    if(!"".equals(selectedFolder) && selectedFolder!=null) {
+                    if (!"".equals(selectedFolder) && selectedFolder != null) {
                         prepButton.setEnabled(true);
                     }
                 } else {
@@ -130,16 +130,15 @@ public class ApplicationPrepareForm extends JFrame {
                     instance.setAlwaysOnTop(true);
                     ta.append("\n Folder not selected.");
                     selectedFolder = fc.getSelectedFile();
-                    if(!"".equals(selectedFolder) && selectedFolder!=null) {
-                        ta.append("\n Current selected folder: "+selectedFolder);
+                    if (!"".equals(selectedFolder) && selectedFolder != null) {
+                        ta.append("\n Current selected folder: " + selectedFolder);
                         prepButton.setEnabled(true);
-                    }else{
+                    } else {
                         prepButton.setEnabled(false);
                     }
                 }
             }
         });
-
 
 
         addWindowListener(new WindowAdapter() {
@@ -166,7 +165,6 @@ public class ApplicationPrepareForm extends JFrame {
         east.add(buttonPanel, gbc);
 
 
-
         add(east, BorderLayout.EAST);
 
         setLocationRelativeTo(null);
@@ -182,7 +180,7 @@ public class ApplicationPrepareForm extends JFrame {
         //jspane.size
         //tablePanel.add(jspane);
         //tablePanel.setBorder(new LineBorder(Color.red));
-        add(jspane,BorderLayout.WEST);
+        add(jspane, BorderLayout.WEST);
         pack();
         setVisible(true);
     }

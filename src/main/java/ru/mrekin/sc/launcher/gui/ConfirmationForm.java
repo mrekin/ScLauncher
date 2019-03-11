@@ -7,9 +7,10 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+
 import net.miginfocom.swing.MigLayout;
 
-public class ConfirmationForm extends JDialog  implements ISCLogger {
+public class ConfirmationForm extends JDialog implements ISCLogger {
     private JPanel contentPane;
     private JButton buttonOK = new JButton("OK");
     private JButton buttonCancel = new JButton("Cancel");
@@ -37,9 +38,9 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
         setModal(true);
         setModalityType(ModalityType.APPLICATION_MODAL);
         textArea.setEditable(false);
-        contentPane.add(textArea,"wrap");
+        contentPane.add(textArea, "wrap");
         contentPane.add(buttonOK, "split 2");
-        contentPane.add(buttonCancel,"gapleft push");
+        contentPane.add(buttonCancel, "gapleft push");
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
@@ -70,7 +71,7 @@ public class ConfirmationForm extends JDialog  implements ISCLogger {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    public ConfirmationForm setText(String text){
+    public ConfirmationForm setText(String text) {
         textArea.setText(text);
         return this;
     }

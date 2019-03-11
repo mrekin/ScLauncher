@@ -32,8 +32,8 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
     JLabel mainText;
     JLabel filePath;
     JTextField appName, appVersion, appType;
-    String appNameStr,appVersionStr,appTypeStr,appPathStr;
-    JButton saveButton,cancelButton/*, selectButton*/;
+    String appNameStr, appVersionStr, appTypeStr, appPathStr;
+    JButton saveButton, cancelButton/*, selectButton*/;
     ShellLinkEx link = null;
 
     public ApplicationPrepareLinkForm() {
@@ -42,7 +42,6 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
     }
 
     /**
-     *
      * @param link
      */
     public ApplicationPrepareLinkForm(ShellLinkEx link) {
@@ -51,19 +50,20 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
             appNameStr = link.getIdList().getLast().getName();
             appVersionStr = "unknown";
             appPathStr = link.resolveTarget();
-            appTypeStr = link.getIdList().getLast().getName().endsWith(".jar") ? "java": "win";
-        }catch (Exception e){
+            appTypeStr = link.getIdList().getLast().getName().endsWith(".jar") ? "java" : "win";
+        } catch (Exception e) {
             log(e.toString());
         }
         init();
         launch();
     }
-/*
-    private static void log(String msg) {
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
-    }
 
-*/
+    /*
+        private static void log(String msg) {
+            SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
+        }
+
+    */
     private void init() {
         //setResizable(false);
         log("Init starting");
@@ -95,15 +95,14 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         log("Creating fields");
         filePath = new JLabel(appPathStr);
         appName = new JTextField(appNameStr);
-        appName.setPreferredSize(new Dimension(200,0));
+        appName.setPreferredSize(new Dimension(200, 0));
         appVersion = new JTextField(appVersionStr);
-        appVersion.setPreferredSize(new Dimension(200,0));
+        appVersion.setPreferredSize(new Dimension(200, 0));
         appType = new JTextField(appTypeStr);
-        appType.setPreferredSize(new Dimension(200,0));
+        appType.setPreferredSize(new Dimension(200, 0));
 
         /* Main text*/
         mainText = new JLabel("Please check App params and confirm!");
-
 
 
         JPanel buttonPanel = new JPanel();
@@ -118,10 +117,10 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
                 try {
                     s = new ShellLinkEx();
                     s.setTarget(link.resolveTarget());
-                }catch (Exception ee){
+                } catch (Exception ee) {
                     log(ee.toString());
                 }
-                AppManager.getInstance().createAppLink(s,appName.getText(),appVersion.getText(),appType.getText());
+                AppManager.getInstance().createAppLink(s, appName.getText(), appVersion.getText(), appType.getText());
                 instance.dispose();
             }
         });
@@ -191,7 +190,7 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
 
         JPanel east = new JPanel(new GridBagLayout());
         east.add(buttonPanel, gbc);
-        east.setMaximumSize(new Dimension(0,200));
+        east.setMaximumSize(new Dimension(0, 200));
 
 
         add(east, BorderLayout.EAST);
@@ -211,7 +210,7 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         //tablePanel = new JPanel();
         jspane = new JPanel();
         jspane.setLayout(ml);
-        jspane.add(mainText,"span");
+        jspane.add(mainText, "span");
 
         jspane.add(new JLabel("Target file:"));
         jspane.add(filePath);
@@ -230,23 +229,22 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         //jspane.size
         //tablePanel.add(jspane);
         //tablePanel.setBorder(new LineBorder(Color.red));
-        add(jspane,BorderLayout.WEST);
+        add(jspane, BorderLayout.WEST);
         pack();
         setVisible(true);
         log("Launched");
     }
 
     /**
-     *
      * @param name
      * @param c
      * @return
      */
-    private JPanel getComponentWithLabel(String name, JComponent c){
+    private JPanel getComponentWithLabel(String name, JComponent c) {
         SpringLayout sl = new SpringLayout();
 
         JLabel l = new JLabel(name);
-        l.setMinimumSize(new Dimension(200,0));
+        l.setMinimumSize(new Dimension(200, 0));
 
         sl.putConstraint(SpringLayout.WEST, c,
                 5,
@@ -256,7 +254,6 @@ public class ApplicationPrepareLinkForm extends JFrame implements ISCLogger {
         filech.add(c);
         return filech;
     }
-
 
 
 }

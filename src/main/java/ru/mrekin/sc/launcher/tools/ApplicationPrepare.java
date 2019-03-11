@@ -22,21 +22,19 @@ public class ApplicationPrepare {
     }
 
     /**
-     *
      * @param dir
      */
     public static void appPrepare(String dir) {
-        appPrepare(dir,"","","","");
+        appPrepare(dir, "", "", "", "");
     }
 
     /**
-     *
      * @param dir
      * @param appName
      * @param appVersion
      * @param appType
      */
-    public static void appPrepare(String dir, String appName, String appVersion,String appType, String execPath) {
+    public static void appPrepare(String dir, String appName, String appVersion, String appType, String execPath) {
 
         if (dir.lastIndexOf("\\") == dir.length() - 1) {
             dir = dir.substring(0, dir.length() - 1);
@@ -56,10 +54,10 @@ public class ApplicationPrepare {
             list = new File(directory.getAbsolutePath() + "/" + LauncherConstants.PropertiesFileName);
             if (!list.isFile() && !list.exists()) {
                 sb = new StringBuffer();
-                sb.append(LauncherConstants.ApplicationName + " = "+appName +"\n");
-                sb.append(LauncherConstants.ApplicationVersion + " = "+appVersion +"\n");
-                sb.append(LauncherConstants.ApplicationType + " = "+appType +"\n");
-                sb.append(LauncherConstants.ApplicationExecFile + " = "+execPath);
+                sb.append(LauncherConstants.ApplicationName + " = " + appName + "\n");
+                sb.append(LauncherConstants.ApplicationVersion + " = " + appVersion + "\n");
+                sb.append(LauncherConstants.ApplicationType + " = " + appType + "\n");
+                sb.append(LauncherConstants.ApplicationExecFile + " = " + execPath);
 
                 fos = (new FileOutputStream(list));
                 fos.write(sb.toString().getBytes());

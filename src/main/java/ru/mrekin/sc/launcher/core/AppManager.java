@@ -29,7 +29,7 @@ public class AppManager {
     //FileDriver FileDriver.getInstance();
     //SvnClient svnClient;
     IRemoteStorageClient client;
-   // ArrayList<Application> appList;
+    // ArrayList<Application> appList;
     CopyOnWriteArrayList<Application> appList;
 
     private AppManager() {
@@ -57,7 +57,7 @@ public class AppManager {
 //        this.svnClient = new SvnClient();
 
         appList = FileDriver.getInstance().getAppList();
-  //      appList = (ArrayList<Application>) Collections.synchronizedList(appList);
+        //      appList = (ArrayList<Application>) Collections.synchronizedList(appList);
         updateAppList();
 //        svnAppList = svnClient.getAppList();
 
@@ -87,7 +87,7 @@ public class AppManager {
         log("Local appList loaded: " + appList.size());
     }
 
-    public void loadLocalAppInfo2(){
+    public void loadLocalAppInfo2() {
         CopyOnWriteArrayList<Application> apps = new CopyOnWriteArrayList<Application>();
 
         FileDriver.getInstance().loadAppsSettings();
@@ -107,7 +107,7 @@ public class AppManager {
 
         }
         for (Application app : appList) {
-            if (app.isInstalled() && apps.indexOf(app)==-1) {
+            if (app.isInstalled() && apps.indexOf(app) == -1) {
                 appList.remove(app);
             }
         }
@@ -188,7 +188,7 @@ public class AppManager {
                 break;
             }
         }
-        if(deleteApplication(appPath, true, "Current version will be deleted!")){
+        if (deleteApplication(appPath, true, "Current version will be deleted!")) {
             installApplication(name, version);
         }
         // AppManager.getInstance().updateAppList();
@@ -313,7 +313,7 @@ public class AppManager {
         }
         for (Application app : FileDriver.getInstance().getAppList()) {
             if (app.getAppPath().equals(appPath)) {
-                if(needConfirmation && app.isInstalled()) {
+                if (needConfirmation && app.isInstalled()) {
                     ConfirmationForm cf = new ConfirmationForm();
                     cf.setText(confirmationText);
                     if (!cf.launch()) {
@@ -351,9 +351,9 @@ public class AppManager {
                 break;
             }
         }*/
-        File f = new File(SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory)+"/"+appName);
-        if(f.exists()){
-            log("App ("+f.getAbsolutePath()+") already exists");
+        File f = new File(SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory) + "/" + appName);
+        if (f.exists()) {
+            log("App (" + f.getAbsolutePath() + ") already exists");
             //return;
         }
         try {
@@ -365,10 +365,10 @@ public class AppManager {
         //save link to target dir
         try {
             link.saveTo(f.getAbsolutePath() + "/" + appName + ".lnk");
-        }catch (IOException ioe){
+        } catch (IOException ioe) {
             log(ioe.toString());
         }
-        ApplicationPrepare.appPrepare(f.getAbsolutePath(),appName,appVersion,appType,appName + ".lnk");
+        ApplicationPrepare.appPrepare(f.getAbsolutePath(), appName, appVersion, appType, appName + ".lnk");
         //loadLocalAppInfo();
         AppManager.getInstance().loadLocalAppInfo();
         AppManager.getInstance().updateAppList();

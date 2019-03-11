@@ -95,9 +95,9 @@ public class AutoUpdater {
             connection = null;
         }
 
-        if (PluginManager.compareVersions(currentVersion,serverVersion) == -1){
+        if (PluginManager.compareVersions(currentVersion, serverVersion) == -1) {
             return serverVersion;
-        }else{
+        } else {
             return null;
         }
 /*

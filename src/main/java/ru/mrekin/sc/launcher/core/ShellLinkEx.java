@@ -22,21 +22,22 @@ public class ShellLinkEx extends ShellLink {
 
     public LinkTargetIDList getIdList() throws Exception {
 
-            Field idList = this.getClass().getSuperclass().getDeclaredField("idlist");
-            idList.setAccessible(true);
-            ids = (LinkTargetIDList) idList.get(this);
+        Field idList = this.getClass().getSuperclass().getDeclaredField("idlist");
+        idList.setAccessible(true);
+        ids = (LinkTargetIDList) idList.get(this);
 
-            return ids;
+        return ids;
 
     }
-    public static ShellLinkEx createLink(String target){
+
+    public static ShellLinkEx createLink(String target) {
         ShellLinkEx sl = null;
         try {
             sl = new ShellLinkEx();
             sl.setTarget(target);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
-        }finally {
+        } finally {
             return sl;
         }
 

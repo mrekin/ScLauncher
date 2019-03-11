@@ -5,6 +5,7 @@ import ru.mrekin.sc.launcher.gui.ConfirmationForm;
 import ru.mrekin.sc.launcher.gui.LauncherGui;
 import ru.mrekin.sc.launcher.tools.ApplicationTools;
 import ru.mrekin.sc.launcher.update.AutoUpdater;
+import ru.mrekin.sc.launcher.update.AutoUpdaterV2;
 
 /**
  * Created by MRekin on 30.07.2014.
@@ -36,10 +37,15 @@ public class Launch {
 
             //Checking if need to update launcher
             if ("true".equals(SettingsManager.getInstance().getPropertyByName(LauncherConstants.AutoUpdaterEnabled, "true"))) {
-                String version = AutoUpdater.checkForUpdates();
+                String version = AutoUpdaterV2.getInstance().checkForUpdates();
                 if (version != null) {
-                    if((new ConfirmationForm()).setText("New version " + version + " avaliable!\n Update?").launch())
-                    {
+                    if ((new ConfirmationForm()).setText("New version " + version + " avaliable!\n Update?").launch()) {
+                        AutoUpdaterV2.getInstance().update(version);
+                    }
+                }
+                version = AutoUpdater.checkForUpdates();
+                if (version != null) {
+                    if ((new ConfirmationForm()).setText("New version " + version + " avaliable!\n Update?").launch()) {
                         AutoUpdater.update(version);
                     }
                 }
