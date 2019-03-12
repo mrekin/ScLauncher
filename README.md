@@ -1,6 +1,7 @@
 ScLauncher
 ==========
 
+
 Simple application launcher. SCL allows to distribute and launch your own applications. May be usefull in companies, which have their self-written tools.
 
 Also, SCL allow add link to locally installed application/files, just drug&drop file on SCL window.
@@ -24,5 +25,4 @@ For more information [Wiki](https://github.com/mrekin/ScLauncher/wiki)
 SCLauncher is released as open-source software under the GNU General Public License (GPL), version 2 or later.
 
 ### Download
-
-http://mrekin.github.io/ScLauncher/
+http://sclauncher.ru/ftprepo/ru/mrekin/sc/sclauncher/
