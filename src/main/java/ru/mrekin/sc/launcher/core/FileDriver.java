@@ -1,12 +1,18 @@
 package ru.mrekin.sc.launcher.core;
 
 import org.apache.commons.io.FileUtils;
+import ru.mrekin.sc.launcher.plugin.NginxUpdateStorageClient;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
@@ -15,6 +21,7 @@ import java.util.jar.JarFile;
 public class FileDriver implements ISCLogger {
 
     private ArrayList<Application> appList;
+
     private static FileDriver instance = null;
     // private String appRoot = "./apps";
     private String appRoot = LauncherConstants.WorkingDirectory + SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory, "./apps");
@@ -209,4 +216,127 @@ public class FileDriver implements ISCLogger {
         return true;
     }
 
+    public static Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
+        Enumeration<JarEntry> entries = jar.entries();
+        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
+
+        Class cl = null;
+        while (entries.hasMoreElements()) {
+            JarEntry nextElement = entries.nextElement();
+            String element = nextElement.getName().replace("/", ".");
+            if (element.endsWith(".class")) {
+                try {
+                    cl = classLoader.loadClass(element.replace(".class", ""));
+                    //cl = classLoader.loadClass(element);
+                } catch (ClassNotFoundException cnfe) {
+                    System.out.println("Entry " + element + " not a class");
+
+                }
+                if (cl != null && iface.isAssignableFrom(cl)) {
+                    return cl;
+                }
+            }
+        }
+
+
+        return null;
+    }
+    public static ArrayList<Class<?>> findClassByInterface(Class iface) {
+        ArrayList<Class<?>> result = new ArrayList<>();
+        Class[] loadedClasses = null;
+        try {
+            loadedClasses = getAllClassesFromPackage("ru.mrekin");
+            System.out.println(String.valueOf(loadedClasses));
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+        for (Class c : loadedClasses) {
+            if (iface.isAssignableFrom(c))
+                result.add(c);
+        }
+
+        String pluginDir = SettingsManager.getInstance().getPropertyByName(LauncherConstants.PluginDirectory, "plugin/");
+        ArrayList<File> jars = new ArrayList<>();
+        try {
+            jars = FileDriver.listFiles(pluginDir, ".jar");
+        } catch (IOException ioe) {
+            System.out.println(ioe.getLocalizedMessage());
+        }
+        for (File f : jars) {
+            try {
+                URL jarURL = f.toURI().toURL();
+                JarFile jf = new JarFile(f);
+                Class cl = findClassByInterface(jf, jarURL, iface);
+                if (cl == null) {
+                    continue;
+                } else {
+                    result.add(cl);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e.getLocalizedMessage());
+            }
+
+        }
+        return result;
+    }
+
+
+    public static Class[] getAllClassesFromPackage(final String packageName) throws ClassNotFoundException, IOException {
+        //ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        //ClassLoader classLoader = AutoUpdaterV2.class.getClassLoader();
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        //TODO hack for loading class. Need to resolve this problem
+        assert classLoader != null;
+        String path = packageName.replace('.', '/');
+        Enumeration<URL> resources = classLoader.getResources(path);
+        List<File> dirs = new ArrayList<File>();
+
+        while (resources.hasMoreElements()) {
+            URL resource = resources.nextElement();
+            dirs.add(new File(resource.getFile()));
+            System.out.println("Dirs: " + resource.getFile());
+        }
+        ArrayList<Class> classes = new ArrayList<Class>();
+        for (File directory : dirs) {
+            classes.addAll(findClasses(directory, packageName));
+        }
+        System.out.println(String.valueOf(classes));
+        return classes.toArray(new Class[classes.size()]);
+    }
+
+    /**
+     * Find file in package.
+     *
+     * @param directory
+     * @param packageName
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
+        System.out.println(directory.getAbsolutePath());
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        File[] files = null;
+        if (!directory.exists()) {
+
+            classes.add(NginxUpdateStorageClient.class);
+            System.out.println(String.valueOf(classes));
+            return classes;
+
+        } else {
+            files = directory.listFiles();
+        }
+        System.out.println("Directory: " + directory.length());
+
+        System.out.println("Classes: " + files.length + ", " + String.valueOf(files));
+        for (File file : files) {
+            if (file.isDirectory()) {
+                assert !file.getName().contains(".");
+                classes.addAll(findClasses(file, packageName + "." + file.getName()));
+            } else if (file.getName().endsWith(".class")) {
+                classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+            }
+        }
+        return classes;
+    }
 }

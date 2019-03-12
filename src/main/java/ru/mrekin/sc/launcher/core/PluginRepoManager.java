@@ -22,7 +22,7 @@ import java.util.jar.JarFile;
 /**
  * Created by MRekin on 02.09.2014.
  */
-public class PluginRepoManager {
+public class PluginRepoManager implements ISCLogger {
 
     private static PluginRepoManager instance;
     private String pluginDir = "";
@@ -35,10 +35,6 @@ public class PluginRepoManager {
         instance = this;
     }
 
-
-    private static void log(String msg) {
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
-    }
 
     public static PluginRepoManager getInstance() {
         if (instance != null) {
@@ -68,7 +64,7 @@ public class PluginRepoManager {
                 try {
                     URL jarURL = f.toURI().toURL();
                     JarFile jf = new JarFile(f);
-                    Class cl = findClassByInterface(jf, jarURL, IPluginRepoClient.class);
+                    Class cl = FileDriver.findClassByInterface(jf, jarURL, IPluginRepoClient.class);
                     if (cl == null) {
                         continue;
                     }
@@ -191,30 +187,6 @@ public class PluginRepoManager {
         return null;
     }
 
-    public static Class findClassByInterface(JarFile jar, URL jarURL, Class iface) {
-        Enumeration<JarEntry> entries = jar.entries();
-        URLClassLoader classLoader = new URLClassLoader(new URL[]{jarURL});
-
-        Class cl = null;
-        while (entries.hasMoreElements()) {
-            JarEntry nextElement = entries.nextElement();
-            String element = nextElement.getName().replace("/", ".");
-            if (element.endsWith(".class")) {
-                try {
-                    cl = classLoader.loadClass(element.replace(".class", ""));
-                    //cl = classLoader.loadClass(element);
-                } catch (ClassNotFoundException cnfe) {
-                    log("Entry " + element + " not a class");
-                }
-                if (cl != null && iface.isAssignableFrom(cl)) {
-                    return cl;
-                }
-            }
-        }
-
-
-        return null;
-    }
 
     public void install(Plugin plugin, String version) {
         Properties props = null;

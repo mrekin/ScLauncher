@@ -92,3 +92,6 @@
 2. Changed update server to sclauncher.ru (forced in settings)
     Will be fixed: now not possible ignore version, app will ask each time.
 =========================================
+=============Version 0.5.7===============
+1. Minor updates in update logic
+=========================================

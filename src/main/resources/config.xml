@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <configuration>
 
-    <MandatoryPlugins force="true">scl-svn-plugin,scl_mq_notif_plugin</MandatoryPlugins>
-    <JavaAppOpeningMode force="true">OSMode</JavaAppOpeningMode>>
-    <SVNUser force="true">submitter</SVNUser>
-    <AutoUpdaterServerURL force="true">http://sclauncher.ru/ftprepo/ru/mrekin/sc/sclauncher/</AutoUpdaterServerURL>
+    <MandatoryPlugins>scl-svn-plugin,scl_mq_notif_plugin</MandatoryPlugins>
+    <JavaAppOpeningMode>OSMode</JavaAppOpeningMode>>
+    <SVNUser>submitter</SVNUser>
+    <AutoUpdaterServerURL>http://sclauncher.ru/ftprepo/ru/mrekin/sc/sclauncher/</AutoUpdaterServerURL>
     <AutoUpdaterEnabled>true</AutoUpdaterEnabled>
-    <AutoUpdaterDevMode force="true">false</AutoUpdaterDevMode>
-    <SVNRepoURL force="true">
-        https://ms-d50909-09.bee.vimpelcom.ru/svn/deployment/.m2/repository/com/vimpelcom/sc/tools
+    <AutoUpdaterDevMode>false</AutoUpdaterDevMode>
+    <SVNRepoURL>
+        https://localhost.ru/svn/deployment/.m2/repository/com/sc/tools
     </SVNRepoURL>
     <ApplicationDirectory>apps/</ApplicationDirectory>
     <ApplicationShowReleaseNotes>true</ApplicationShowReleaseNotes>
     <PluginDirectory>plugins/</PluginDirectory>
-    <SVNPassword force="true">subpass</SVNPassword>
-    <PluginRepoServerURL force="true">http://sclauncher.ru/ftprepo/ru/mrekin/sc/scl-plugins/
+    <SVNPassword>subpass</SVNPassword>
+    <PluginRepoServerURL>http://sclauncher.ru/ftprepo/ru/mrekin/sc/scl-plugins/
     </PluginRepoServerURL>
 </configuration>
