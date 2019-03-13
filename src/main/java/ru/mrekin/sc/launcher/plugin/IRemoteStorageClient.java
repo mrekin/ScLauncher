@@ -13,6 +13,15 @@ public interface IRemoteStorageClient {
 
     public boolean loadProperties(Properties props) throws Exception;
 
+    default public Properties getDefaultProperties(){
+        Properties props = new Properties();
+        props.setProperty("name","default");
+        props.setProperty("version","1.0.0");
+        props.setProperty("server","localhost");
+        props.setProperty("password","password");
+        return props;
+    };
+
     public boolean connect() throws Exception;
 
     public boolean disconnect() throws Exception;
