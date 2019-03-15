@@ -49,7 +49,13 @@ public class LauncherGui extends JFrame {
         //setLocationByPlatform(true);
         //  setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        instance.setDropTarget(AppDropTarget.getInstance());
+     /*   if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.StartMinimized,"false").equals("true")){
+            setVisible(false);
+            setEnabled(false);
+            setState(Frame.ICONIFIED);
+            TrayPopup.displayMessage("SCLauncher started");
+        }
+       */ instance.setDropTarget(AppDropTarget.getInstance());
         TrayPopup.createGUI();
 
         MouseAdapter ma = new MouseAdapter() {
@@ -205,6 +211,16 @@ public class LauncherGui extends JFrame {
         }
         setJMenuBar(menuBar);
 
+        if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.StartMinimized,"false").equals("true")){
+            setVisible(false);
+            setEnabled(false);
+            setState(Frame.ICONIFIED);
+            TrayPopup.displayMessage("SCLauncher started");
+        }else {
+            setVisible(true);
+            setEnabled(true);
+        }
+
     }
 
     synchronized public void launch() {
@@ -321,8 +337,7 @@ public class LauncherGui extends JFrame {
         statusPanel.add(lbl2, BorderLayout.EAST);
 
         getContentPane().add(statusPanel, BorderLayout.SOUTH);
-        setVisible(true);
-        setEnabled(true);
+
         setIconImage(mainIcon);
         pack();
     }
