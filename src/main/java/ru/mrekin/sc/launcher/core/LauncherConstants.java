@@ -42,4 +42,6 @@ public class LauncherConstants {
     public final static String AppPrepareLinkFormTitle = "Prepare link for application";
     public final static String PluginsFormTitle = "Plugins";
 
+    //GUI
+    public final static String StartMinimized = "UI.StartMinimized";
 }
