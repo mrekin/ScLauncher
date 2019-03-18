@@ -6,14 +6,18 @@ import ru.mrekin.sc.launcher.plugin.NginxUpdateStorageClient;
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
+import java.nio.file.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import static java.util.stream.Collectors.counting;
+import static org.jsoup.helper.Validate.fail;
 
 /**
  * Created by MRekin on 31.07.2014.
@@ -27,7 +31,7 @@ public class FileDriver implements ISCLogger {
     private String appRoot = LauncherConstants.WorkingDirectory + SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationDirectory, "./apps");
 
     private FileDriver() {
-        loadAppsSettings();
+        //loadAppsSettings();
         instance = this;
     }
 
@@ -41,7 +45,18 @@ public class FileDriver implements ISCLogger {
 
     }
 
-    public static ArrayList<File> listFiles(String path, String nameContains) throws IOException {
+    public static ArrayList<File> listFiles(String path, String nameContains) throws IOException
+    {
+        return listFiles2(path,nameContains,null);
+    }
+
+    public static ArrayList<File> listFiles(String path, String nameContains, int depth) throws IOException
+    {
+        return listFiles2(path,nameContains,depth);
+    }
+
+
+    public static ArrayList<File> listFiles3(String path, String nameContains) throws IOException {
 
         ArrayList<File> apps = new ArrayList<File>(1);
 
@@ -52,11 +67,40 @@ public class FileDriver implements ISCLogger {
 
             for (File f : files) {
                 if (f.isDirectory()) {
-                    apps.addAll(listFiles(f.getPath(), nameContains));
+                    apps.addAll(listFiles3(f.getPath(), nameContains));
                 } else if (f.getName().contains(nameContains) && f.isFile()) {
                     apps.add(f);
                 }
             }
+        }
+        return apps;
+    }
+
+    private static ArrayList<File> listFiles2(String spath, String nameContains, Integer depth){
+        ArrayList<File> apps = new ArrayList<File>(1);
+
+        Consumer<Path> pathConsumer = new Consumer<Path>() {
+            @Override
+            public void accept(Path path) {
+                if(path.toString().contains(nameContains)){
+                    apps.add(path.toFile());
+                }
+            }
+        };
+
+        try {
+            Instant start = Instant.now();
+            if(depth==null){
+                depth = Integer.MAX_VALUE;
+            }
+            Files.walk(Paths.get(spath).toAbsolutePath(),depth)
+                    .parallel()
+                    .filter(n->Files.isRegularFile(n,LinkOption.NOFOLLOW_LINKS))
+                    .forEach(pathConsumer);
+            Duration d= Duration.between(start, Instant.now());
+            FileDriver.getInstance().log(String.format("Listing '%s','%s' duration: %s",spath,nameContains,d.toMillis()));
+        } catch (IOException ex) {
+            fail(ex.getMessage());
         }
         return apps;
     }
@@ -82,7 +126,7 @@ public class FileDriver implements ISCLogger {
         } else {
             try {
                 //TODO !!! will not work with old version. Need to do something
-                apps = listFiles(file.getPath(), "app.properties");
+                apps = listFiles(file.getPath(),  LauncherConstants.PropertiesFileName,2);
                 for (File f : apps) {
 
                     String propertyFile = f.getParent() + "/" + LauncherConstants.PropertiesFileName;

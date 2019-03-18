@@ -162,8 +162,9 @@ public class PluginManager {
     }
 
     public void loadAvaliablePlugins() {
-        //TODO need to move all file names to constans class //
+        log("Starting update avaliable plugins");
         this.avaliabledPlugins = PluginRepoManager.getInstance().getAvaliablePlugins2();
+        log("Update avaliable plugins - done");
         avaliablePluginsLoaded = true;
     }
 

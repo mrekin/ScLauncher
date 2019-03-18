@@ -55,7 +55,7 @@ public class AppManager {
     public void init() {
         // this.FileDriver.getInstance() = FileDriver.getInstance();
 //        this.svnClient = new SvnClient();
-
+        FileDriver.getInstance().loadAppsSettings();
         appList = FileDriver.getInstance().getAppList();
         //      appList = (ArrayList<Application>) Collections.synchronizedList(appList);
         updateAppList();
