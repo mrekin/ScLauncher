@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by MRekin on 03.08.2014.
  */
-public class AppManager {
+public class AppManager implements ISCLogger {
 
     //, svnAppList;
     private static AppManager instance;
@@ -37,11 +37,11 @@ public class AppManager {
         init();
 
     }
-
+/*
     private static void log(String msg) {
         SCLogger.getInstance().log(AppManager.class.getName(), "INFO", msg);
     }
-
+*/
 
     public static AppManager getInstance() {
         if (instance != null) {
@@ -63,23 +63,6 @@ public class AppManager {
 
     }
 
-    /*   public SvnClient getSvnClient() {
-           return svnClient;
-       }
-   */
- /*   public void setSvnClient(SvnClient svnClient) {
-        this.svnClient = svnClient;
-    }
-*/
-    /*public FileDriver getFileDriver() {
-        return fileDriver;
-    }
-*/
-    /*
-    public void setFileDriver(FileDriver fileDriver) {
-        this.fileDriver = fileDriver;
-    }
-*/
 
     public void loadLocalAppInfo() {
         FileDriver.getInstance().loadAppsSettings();
@@ -92,7 +75,7 @@ public class AppManager {
 
         FileDriver.getInstance().loadAppsSettings();
         apps = FileDriver.getInstance().getAppList();
-        log("Local appList loaded (2): " + appList.size());
+        log("Local appList loaded (v2): " + apps.size());
 
         for (Application app : apps) {
             if (appList.contains(app)) {
@@ -109,6 +92,7 @@ public class AppManager {
         for (Application app : appList) {
             if (app.isInstalled() && apps.indexOf(app) == -1) {
                 appList.remove(app);
+                log("Removed from applist: "+app.getAppName(),"DEBUG");
             }
         }
     }
@@ -164,18 +148,7 @@ public class AppManager {
         return;
     }
 
-    /*    public void setAppList(ArrayList<Application> appList) {
-            this.appList = appList;
-        }
-    */
-/*    public ArrayList<Application> getSvnAppList() {
-        return svnAppList;
-    }
-*/
-/*    public void setSvnAppList(ArrayList<Application> svnAppList) {
-        this.svnAppList = svnAppList;
-    }
-*/
+
     public void updateApplication(String appPath) {
 
         String version = "";
@@ -200,6 +173,7 @@ public class AppManager {
 
         for (Application app : appList) {
             if (name.equals(app.getAppName())) {
+                log("GetAppByName: "+app.getAppName(),"DEBUG");
                 return app;
             }
         }
@@ -209,15 +183,21 @@ public class AppManager {
     public void installApplication(String appName, String version) {
 
         log("Installing: " + appName + " " + version);
-        client = PluginManager
-                .getInstance()
-                .getPluginByName(getAppByName(appName)
-                        .getSourcePlugin())
-                .getPluginObj();
+        try {
+            client = PluginManager
+                    .getInstance()
+                    .getPluginByName(getAppByName(appName)
+                            .getSourcePlugin())
+                    .getPluginObj();
+            log("GetPlugin return: "+client.getPluginName(),"DEBUG");
+        }catch (Exception e){
+            log("GetPlugin failed: "+ e.getLocalizedMessage(),"DEBUG");
+        }
         try {
             if (!client.checkConnection()) {
                 try {
                     client.connect();
+                    log("Install application: Connected to repo.","DEBUG");
                 } catch (Exception e) {
                     e.printStackTrace();
                     log("Can't access to " + client.getPluginName() + " storage, check connection");
@@ -296,7 +276,9 @@ public class AppManager {
         }
 
         MyThread th = new MyThread();
+        th.setName("AppInstaller");
         th.setData(appName, version);
+        log("Install application: Starting thread","DEBUG");
         th.start();
 
     }
@@ -308,7 +290,7 @@ public class AppManager {
 
         String path = "";
         if ("".equals(appPath) || appPath == null) {
-            System.out.print("Nothing to delete. Ok.");
+            log("Nothing to delete. Ok.");
             return true;
         }
         for (Application app : FileDriver.getInstance().getAppList()) {
@@ -317,6 +299,7 @@ public class AppManager {
                     ConfirmationForm cf = new ConfirmationForm();
                     cf.setText(confirmationText);
                     if (!cf.launch()) {
+                        log("Deleting not confirmed","DEBUG");
                         return false;
                     }
                 }
@@ -327,8 +310,9 @@ public class AppManager {
         File f = new File(path);
         try {
             FileUtils.deleteDirectory(f);
+            log("Application deleted","DEBUG");
         } catch (IOException ioe) {
-            log(ioe.getLocalizedMessage());
+            log("Exception on deleting application: "+ioe.getLocalizedMessage());
             return false;
         }
         //loadLocalAppInfo();

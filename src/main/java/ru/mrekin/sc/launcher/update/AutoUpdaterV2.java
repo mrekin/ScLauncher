@@ -82,7 +82,7 @@ public class AutoUpdaterV2 {
         }
         currentVersion = SettingsManager.getInstance().getPropertyByName("Application.version");
 
-        if (PluginManager.compareVersions(currentVersion, serverVersion) == -1) {
+        if (PluginManager.getInstance().compareVersions(currentVersion, serverVersion) == -1) {
             return serverVersion;
         } else {
             return null;

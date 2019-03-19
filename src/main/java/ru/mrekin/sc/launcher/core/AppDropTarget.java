@@ -66,9 +66,7 @@ public class AppDropTarget extends DropTarget implements ISCLogger {
             SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
         }
     */
-    private static void log(String msg, String level) {
-        SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), level, msg);
-    }
+
 
 
 }

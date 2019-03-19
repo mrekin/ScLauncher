@@ -183,6 +183,7 @@ public class PluginManager {
     public Plugin getPluginByName(String name) {
         for (Plugin pl : installedPlugins) {
             if (name.equals(pl.getPluginName())) {
+                log("GetAppByName: "+pl.getPluginName());
                 return pl;
             }
         }
