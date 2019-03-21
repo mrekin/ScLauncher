@@ -62,6 +62,7 @@ public class LauncherGui extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (getState() == Frame.ICONIFIED) {
+                    pack();
                     setVisible(true);
                     setEnabled(true);
                     setState(Frame.NORMAL);
