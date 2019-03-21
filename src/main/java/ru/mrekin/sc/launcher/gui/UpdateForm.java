@@ -1,25 +1,31 @@
 package ru.mrekin.sc.launcher.gui;
 
+import net.miginfocom.swing.MigLayout;
 import ru.mrekin.sc.launcher.core.ISCLogger;
+import ru.mrekin.sc.launcher.core.LauncherConstants;
+import ru.mrekin.sc.launcher.core.SettingsManager;
+import ru.mrekin.sc.launcher.update.AutoUpdaterV2;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
-import net.miginfocom.swing.MigLayout;
-
-public class ConfirmationForm extends JDialog implements ISCLogger {
+public class UpdateForm extends JDialog implements ISCLogger {
     private JPanel contentPane;
     private JButton buttonOK = new JButton("OK");
     private JButton buttonCancel = new JButton("Cancel");
-    private JTextArea textArea = new JTextArea();
+    private JLabel currVersionText = new JLabel();
+    private JLabel availableVerText = new JLabel("Available version: ");
+    private JComboBox<String> versionsCBox = new JComboBox<>();
     private boolean result = false;
 
-    public ConfirmationForm() {
+    public UpdateForm() {
 
-        setTitle("Confirmation");
+        setTitle("Update");
         contentPane = new JPanel((new MigLayout()));
 
         BufferedImage
@@ -37,11 +43,19 @@ public class ConfirmationForm extends JDialog implements ISCLogger {
         setContentPane(contentPane);
         setModal(true);
         setModalityType(ModalityType.APPLICATION_MODAL);
-        textArea.setEditable(false);
-        textArea.setBackground(this.getBackground());
-        contentPane.add(textArea, "wrap");
-        contentPane.add(buttonOK, "split 2");
-        contentPane.add(buttonCancel, "gapleft push");
+        currVersionText.setText("Current version: "+ SettingsManager.getInstance().getPropertyByName(LauncherConstants.ApplicationVersion));
+        ArrayList<String> vers = AutoUpdaterV2.getInstance().getVersions();
+        Collections.sort(vers, Collections.reverseOrder());
+        for(String ver: vers){
+            versionsCBox.addItem(ver);
+        }
+
+        contentPane.add(currVersionText, "wrap");
+        contentPane.add(availableVerText, "split 2");
+        contentPane.add(versionsCBox, "gapbefore push, wrap");
+        contentPane.add(buttonOK,"split 2");
+        contentPane.add(buttonCancel,"gapleft push");
+
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
@@ -70,15 +84,12 @@ public class ConfirmationForm extends JDialog implements ISCLogger {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        pack();
     }
 
-    public ConfirmationForm setText(String text) {
-        textArea.setText(text);
-        return this;
-    }
 
     private void onOK() {
-        result = true;
+        AutoUpdaterV2.getInstance().update(versionsCBox.getSelectedItem().toString());
         // add your code here
         dispose();
     }

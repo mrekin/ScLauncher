@@ -31,12 +31,13 @@ public class LauncherGui extends JFrame {
     BufferedImage mainIcon;
     ImageIcon redIcon, greenIcon;
     JMenuBar menuBar;
-    JMenu pluginMenu, settingsMenu, toolsMenu;
-    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem, viewLogMenuItem, appPrepareMenuItem;
+    JMenu pluginMenu, settingsMenu, toolsMenu, helpMenu;
+    JMenuItem pluginRepoMenuItem, pluginSettingsMenuItem, settingMenuItem, viewLogMenuItem, appPrepareMenuItem, updateMenuItem;
     //PluginRepoForm pluginRepoForm;
     SettingsForm settingsForm;
     ApplicationPrepareForm applicationPrepareForm;
     ApplicationPrepareLinkForm applicationPrepareLinkForm;
+    UpdateForm updateForm;
 
     private static void log(String msg) {
         SCLogger.getInstance().log(MethodHandles.lookup().lookupClass().getName(), "INFO", msg);
@@ -62,6 +63,7 @@ public class LauncherGui extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (getState() == Frame.ICONIFIED) {
+                    pack();
                     setVisible(true);
                     setEnabled(true);
                     setState(Frame.NORMAL);
@@ -203,12 +205,32 @@ public class LauncherGui extends JFrame {
 
         pluginSettingsMenuItem.setEnabled(false);
 
+        helpMenu = new JMenu("Help");
+        updateMenuItem = new JMenuItem("Update...");
+        updateMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (updateForm == null) {
+                    updateForm = new UpdateForm();
+                } else if (!updateForm.isVisible()) {
+                    updateForm = new UpdateForm();
+                }
+                updateForm.setEnabled(true);
+                updateForm.setVisible(true);
+
+            }
+        });
+
+        helpMenu.add(updateMenuItem);
+
+
         //FORMING MENU BAR
         menuBar.add(pluginMenu);
         menuBar.add(settingsMenu);
         if (SettingsManager.getInstance().getPropertyByName(LauncherConstants.MenuExtendedMode, "false").equals("true")) {
             menuBar.add(toolsMenu);
         }
+        menuBar.add(helpMenu);
         setJMenuBar(menuBar);
 
         if(SettingsManager.getInstance().getPropertyByName(LauncherConstants.StartMinimized,"false").equals("true")){
