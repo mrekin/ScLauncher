@@ -2,21 +2,16 @@ package ru.mrekin.sc.launcher.update;
 
 import ru.mrekin.sc.launcher.core.*;
 import ru.mrekin.sc.launcher.plugin.IUpdateStorageClient;
-import ru.mrekin.sc.launcher.plugin.NginxUpdateStorageClient;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.*;
-import java.util.*;
-import java.util.List;
-import java.util.jar.JarFile;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * Created by MRekin on 25.08.2014.
@@ -204,6 +199,10 @@ public class AutoUpdaterV2 {
             System.out.println(ioe.getLocalizedMessage());
         }
         System.exit(0);
+    }
+
+    public ArrayList<String> getVersions(){
+        return versions;
     }
 
 

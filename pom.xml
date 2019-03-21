@@ -5,7 +5,7 @@
     <groupId>ru.mrekin.sc</groupId>
     <artifactId>sc-launcher</artifactId>
     <packaging>jar</packaging>
-    <version>0.5.8.2</version>
+    <version>0.5.9</version>
     <description>Tool for launching app</description>
 
     <properties>
@@ -65,11 +65,11 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.6</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
             <version>1.3.3</version>
-        </dependency>
+        </dependency-->
     </dependencies>
     <repositories>
         <repository>
