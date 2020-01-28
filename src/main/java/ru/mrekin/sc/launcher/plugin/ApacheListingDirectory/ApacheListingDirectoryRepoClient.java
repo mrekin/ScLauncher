@@ -47,7 +47,8 @@ public class ApacheListingDirectoryRepoClient implements IPluginRepoClient {
 
     private ArrayList<ApacheListResources> getXmlResources(String user, String pass, String serverURL) throws Exception {
 
-        String itemsSelector = "tr:has(img[src*='folder']), tr:has(a[href$='.jar'])";
+       //String itemsSelector = "tr:has(img[src*='folder']), tr:has(a[href$='.jar'])";
+        String itemsSelector = "a:matches([a-zA-Z0-9_-])";
 
         Document doc = Jsoup.connect(serverURL).get();
         Elements folders = doc.select(itemsSelector);
